@@ -2,7 +2,6 @@
 from flask import Flask
 app = Flask(__name__)
 
-
 app.config.from_object("bmp.config.Config")
 
 from bmp.views.login import LoginView
