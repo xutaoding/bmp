@@ -1,1 +1,1 @@
-__author__ = 'chenglong.yan'
+#coding: utf-8

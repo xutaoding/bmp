@@ -1,9 +1,6 @@
+#coding: utf-8
 from bmp.views.base import BaseView
 
 
 class LogoutView(BaseView):
-    def auth(self):
-        return True
-
-    def dispatch(self):
-        return self.redirect("login")
+    def get(self):pass

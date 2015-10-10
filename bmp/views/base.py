@@ -1,24 +1,20 @@
-from flask.views import View
+#coding: utf-8
+from flask.views import MethodView
 from flask import redirect
 from flask import url_for
 from flask import session
 from flask import render_template
 
-class BaseView(View):
+class BaseView(MethodView):
 
     def auth(self):
-        return False
+        return True
 
-    def dispatch_request(self):
+    def dispatch_request(self, *args, **kwargs):
         if self.auth():
-            return self.dispatch()
+            return super(BaseView,self).dispatch_request(*args,**kwargs)
         else:
-            return self.redirect("login")
-        #return self.dispatch(request)
-
-    def render(self,name):pass
-        #return render_template("%s.html"%(name.replace(".","\\")))
-
+            return "err"
 
     def redirect(self,url):
         return redirect(url_for(url))
