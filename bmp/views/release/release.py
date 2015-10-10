@@ -1,4 +1,4 @@
-from bmp.views.base import BaseView
+from bmp.apis.base import BaseView
 
 class ReleaseView(BaseView):
     def get(self):pass

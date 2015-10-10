@@ -1,8 +1,18 @@
 #coding: utf-8
-from flask import Flask
-app = Flask(__name__)
+from myapp import Myapp
 
-app.config.from_object("bmp.config.Config")
 
-from bmp.views.login import LoginView
-app.add_url_rule("/login/<string:user>/<string:pwd>",view_func=LoginView.as_view("login"),methods=["GET","POST"])
+
+app = Myapp(__name__)
+db=app.db
+
+
+app.add_api_rule("/api/login/<string:name>/<string:pwd>","bmp.apis.login")
+app.add_api_rule("/api/logout","bmp.apis.logout")
+app.add_rule("/","bmp.views.index")
+app.add_rule("/service.html","bmp.views.service")
+
+
+if __name__=="__main__":
+    from bmp.models.user import User
+    db.create_all()

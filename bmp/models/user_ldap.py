@@ -1,20 +1,8 @@
 #coding: utf-8
 from bmp import app
+from bmp import db
+from bmp.models.user import User
 import ldap
-import hashlib
-
-
-
-
-class User:
-    def __init__(self,_dict):
-            self.uid=_dict["uid"]
-            self.userPassword=_dict["userPassword"]
-            self.displayName=_dict["displayName"]
-            self.mail=_dict["mail"]
-            self.mobile=_dict["mobile"]
-            self.title=_dict["title"]
-
 
 def __bind(account,pwd):
     try:
@@ -65,5 +53,8 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    print auth("chenglong.yan","M7W68ZB8")
+    result,user=auth("chenglong.yan","M7W68ZB8")
+    if result:
+        db.session.add(user)
+
 
