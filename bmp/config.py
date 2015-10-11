@@ -13,5 +13,5 @@ class Config(object):
 
     API_VERSION="v1.0"
 
-
-
+class DebugConfig(Config):
+    SQLALCHEMY_DATABASE_URI = ""

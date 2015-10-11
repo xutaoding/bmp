@@ -3,5 +3,7 @@ from bmp import db
 
 from models.user import User
 
-if __name__=="__main__":
+def create_all():
     db.create_all()
+if __name__=="__main__":
+    create_all()

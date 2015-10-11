@@ -23,7 +23,10 @@ class Myapp(Flask):
 
     def __init__(self,name):
         Flask.__init__(self,name)
-        self.config.from_object("bmp.config.Config")
+        if not self.debug:
+            self.config.from_object("bmp.config.Config")
+        else:
+            self.config.from_object("bmp.config.DebugConfig")
 
         self.db=SQLAlchemy(self)
         self.db.Model.to_dict=lambda self:{c.name: getattr(self, c.name, None) for c in self.__table__.columns}

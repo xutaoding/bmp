@@ -10,10 +10,13 @@ class User(db.Model):
     title=db.Column(db.String(128))
 
     def __init__(self,_dict):
-        self.id=0
         for k,lst_item in _dict.items():
             setattr(self,k,lst_item[0])
 
 
 if __name__=="__main__":
-    pass
+    user=User({
+        "displayName":"a"
+    })
+    db.session.add(user)
+    db.session.commit()
