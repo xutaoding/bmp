@@ -10,3 +10,8 @@ class Config(object):
 
     SECRET_KEY="scope"
     SESSION_TYPE="filesystem"
+
+    API_VERSION="v1.0"
+
+
+

@@ -6,7 +6,7 @@ from flask import jsonify
 from flask import session
 from bmp.const import USER_SESSION
 
-class BaseView(MethodView):
+class BaseApi(MethodView):
 
     def auth(self):
         if session.__contains__(USER_SESSION):
@@ -15,18 +15,23 @@ class BaseView(MethodView):
 
     def dispatch_request(self, *args, **kwargs):
         if self.auth():
-            return super(BaseView,self).dispatch_request(*args,**kwargs)
+            return super(BaseApi,self).dispatch_request(*args,**kwargs)
         else:
-            return self.failure("未登录")
+            return self.fail("未登录")
 
-    def failure(self,error):
+    def fail(self, error):
         return jsonify({
             "success":False,
-            "error":error
+            "error":error,
+            "content":{}
         })
 
-    def success(self,data):
-        return jsonify(data)
+    def succ(self, data={}):
+        return jsonify({
+            "success":True,
+            "error":"",
+            "content":data
+        })
 
     def redirect(self,url):
         return redirect(url_for(url))

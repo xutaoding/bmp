@@ -4,7 +4,6 @@ from bmp import db
 class User(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     uid=db.Column(db.String(128),unique=True)
-    userPassword=db.Column(db.String(128))
     displayName=db.Column(db.String(128))
     mail=db.Column(db.String(128))
     mobile=db.Column(db.String(128))
@@ -14,3 +13,7 @@ class User(db.Model):
         self.id=0
         for k,lst_item in _dict.items():
             setattr(self,k,lst_item[0])
+
+
+if __name__=="__main__":
+    pass

@@ -3,8 +3,7 @@ from bmp.apis.base import BaseApi
 from flask import session
 from bmp.const import USER_SESSION
 
-class LogoutApi(BaseApi):
-    route="/logout"
+class UserApi(BaseApi):
+    route="/user"
     def get(self):
-        session.pop(USER_SESSION)
-        return self.succ()
+        return self.succ(session[USER_SESSION])
