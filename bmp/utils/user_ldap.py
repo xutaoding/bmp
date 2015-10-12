@@ -13,32 +13,33 @@ def __bind(account,pwd):
         return None
 
 
-def search(name):
+def search(uid="*"):
     init=__bind(app.config["LDAP_ACCOUNT"],app.config["LDAP_PASSWORD"])
     if not init:
-        return None,None
+        return []
 
     result=init.search_s(
         app.config["LDAP_BASE_DN"],
         ldap.SCOPE_SUBTREE,
-        "(uid=%s)"%(name),
+        "(uid=%s)"%(uid),
         [
             "uid",
-            "userPassword",
             "displayName",
+            "businessCategory",
             "mail",
             "mobile",
             "title"
         ]
     )
-    if not len(result):
-        return None,None
+    return result
+
+
+def auth(uid,pwd):
+    result=search(uid)
+    if not result:
+        return False,None
+
     dn,user=result[0]
-    return dn,User(user)
-
-
-def auth(user,pwd):
-    dn,user=search(user)
     if not __bind(dn,pwd):
         return False,None
     return True,user
@@ -53,8 +54,7 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    result,user=auth("chenglong.yan","M7W68ZB8")
-    if result:
-        db.session.add(user)
+   for dn,u in  search("*"):
+       print(u)
 
 

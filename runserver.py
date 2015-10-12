@@ -7,4 +7,4 @@ ln -s ops/static/templates/ bmp/templates/
 '''
 
 from bmp import app
-app.run(debug=True)
+app.run(host="192.168.0.143",debug=True)

@@ -21,6 +21,11 @@ class Myapp(Flask):
             Myapp.__app=Myapp(name)
         return Myapp.__app
 
+    @staticmethod
+    def __to_dict(self):
+        print(self.__table__.columns)
+        return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+
     def __init__(self,name):
         Flask.__init__(self,name)
         if not self.debug:
@@ -29,7 +34,9 @@ class Myapp(Flask):
             self.config.from_object("bmp.config.DebugConfig")
 
         self.db=SQLAlchemy(self)
-        self.db.Model.to_dict=lambda self:{c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+        self.db.text_factory = str
+
+        self.db.Model.to_dict=self.__to_dict
 
         self.url_map.converters["regex"] = _RegexConverter
 

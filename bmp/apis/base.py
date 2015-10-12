@@ -19,7 +19,7 @@ class BaseApi(MethodView):
         else:
             return self.fail("未登录")
 
-    def fail(self, error):
+    def fail(self, error=""):
         return jsonify({
             "success":False,
             "error":error,
