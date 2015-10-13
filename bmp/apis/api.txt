@@ -11,6 +11,9 @@ type:分类信息 通配符:%
 
 获取全部发布申请:get /apis/v1.0/release
 
+获取发布申请:get /apis/v1.0/release/<int:id>
+id:申请id
+
 提交申请:post /apis/v1.0/release
 参考:
 {

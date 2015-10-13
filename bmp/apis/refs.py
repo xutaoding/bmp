@@ -5,8 +5,6 @@ from bmp.models.ref import Ref
 
 class RefsApi(BaseApi):
     route="/refs/<string:type>"
-    def auth(self):
-        return True
 
     def get(self,type):
         refs=Ref.query.filter(Ref.type.like(type)).all()

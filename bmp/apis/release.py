@@ -19,14 +19,15 @@ class ReleaseApi(BaseApi):
     def auth(self):
         return True
 
-    def get(self):
+    def get(self,id=None):
         def __to_dict(release):
             _release=release.to_dict()
             _release["approvals"]=[a.to_dict() for a in release.approvals]
             _release["service"]=release.service.to_dict()
             return _release
-
-        return self.succ([__to_dict(release) for release in Release.query.all()])
+        if id!=None:
+            self.succ([__to_dict(release) for release in Release.query.all()])
+        return self.succ([__to_dict(release) for release in Release.query.filter(Release.id==id).all()])
 
     def put(self,id):
         approval=self.request()
