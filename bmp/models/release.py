@@ -31,7 +31,6 @@ class ReleaseService(db.Model):
         self.table=_dict["table"]
 
 
-
 class ReleaseApproval(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     type=db.Column(db.String(128),unique=True)
@@ -58,6 +57,7 @@ class Release(db.Model):
     apply_time=db.Column(db.DateTime)
     _from=db.Column(db.String(128))
     to=db.Column(db.String(256))
+    #group=db.Column(db.String(128))
     approvals=db.relationship("ReleaseApproval")
     service=db.relationship("ReleaseService",uselist=False)
 

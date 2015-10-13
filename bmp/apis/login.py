@@ -3,6 +3,7 @@ from flask import session
 from bmp.apis.base import BaseApi
 from bmp.utils import user_ldap
 from bmp.const import USER_SESSION
+import bmp.models.user as user
 
 class LoginApi(BaseApi):
     route="/login/<string:uid>/<string:pwd>"
@@ -13,9 +14,10 @@ class LoginApi(BaseApi):
         if session.__contains__(USER_SESSION):
             return self.fail("已登录")
 
-        result,user= user_ldap.auth(uid,pwd)
+        result,_user= user_ldap.auth(uid,pwd)
         if result:
-            session[USER_SESSION]=user
+            user.add(_user)
+            session[USER_SESSION]=_user
             return self.succ(session[USER_SESSION])
 
         return self.fail("用户名或密码错误")

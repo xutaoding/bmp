@@ -7,3 +7,11 @@ class MyApi(BaseApi):
     route="/my"
     def get(self):
         return self.succ(session[USER_SESSION])
+
+
+    def put(self):
+        pass
+
+
+    def post(self):
+        pass

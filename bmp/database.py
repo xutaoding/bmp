@@ -1,6 +1,6 @@
 #coding: utf-8
 from bmp import db
-from models.user import User
+from models.user import user_group,Group,User
 from models.ref import Ref
 from const import REFS
 from models.release import Release,ReleaseApproval,ReleaseService

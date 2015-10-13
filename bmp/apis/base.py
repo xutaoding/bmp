@@ -35,7 +35,8 @@ class BaseApi(MethodView):
         })
 
     def request(self):
-        return json.loads([request.form.get(name) for name in request.form][0])
+        req=[j for j in request.form][0]
+        return json.loads(req)
 
     def succ(self, data={}):
         return jsonify({

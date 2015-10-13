@@ -8,4 +8,4 @@ class IndexView(View):
     def dispatch_request(self,html=""):
         if html=="":
             return render_template("index.html")
-        return render_template("release/%s"%html)
+        return render_template(html)

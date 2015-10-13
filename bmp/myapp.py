@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.routing import BaseConverter
 from utils import path
+from flask.ext.mail import Mail
 
 import sys
 import re
@@ -33,7 +34,7 @@ class Myapp(Flask):
             self.config.from_object("bmp.config.DebugConfig")
 
         self.db=SQLAlchemy(self)
-        self.db.text_factory = str
+        self.mail = Mail(self)
 
         self.db.Model.to_dict=self.__to_dict
 

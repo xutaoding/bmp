@@ -91,8 +91,7 @@ if __name__=="__main__":
             "status":"审批状态",
             "reson":"退回理由!",
             "options":"BUG,文件未成功修改,发布问题"
-        },
-        True
+        }
     )
 
     test(
@@ -112,5 +111,5 @@ if __name__=="__main__":
             "release_time":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "copy_to_uid":"抄送人",
             "content":"更改内容"
-        }
+        },True
     )
