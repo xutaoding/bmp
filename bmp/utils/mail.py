@@ -1,5 +1,4 @@
 from flask.ext.mail import Message
 
-def send():
+def send():#todo
     pass
-    #todo
