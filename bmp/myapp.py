@@ -23,7 +23,6 @@ class Myapp(Flask):
 
     @staticmethod
     def __to_dict(self):
-        print(self.__table__.columns)
         return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
 
     def __init__(self,name):

@@ -31,30 +31,33 @@ class ReleaseService(db.Model):
         self.table=_dict["table"]
 
 
+
 class ReleaseApproval(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    type=db.Column(db.String(128))
+    type=db.Column(db.String(128),unique=True)
     uid=db.Column(db.String(128))
     status=db.Column(db.String(128))
     reson=db.Column(db.String(128))
-    other=db.Column(db.String(128))
+    options=db.Column(db.String(128))
     release_id=db.Column(db.Integer,db.ForeignKey("release.id"))
 
-    def __init__(self,type):
-        self.type=type
-        self.status=u"待确认"
-
+    def __init__(self,_dict):
+        self.type=_dict["type"]
+        self.status=_dict["status"]
+        self.reson=_dict["reson"]
+        self.options=_dict["options"]
+        self.uid=_dict["uid"]
 
 class Release(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     project=db.Column(db.String(128))
-    _from=db.Column(db.String(128))
-    to=db.Column(db.String(128))
     content=db.Column(db.String(256))
     copy_to_uid=db.Column(db.String(128))
     release_time=db.Column(db.DateTime)
     apply_uid=db.Column(db.String(128))
     apply_time=db.Column(db.DateTime)
+    _from=db.Column(db.String(128))
+    to=db.Column(db.String(256))
     approvals=db.relationship("ReleaseApproval")
     service=db.relationship("ReleaseService",uselist=False)
 
