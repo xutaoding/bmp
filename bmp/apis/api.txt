@@ -43,6 +43,28 @@ id:申请id
     "options":"BUG,文件未成功修改,发布问题"
 }
 
+获取管理组:get "/groups/<string:name>"
+name:组名 通配符 %
 
+添加管理组:post "/groups/<string:name>"
+name:组名
 
+更新管理组用户:put "/groups/<string:name>"
+name:组名
+参考:["用户1(uid)","用户2(uid)"]
 
+修改组名:put "/groups/<string:name>/<string:new>"
+
+删除管理组:delete "/users/<string:name>"
+name:组名
+
+获取用户:get "/users/<string:uid>"
+uid:用户名 通配符 %
+
+编辑用户:put "/users/<string:uid>/<string:mail>/<int:is_admin>"
+uid:用户名
+mail:email
+is_admin:管理员:1:是,0:不是
+
+删除用户:delete "/users/<string:uid>"
+uid:用户名
