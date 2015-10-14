@@ -42,45 +42,16 @@ class ReleaseApi(BaseApi):
         return True
 
     def get(self,id=None):
-        def __to_dict(release):
-            _release=release.to_dict()
-            _release["approvals"]=[a.to_dict() for a in release.approvals]
-            _release["service"]=release.service.to_dict()
-            return _release
-        if id!=None:
-            self.succ([__to_dict(release) for release in Release.query.all()])
-        return self.succ([__to_dict(release) for release in Release.query.filter(Release.id==id).all()])
+        return self.succ(Release.select(id))
 
     def put(self,id):
-        approval=self.request()
-        approvals=ReleaseApproval.query.filter(
-            ReleaseApproval.release_id==id,
-            ReleaseApproval.type==approval["type"]).all()
-
-        if not approvals:
-            _approval=ReleaseApproval(approval)
-            _approval.release_id=id
-            db.session.add(_approval)
-            db.session.commit()
+        submit=self.request()
+        if ReleaseApproval.edit(id,submit):
             return self.succ()
-
-        _approval=approvals[0]
-        _approval.status=approval["status"]
-        _approval.reson=approval["reson"]
-        _approval.options=approval["options"]
-        db.session.commit()
-        return self.succ()
 
     def post(self):
         submit=self.request()
-        release=Release(submit)
-        service=ReleaseService(submit["service"])
-        release.service=service
-        release.approvals=[]
-        release.apply_uid=User(session[USER_SESSION]).uid
-        release.apply_time=datetime.now()
-        db.session.add(release)
-        db.session.commit()
+        Release.add(submit)
         return self.succ()
 
 '''

@@ -1,6 +1,6 @@
 #coding: utf-8
 from bmp.apis.base import BaseApi
-from bmp.models.user import Group,add_group,join_group,edit_group,delete_group
+from bmp.models.user import Group
 
 class GroupsApi(BaseApi):
     route=["/groups","/groups/<string:name>","/groups/<string:name>/<string:new>"]
@@ -9,20 +9,20 @@ class GroupsApi(BaseApi):
 
     def put(self,name,new=""):
         if new:
-            if not edit_group(name,new):
+            if not Group.edit(name,new):
                 return self.fail()
             return self.succ()
 
         submit=self.request()
-        if not join_group(name,submit):
+        if not Group.join(name,submit):
             return self.fail()
         return self.succ()
 
     def post(self,name):
-        if not add_group(name):
+        if not Group.add(name):
             return self.fail()
         return self.succ()
 
     def delete(self,name):
-        delete_group(name)
+        Group.delete(name)
         return self.succ()

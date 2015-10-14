@@ -35,7 +35,12 @@ class BaseApi(MethodView):
         })
 
     def request(self):
-        req=[j for j in request.form][0]
+        try:
+            req=[j for j in request.form][0]
+            return json.loads(req)
+        except:
+            pass
+        req=[request.form[j] for j in request.form][0]
         return json.loads(req)
 
     def succ(self, data={}):

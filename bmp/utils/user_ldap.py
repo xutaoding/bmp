@@ -40,6 +40,8 @@ def auth(uid,pwd):
         return False,None
 
     dn,user=result[0]
+    for k in user:
+        user[k]=user[k][0]
     if not __bind(dn,pwd):
         return False,None
     return True,user
@@ -61,8 +63,11 @@ if __name__=="__main__":
         ldap.SCOPE_SUBTREE,
         "(uid=*)",["businessCategory"]
     )
+    filter={}
     for dn,user in users:
-        print(user)
+        filter[user]=user
+    for k in filter:
+        print(k)
 
 
 

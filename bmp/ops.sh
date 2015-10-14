@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 rm -rf templates
 rm -rf static 
 
@@ -6,4 +7,4 @@ git pull
 cd ../bmp/bmp
 
 ln -s ../../ops/static/ templates
-ln -s ../../ops/static/static/ static
+ln -s ../../ops/static/ static

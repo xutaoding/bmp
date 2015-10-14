@@ -2,12 +2,12 @@
 from bmp.apis.base import BaseApi
 from flask import session
 from bmp.const import USER_SESSION
+from bmp.models.user import User
 
 class MyApi(BaseApi):
     route="/my"
     def get(self):
-        return self.succ(session[USER_SESSION])
-
+        return self.succ(User.select(session[USER_SESSION]["uid"]))
 
     def put(self):
         pass
