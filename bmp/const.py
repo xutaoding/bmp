@@ -4,12 +4,19 @@ USER_SESSION="user"
 
 
 REFS={
-    u"项目名称":[u"ichinascope",u"chinascopefinancial",u"智投",u"数库云",u"数库港",u"后台系统"],
-    u"数据库":[u"mongodb",u"mysql",u"oracle",u"sqlserver"],
-    u"web":[u"PHP",u"Nginx",u"Apache",u"other"],
-    u"应用服务":[u"portalmobile",u"ada",u"datafeed",u"datashift",u"datareceiver",u"datacloud",u"hqservice",u"csdata",u"otcds",u"bts",u"shukugang",u"idexservice",u"indexer"],
-    u"服务":[u"数据库",u"web",u"应用服务"],
-    u"地点":[u"办公室",u"上海IDC",u"亚马逊(北京)",u"亚马逊(新加坡)"],
-    u"审批":[u"内部测试",u"运维发布",u"正式环境测试"],
-    u"未通过原因":[u"BUG",u"文件未成功修改",u"数据问题",u"配置文件错误",u"问题未修改",u"发布问题",u"其他"]
+    "项目名称":["ichinascope","chinascopefinancial","智投","数库云","数库港","后台系统"],
+    "数据库":["mongodb","mysql","oracle","sqlserver"],
+    "web":["PHP","Nginx","Apache","other"],
+    "应用服务":["portalmobile","ada","datafeed","datashift","datareceiver","datacloud","hqservice","csdata","otcds","bts","shukugang","idexservice","indexer"],
+    "服务":["数据库","web","应用服务"],
+    "地点":["办公室","上海IDC","亚马逊(北京)","亚马逊(新加坡)"],
+    "审批":["内部测试","运维发布","正式环境测试"],
+    "未通过原因":["BUG","文件未成功修改","数据问题","配置文件错误","问题未修改","发布问题","其他"]
+}
+
+
+DEFAULT_GROUPS={
+    "QA":["KIKI.zhang","aurora.yang","helen.yang"],
+    "OP":["ryan.wang","jim.zhao"],
+    "Guest":[]
 }

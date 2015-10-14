@@ -101,7 +101,7 @@ if __name__=="__main__":
                 },
             "_from":"从",
             "to":"到",
-            "release_time":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "release_time":datetime.now().strftime("%Y:%m:%d"),
             "copy_to_uid":"抄送人",
             "content":"更改内容"
         },True

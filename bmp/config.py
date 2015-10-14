@@ -14,11 +14,9 @@ class Config(object):
     API_VERSION="v1.0"
 
     MAIL_SERVER = "mail.chinascopefinancial.com"
-    MAIL_PORT = 110
-    MAIL_USE_TLS = False
-    MAIL_USE_SSL = False
     MAIL_USERNAME = "ops@chinascopefinancial.com"
     MAIL_PASSWORD = "GmgW3UXF"
+    MAIL_DEFAULT_SENDER="ops@chinascopefinancial.com"
 
 class DebugConfig(Config):
     SQLALCHEMY_DATABASE_URI = ""

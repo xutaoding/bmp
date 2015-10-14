@@ -1,7 +1,5 @@
 #coding: utf-8
 from bmp import app
-from bmp import db
-from bmp.models.user import User
 import ldap
 
 def __bind(account,pwd):
@@ -33,15 +31,19 @@ def search(uid="*"):
     )
     return result
 
+def user_dict(result):
+    dn,user=result[0]
+    for k in user:
+        user[k]=user[k][0]
+    return dn,user
 
 def auth(uid,pwd):
     result=search(uid)
     if not result:
         return False,None
 
-    dn,user=result[0]
-    for k in user:
-        user[k]=user[k][0]
+    dn,user=user_dict(result)
+
     if not __bind(dn,pwd):
         return False,None
     return True,user

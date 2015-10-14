@@ -87,7 +87,7 @@ class Release(db.Model):
         self.project=_dict["project"]
         self._from=_dict["_from"]
         self.to=_dict["to"]
-        self.release_time=datetime.strptime(_dict["release_time"],"%Y-%m-%d %H:%M:%S")
+        self.release_time=datetime.strptime(_dict["release_time"],"%Y:%m:%d")
         self.copy_to_uid=_dict["copy_to_uid"]
         self.content=_dict["content"]
 
@@ -112,7 +112,11 @@ class Release(db.Model):
         release.service=service
         release.approvals=[]
         release.apply_uid=user.uid
-        release.apply_group=[g.name for g in user.groups]
+        if user.groups:
+            release.apply_group=user.groups[0].name
+        else:
+            release.apply_group="Guest"
+
         release.apply_time=datetime.now()
         db.session.add(release)
         db.session.commit()

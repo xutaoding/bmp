@@ -14,3 +14,13 @@ class Ref(db.Model):
     def select(type):
         refs=Ref.query.filter(Ref.type.like(type)).all()
         return [ref.to_dict() for ref in refs]
+
+    @staticmethod
+    def add(name,type):
+        if Ref.query\
+            .filter(Ref.type==type)\
+            .filter(Ref.name==name).count():
+            return False
+
+        db.session.add(Ref(name,type))
+        db.session.commit()

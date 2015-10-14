@@ -16,24 +16,24 @@ class Group(db.Model):
 
     @staticmethod
     def join(name,users):
-        group=Group.query.filter(Group.name==name)
-        group.users=User.query.filter(User.uid.in_(users)).all()
+        group=Group.query.filter(Group.name==name).one()
+        if users:
+            group.users=User.query.filter(User.uid.in_(users)).all()
+        else:
+            group.users=[]
         db.session.commit()
         return True
 
     @staticmethod
     def edit(name,new):
-        group=Group.query.filter(Group.name==new)
-        if group.count():
-            return False
+        group=Group.query.filter(Group.name==name).one()
         group.name=new
         db.session.commit()
         return True
 
     @staticmethod
     def add(name):
-        group=Group.query.filter(Group.name==name)
-        if group.count():
+        if Group.query.filter(Group.name==name).count():
             return False
         db.session.add(Group(name))
         db.session.commit()
@@ -63,14 +63,14 @@ class User(db.Model):
     last_time=db.Column(db.DateTime)
 
     def __init__(self,_dict):
-        for k,lst_item in _dict.items():
-            setattr(self,k,lst_item[0])
+        for k,item in _dict.items():
+            setattr(self,k,item)
 
     @staticmethod
     def select(uid):
         def __add_group(user):
             _user=user.to_dict()
-            _user["group"]=[g.to_dict() for g in user.groups]
+            _user["group"]=[g.name for g in user.groups]
             return _user
         if uid=="%":
             return [__add_group(user) for user in User.query.all()]
@@ -111,4 +111,4 @@ class User(db.Model):
 
 
 if __name__=="__main__":
-    edit("chenglong.yan","test@test.com",1)
+    User.edit("chenglong.yan","test@test.com",1)
