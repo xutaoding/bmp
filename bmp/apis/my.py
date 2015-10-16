@@ -5,13 +5,12 @@ from bmp.const import USER_SESSION
 from bmp.models.user import User
 
 class MyApi(BaseApi):
-    route="/my"
+    route=["/my"]
     def get(self):
-        return self.succ(User.select(session[USER_SESSION]["uid"]))
+        return self.succ(User.get(session[USER_SESSION]["uid"]))
 
     def put(self):
         pass
-
 
     def post(self):
         pass

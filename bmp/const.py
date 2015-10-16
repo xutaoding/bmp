@@ -15,8 +15,20 @@ REFS={
 }
 
 
-DEFAULT_GROUPS={
-    "QA":["KIKI.zhang","aurora.yang","helen.yang"],
-    "OP":["ryan.wang","jim.zhao"],
-    "Guest":[]
-}
+
+class DEFAULT_GROUP:
+    QA="QA"
+    OP="OP"
+    GUEST="GUEST"
+    GROUPS={
+        "QA":["KIKI.zhang","aurora.yang","helen.yang"],
+        "OP":["ryan.wang","jim.zhao"],
+        "GUEST":[]
+    }
+
+
+class RELEASE:
+    PASS="已确认"
+    FAIL="退回"
+    FLOW_OP=["运维发布"]
+    FLOW_QA=["内部测试","正式环境测试"]

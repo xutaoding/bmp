@@ -46,8 +46,13 @@ class Group(db.Model):
         db.session.commit()
         return True
 
+    @staticmethod
+    def get(name):
+        return Group.query.filter(Group.name.like(name)).one()
 
-
+    @staticmethod
+    def get_users(name):
+        return Group.get(name).users
 
 
 class User(db.Model):
@@ -62,20 +67,32 @@ class User(db.Model):
     create_time=db.Column(db.DateTime)
     last_time=db.Column(db.DateTime)
 
+
+    def __eq__(self, other):
+        return self.uid==other.uid
+
     def __init__(self,_dict):
         for k,item in _dict.items():
             setattr(self,k,item)
 
     @staticmethod
-    def select(uid):
-        def __add_group(user):
-            _user=user.to_dict()
-            _user["group"]=[g.name for g in user.groups]
-            return _user
-        if uid=="%":
-            return [__add_group(user) for user in User.query.all()]
+    def __add_group(user):
+        _user=user.to_dict()
+        _user["group"]=[g.name for g in user.groups]
+        return _user
 
-        return [__add_group(user) for user in User.query.filter(User.uid==uid).all()]
+    @staticmethod
+    def select(uid):
+        if uid=="%":
+            return [User.__add_group(user) for user in User.query.all()]
+
+        return [User.__add_group(user) for user in User.query.filter(User.uid==uid).all()]
+
+
+    @staticmethod
+    def get(uid):
+        user=User.query.filter(User.uid==uid).one()
+        return User.__add_group(user)
 
     @staticmethod
     def edit(uid,email,is_admin):

@@ -3,7 +3,7 @@ from flask import session
 from bmp.apis.base import BaseApi
 from bmp.utils import user_ldap
 from bmp.const import USER_SESSION
-from bmp.models.user import User,Group
+from bmp.models.user import User
 
 class LoginApi(BaseApi):
     route="/login/<string:uid>/<string:pwd>"

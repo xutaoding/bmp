@@ -14,7 +14,7 @@ class GroupsApi(BaseApi):
             return self.succ()
 
         submit=self.request()
-        if not Group.join(name,submit):
+        if not Group.join(name,submit.split(",")):
             return self.fail()
         return self.succ()
 

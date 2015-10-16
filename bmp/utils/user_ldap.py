@@ -58,18 +58,7 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    init=__bind(app.config["LDAP_ACCOUNT"],app.config["LDAP_PASSWORD"])
-
-    users=init.search_s(
-        app.config["LDAP_BASE_DN"],
-        ldap.SCOPE_SUBTREE,
-        "(uid=*)",["businessCategory"]
-    )
-    filter={}
-    for dn,user in users:
-        filter[user]=user
-    for k in filter:
-        print(k)
+    pass
 
 
 

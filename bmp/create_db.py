@@ -1,7 +1,7 @@
 #coding: utf-8
 from bmp import db
 from models.ref import Ref
-from const import REFS,DEFAULT_GROUPS
+from const import REFS,DEFAULT_GROUP
 from models.user import user_group,Group,User
 from models.release import Release,ReleaseApproval,ReleaseService
 from bmp.utils import user_ldap
@@ -24,7 +24,7 @@ def create_all():
             Ref.add(u(name),u(type))
 
     #导入默认用户组
-    for group,uids in DEFAULT_GROUPS.items():
+    for group,uids in DEFAULT_GROUP.GROUPS.items():
         for uid in uids:
             result=user_ldap.search(uid)
             dn,user=user_ldap.user_dict(result)

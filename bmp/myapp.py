@@ -34,7 +34,6 @@ class Myapp(Flask):
             self.config.from_object("bmp.config.DebugConfig")
 
         self.db=SQLAlchemy(self)
-        self.mail = Mail(self)
 
         self.db.Model.to_dict=self.__to_dict
 
