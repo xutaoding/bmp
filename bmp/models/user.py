@@ -26,6 +26,7 @@ class Group(db.Model):
 
     @staticmethod
     def edit(name,new):
+        name,new=name.upper(),new.upper()
         group=Group.query.filter(Group.name==name).one()
         group.name=new
         db.session.commit()
@@ -74,6 +75,7 @@ class User(db.Model):
     def __init__(self,_dict):
         for k,item in _dict.items():
             setattr(self,k,item)
+
 
     @staticmethod
     def __add_group(user):

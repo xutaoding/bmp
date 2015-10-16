@@ -1,3 +1,5 @@
+import os
+from datetime import timedelta
 
 class Config(object):
     LDAP_HOST = "ldap://ldap.chinascopefinancial.com"
@@ -8,8 +10,9 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI="sqlite:////test.db"
 
-    SECRET_KEY="scope"
+    SECRET_KEY=os.urandom(1024)
     SESSION_TYPE="filesystem"
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
 
     API_VERSION="v1.0"
 
@@ -17,6 +20,9 @@ class Config(object):
     MAIL_USERNAME = "ops@chinascopefinancial.com"
     MAIL_PASSWORD = "GmgW3UXF"
     MAIL_DEFAULT_SENDER="ops@chinascopefinancial.com"
+
+    LOG_PATH="bmp.log"
+    LOG_MAX=""
 
 class DebugConfig(Config):
     SQLALCHEMY_DATABASE_URI = ""

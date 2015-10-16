@@ -4,3 +4,4 @@ __pycache__/
 static/
 templates/
 ops/
+bmp.log

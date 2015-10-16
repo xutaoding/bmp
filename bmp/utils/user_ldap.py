@@ -58,7 +58,8 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    pass
+    for dn,user in  search():
+        print(user)
 
 
 

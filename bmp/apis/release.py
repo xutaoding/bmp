@@ -34,8 +34,6 @@ from bmp.const import RELEASE
 
 class ReleaseApi(BaseApi):
     route=["/release","/release/<int:id>"]
-    def auth(self):
-        return True
 
     def get(self,id=0):
         return self.succ(Release.select(id))

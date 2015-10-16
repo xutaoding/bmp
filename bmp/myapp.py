@@ -1,8 +1,9 @@
 from flask import Flask
+from flask import session
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.routing import BaseConverter
 from utils import path
-from flask.ext.mail import Mail
+import logging
 
 import sys
 import re
@@ -36,6 +37,13 @@ class Myapp(Flask):
         self.db=SQLAlchemy(self)
 
         self.db.Model.to_dict=self.__to_dict
+
+        fileHandler=logging.FileHandler("%s/bmp.log"%self.root_path)
+        fileHandler.setLevel(logging.ERROR)
+        streamHandler=logging.StreamHandler()
+        streamHandler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+        self.logger.addHandler(streamHandler)
+        self.logger.addHandler(fileHandler)
 
         self.url_map.converters["regex"] = _RegexConverter
 

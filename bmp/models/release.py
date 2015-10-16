@@ -3,6 +3,7 @@ from bmp import db
 from datetime import datetime
 from flask import session
 from bmp.const import USER_SESSION
+from bmp.const import DEFAULT_GROUP
 
 class ReleaseService(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
@@ -19,7 +20,7 @@ class ReleaseService(db.Model):
 
 class ReleaseApproval(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    type=db.Column(db.String(128),unique=True)
+    type=db.Column(db.String(128))
     uid=db.Column(db.String(128),nullable=False)
     status=db.Column(db.String(128),nullable=False)
     reson=db.Column(db.String(128))
@@ -109,7 +110,7 @@ class Release(db.Model):
         if user.groups:
             release.apply_group=user.groups[0].name
         else:
-            release.apply_group="GUEST"
+            release.apply_group=DEFAULT_GROUP.GUEST
 
         release.apply_time=datetime.now()
         db.session.add(release)

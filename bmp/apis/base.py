@@ -8,10 +8,12 @@ from bmp.const import USER_SESSION
 from flask import request
 import json
 import traceback
+from bmp import log
 
 class BaseApi(MethodView):
 
     def auth(self):
+        session.permanent = True
         if session.__contains__(USER_SESSION):
             return True
         return False
@@ -22,8 +24,9 @@ class BaseApi(MethodView):
                 return super(BaseApi,self).dispatch_request(*args,**kwargs)
             else:
                 return self.fail("未登录")
-        except:
+        except Exception,e:
             traceback.print_exc()
+            log.exception(e)
             return self.fail("接口异常")
 
 
@@ -38,8 +41,8 @@ class BaseApi(MethodView):
         try:
             req=[j for j in request.form][0]
             return json.loads(req)
-        except:
-            pass
+        except Exception,e:
+            app.logger.exception(e)
         req=[request.form[j] for j in request.form][0]
         return json.loads(req)
 
