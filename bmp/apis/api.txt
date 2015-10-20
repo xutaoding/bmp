@@ -55,7 +55,7 @@ name:组名
 
 修改组名:put "/groups/<string:name>/<string:new>"
 
-删除管理组:delete "/users/<string:name>"
+删除管理组:delete "/groups/<string:name>"
 name:组名
 
 获取用户:get "/users/<string:uid>"

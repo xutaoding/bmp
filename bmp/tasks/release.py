@@ -39,9 +39,13 @@ def __mail_to(r,submit):
         cc.append(user["mail"])
 
     try:
+        '''
         copy_to=User.get(r.copy_to_uid)
         if copy_to:
             cc.append(copy_to["mail"])
+        '''
+        if r.copy_to_uid:
+            cc.append(r.copy_to_uid)
     except:pass
 
 
@@ -49,7 +53,7 @@ def __mail_to(r,submit):
 
     regx=re.compile(r"^http://([a-z.]+)/")
 
-    url=regx.findall(request.headers["Referer"])[0]
+    url="http://%s/templates/release/release.html"%regx.findall(request.headers["Referer"])[0]
 
     html=render_template(
         "mail.tpl.html",
@@ -57,5 +61,4 @@ def __mail_to(r,submit):
         release=r,
         url=url)
 
-    #todo add to cc
-    mail.send(sub,html,["chenglong.yan@chinascopefinancial.com"],[])
+    mail.send(sub,html,to,cc)

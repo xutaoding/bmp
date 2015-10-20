@@ -37,4 +37,8 @@ def create_all():
 
 
 if __name__=="__main__":
-    create_all()
+    #create_all()
+    release=Release.query.first()
+    from datetime import datetime
+    release.apply_time=release.apply_time.strftime("%Y-%m-%d %H:%M:%S")
+    print(type(release.apply_time))
