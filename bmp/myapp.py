@@ -80,11 +80,12 @@ class Myapp(Flask):
                 route=root+route
                 self.add_url_rule(route,view_func=cls.as_view(route),methods=methods)
 
-    def run(self, host=None, port=None, debug=None, **options):
+    def add_api_rule(self):
         apis="%s/apis"%self.root_path.replace("\\","/")
         regx=re.compile(r"^%s/(.+)\.py$"%apis)
         for name in path.files(apis,".+\.py$"):
             mod=regx.findall(name.replace("\\","/"))[0].replace("/",".")
             self.__add_api_rule(mod)
 
+    def run(self, host=None, port=None, debug=None, **options):
         super(Myapp,self).run(host,port,debug,**options)

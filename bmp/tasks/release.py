@@ -39,13 +39,9 @@ def __mail_to(r,submit):
         cc.append(user["mail"])
 
     try:
-        '''
         copy_to=User.get(r.copy_to_uid)
         if copy_to:
             cc.append(copy_to["mail"])
-        '''
-        if r.copy_to_uid:
-            cc.append(r.copy_to_uid)
     except:pass
 
 

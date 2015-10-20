@@ -16,7 +16,7 @@ OP（运维），ryan.wang,jim.zhao
 def create_all():
     db.create_all()
 
-    u=lambda s:unicode(s,"utf8")
+    u=lambda s:s
 
     #导入字典
     for type,names in REFS.items():
@@ -37,8 +37,5 @@ def create_all():
 
 
 if __name__=="__main__":
-    #create_all()
+    create_all()
     release=Release.query.first()
-    from datetime import datetime
-    release.apply_time=release.apply_time.strftime("%Y-%m-%d %H:%M:%S")
-    print(type(release.apply_time))
