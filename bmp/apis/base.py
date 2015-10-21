@@ -9,7 +9,6 @@ from flask import request
 import json
 import traceback
 from bmp import log
-from bmp import app
 
 class BaseApi(MethodView):
 
@@ -43,7 +42,7 @@ class BaseApi(MethodView):
             req=[j for j in request.form][0]
             return json.loads(req)
         except Exception,e:
-            app.logger.exception(e)
+            log.exception(e)
         req=[request.form[j] for j in request.form][0]
         return json.loads(req)
 

@@ -49,10 +49,13 @@ class Myapp(Flask):
 
         self.db.Model.to_dict=self.__to_dict
 
+        log_fmt=logging.Formatter("%(asctime)s %(message)s")
         fileHandler=logging.FileHandler("%s/bmp.log"%self.root_path)
         fileHandler.setLevel(logging.ERROR)
+        fileHandler.setFormatter(log_fmt)
         streamHandler=logging.StreamHandler()
-        streamHandler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+        streamHandler.setLevel(logging.ERROR)
+        streamHandler.setFormatter(log_fmt)
         self.logger.addHandler(streamHandler)
         self.logger.addHandler(fileHandler)
 

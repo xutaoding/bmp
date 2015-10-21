@@ -59,7 +59,7 @@ class Group(db.Model):
 class User(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     uid=db.Column(db.String(128),unique=True,nullable=False)
-    display_name=db.Column(db.String(128))
+    displayName=db.Column(db.String(128))
     mail=db.Column(db.String(128))
     mobile=db.Column(db.String(128))
     title=db.Column(db.String(128))
@@ -130,4 +130,4 @@ class User(db.Model):
 
 
 if __name__=="__main__":
-    User.edit("chenglong.yan","test@test.com",1)
+    pass
