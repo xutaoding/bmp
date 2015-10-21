@@ -7,6 +7,8 @@ import logging
 
 import sys
 import re
+from datetime import datetime
+from bmp.utils import time
 
 
 class _RegexConverter(BaseConverter):
@@ -25,7 +27,15 @@ class Myapp(Flask):
 
     @staticmethod
     def __to_dict(self):
-        return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+        _dict={}
+        for c in self.__table__.columns:
+            attr=getattr(self, c.name, None)
+            if isinstance(attr,datetime):
+                _dict[c.name]=time.format(attr,"%Y-%m-%d %H:%M")
+            else:
+                _dict[c.name]=attr
+        return _dict
+        #return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
 
     def __init__(self,name):
         Flask.__init__(self,name)
@@ -33,6 +43,7 @@ class Myapp(Flask):
             self.config.from_object("bmp.config.Config")
         else:
             self.config.from_object("bmp.config.DebugConfig")
+
 
         self.db=SQLAlchemy(self)
 

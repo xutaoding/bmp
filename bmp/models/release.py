@@ -4,6 +4,8 @@ from datetime import datetime
 from flask import session
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
+import bmp.utils.time as time
+
 
 class ReleaseService(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
@@ -72,7 +74,7 @@ class Release(db.Model):
         self.project=_dict["project"]
         self._from=_dict["_from"]
         self.to=_dict["to"]
-        self.release_time=datetime.strptime(_dict["release_time"],"%Y-%m-%d")
+        self.release_time=datetime.strptime(_dict["release_time"],"%Y-%m-%d %H:%M")
         self.copy_to_uid=_dict["copy_to_uid"]
         self.content=_dict["content"]
 

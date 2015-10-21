@@ -10,7 +10,7 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp"#"sqlite:////test.db"#
 
-    SECRET_KEY=os.urandom(1024)
+    SECRET_KEY="scope"#os.urandom(1024)
     SESSION_TYPE="filesystem"
     PERMANENT_SESSION_LIFETIME=timedelta(days=7)
 

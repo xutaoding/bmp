@@ -9,6 +9,7 @@ from flask import request
 import json
 import traceback
 from bmp import log
+from bmp import app
 
 class BaseApi(MethodView):
 

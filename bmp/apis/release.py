@@ -6,6 +6,7 @@ from bmp.tasks.release import mail_to
 from bmp.const import DEFAULT_GROUP
 from bmp.models.user import User,Group
 from bmp.const import RELEASE
+import bmp.utils.time as time
 
 '''
     模块：发布申请
