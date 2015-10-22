@@ -8,7 +8,7 @@ class Config(object):
     LDAP_PASSWORD = "\X'94ORKWV#4gCyHFzPV"#"nfUa5gCxXzUNs9ybM8ko"
     LDAP_BASE_DN = "dc=chinascopefinancial,dc=com"
 
-    SQLALCHEMY_DATABASE_URI="sqlite:////test.db"#"mysql://ops:Ops@192.168.250.10:3306/bmp"
+    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp"
 
     SECRET_KEY="scope"#os.urandom(1024)
     SESSION_TYPE="filesystem"
@@ -24,5 +24,11 @@ class Config(object):
     LOG_PATH="bmp.log"
     LOG_MAX=""
 
-class DebugConfig(Config):
+    UPLOAD_FOLDER="/upload"
+
+
+class TestConfig(Config):
+    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp_test"
+
+class DevConfig(Config):
     SQLALCHEMY_DATABASE_URI = ""

@@ -68,3 +68,6 @@ is_admin:管理员:1:是,0:不是
 
 删除用户:delete "/users/<string:uid>"
 uid:用户名
+
+上传文件:post "/upload"
+

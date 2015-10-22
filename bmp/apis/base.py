@@ -46,6 +46,12 @@ class BaseApi(MethodView):
         req=[request.form[j] for j in request.form][0]
         return json.loads(req)
 
+    def page(self,pages,items):
+        return {
+            "pages":pages,
+            "items":items
+        }
+
     def succ(self, data={}):
         return jsonify({
             "success":True,

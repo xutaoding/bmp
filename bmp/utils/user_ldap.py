@@ -19,15 +19,7 @@ def search(uid="*"):
     result=init.search_s(
         app.config["LDAP_BASE_DN"],
         ldap.SCOPE_SUBTREE,
-        "(uid=%s)"%(uid),
-        [
-            "uid",
-            "displayName",
-            "businessCategory",
-            "mail",
-            "mobile",
-            "title"
-        ]
+        "(uid=%s)"%(uid)
     )
     return result
 
@@ -58,7 +50,8 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    pass
+    for dn,user in search():
+        print(user)
 
 
 

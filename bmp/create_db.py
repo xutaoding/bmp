@@ -4,6 +4,8 @@ from models.ref import Ref
 from const import REFS,DEFAULT_GROUP
 from models.user import user_group,Group,User
 from models.release import Release,ReleaseApproval,ReleaseService
+from models.purchase import Purchase,PurchaseImg,PurchaseGoods,PurchaseContract,PurchaseApproval,purchase_supplier
+from models.asset import Supplier
 from bmp.utils import user_ldap
 
 '''

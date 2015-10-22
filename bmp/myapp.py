@@ -39,14 +39,10 @@ class Myapp(Flask):
 
     def __init__(self,name):
         Flask.__init__(self,name)
-        if not self.debug:
-            self.config.from_object("bmp.config.Config")
-        else:
-            self.config.from_object("bmp.config.DebugConfig")
 
+        self.config.from_object("bmp.config.Config")
 
         self.db=SQLAlchemy(self)
-
         self.db.Model.to_dict=self.__to_dict
 
         log_fmt=logging.Formatter("%(asctime)s %(message)s")

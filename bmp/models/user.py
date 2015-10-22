@@ -68,14 +68,12 @@ class User(db.Model):
     create_time=db.Column(db.DateTime)
     last_time=db.Column(db.DateTime)
 
-
     def __eq__(self, other):
         return self.uid==other.uid
 
     def __init__(self,_dict):
         for k,item in _dict.items():
             setattr(self,k,item)
-
 
     @staticmethod
     def __add_group(user):
@@ -89,7 +87,6 @@ class User(db.Model):
             return [User.__add_group(user) for user in User.query.all()]
 
         return [User.__add_group(user) for user in User.query.filter(User.uid==uid).all()]
-
 
     @staticmethod
     def get(uid):

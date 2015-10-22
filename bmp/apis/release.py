@@ -3,10 +3,6 @@ from datetime import datetime
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release, ReleaseApproval
 from bmp.tasks.release import mail_to
-from bmp.const import DEFAULT_GROUP
-from bmp.models.user import User,Group
-from bmp.const import RELEASE
-import bmp.utils.time as time
 
 '''
     模块：发布申请
@@ -41,13 +37,10 @@ class ReleaseApi(BaseApi):
 
     def put(self,id):
         submit=self.request()
-
         if ReleaseApproval.edit(id,submit):
             mail_to(Release.get(id),submit)
             return self.succ()
-
         return self.fail()
-
 
     def post(self):
         submit=self.request()
