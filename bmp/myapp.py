@@ -1,10 +1,9 @@
 from flask import Flask
 from flask import session
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy,Pagination
 from werkzeug.routing import BaseConverter
 from utils import path
 import logging
-
 import sys
 import re
 from datetime import datetime
@@ -37,13 +36,28 @@ class Myapp(Flask):
         return _dict
         #return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
 
+    @staticmethod
+    def __to_page(self,_to_dict):
+        _dict={}
+
+        _dict["items"]=[_to_dict(item) for item in getattr(self,"items",None)]
+
+        for name in ["page","pages","per_page","total"]:
+            attr=getattr(self,name,None)
+            _dict[name]=attr
+
+        return _dict
+
     def __init__(self,name):
         Flask.__init__(self,name)
 
         self.config.from_object("bmp.config.Config")
 
         self.db=SQLAlchemy(self)
-        self.db.Model.to_dict=self.__to_dict
+        self.db.Model.to_dict=Myapp.__to_dict
+        Pagination.to_page=Myapp.__to_page
+
+
 
         log_fmt=logging.Formatter("%(asctime)s %(message)s")
         fileHandler=logging.FileHandler("%s/bmp.log"%self.root_path)

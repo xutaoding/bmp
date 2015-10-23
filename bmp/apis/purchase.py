@@ -2,29 +2,43 @@
 from bmp.apis.base import BaseApi
 from bmp.models.purchase import Purchase,PurchaseApproval,PurchaseGoods,PurchaseImg
 from bmp.models.asset import Supplier,Contract
-
+from flask import session
+from bmp.const import USER_SESSION
 
 class PurchaseApi(BaseApi):
     route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
 
-    def get(self,page,pre_page):
-        return self.succ(Purchase.page(page,pre_page))
+    def auth(self):
+        session[USER_SESSION]={"uid":"jim.zhao"}
+        return True
+
+    def get(self,page=0,pre_page=0):
+        page=Purchase.unfinished(page,pre_page)
+        return self.succ(page)
+
+    def put(self,pid):
+        submit=self.request()
+        PurchaseApproval.edit(pid,submit)
+        return self.succ()
 
     def post(self):
         submit=self.request()
+        submit["supplier"]=Supplier.get(submit["supplier_id"])
+        submit["contract"]=Contract(submit["contract"])
+        submit["approvals"]=[]
         Purchase.add(submit)
         return self.succ()
 
-    def delete(self):
+    def delete(self,pid):
+        Purchase.delete(pid)
         return self.succ()
 
 if __name__=="__main__":
     from bmp.utils.post import test
 
     test("post",
-         "http://192.168.0.143:5000/apis/v1.0/purchase",
+         "http://192.168.0.143:5001/apis/v1.0/purchase",
          {
-             "approvals":[],
              "contract":{
                  "begin_time":"2015-01-01 01:01:01",
                  "end_time":"2015-01-02 01:01:01",
@@ -40,9 +54,9 @@ if __name__=="__main__":
                  "spec":"规格",
                  "amount":"10"
              }],
-             "supplier_id":1,
+             "supplier_id":1,#供应商id
              "use":"用途"
-         })
+         },True)
 
 
 

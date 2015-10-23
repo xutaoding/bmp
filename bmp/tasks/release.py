@@ -22,6 +22,7 @@ def __mail_to(r,submit):
     cc_group=DEFAULT_GROUP.OP
 
     if submit and submit["status"] is RELEASE.FAIL:
+        #todo 失败发给申请人
         return
 
     if submit and submit["status"] is RELEASE.PASS:
@@ -29,6 +30,7 @@ def __mail_to(r,submit):
             to_group=DEFAULT_GROUP.OP
             cc_group=DEFAULT_GROUP.QA
 
+    #todo QA OP 全部归入to
     to=[u.mail for u in Group.get_users(to_group)]
     cc=[u.mail for u in Group.get_users(cc_group)]
 

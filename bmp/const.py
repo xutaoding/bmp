@@ -32,3 +32,13 @@ class RELEASE:
     FAIL="退回"
     FLOW_OP=["运维发布"]
     FLOW_QA=["内部测试","正式环境测试"]
+
+class PURCHASE:
+    PASS="已确认"
+    FAIL="退回"
+    FLOW_ONE="UP"
+    FLOW_TWO="FIN"
+    FLOW_THREE="BOSS"
+    FLOW_FOUR="LAW"
+    FLOW=[FLOW_ONE,FLOW_TWO,FLOW_THREE,FLOW_FOUR]
+    PRICE_LIMIT=10000

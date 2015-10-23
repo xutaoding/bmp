@@ -1,20 +1,31 @@
-登录:get  /apis/v1.0/login/<string:uid>/<string:pwd>
+根路径：/apis/v1.0
+格式：
+描述:方法 相对路径
+
+<string:*>:字符串参数
+<int:*>:整型参数
+
+
+登录:get  /login/<string:uid>/<string:pwd>
 uid:用户名
 pwd:密码
 
-登出:get /apis/v1.0/logout
+登出:get /logout
 
-字典:get /apis/v1.0/refs/<string:type>
+字典:get /refs/<string:type>
 type:分类信息 通配符:%
 
-用户信息:get /apis/v1.0/my
+用户信息:get /my
 
-获取全部发布申请:get /apis/v1.0/release
 
-获取发布申请:get /apis/v1.0/release/<int:id>
+发布相关------------------------------------------------
+
+获取全部发布申请:get /release
+
+获取发布申请:get /release/<int:id>
 id:申请id
 
-提交申请:post /apis/v1.0/release
+提交申请:post /release
 参考:
 {
     "project":"项目名称",
@@ -32,7 +43,7 @@ id:申请id
     "content":"更改内容"
 }
 
-确认(退回)申请:put /apis/v1.0/release/<int:id>
+确认(退回)申请:put /release/<int:id>
 id:申请id
 参考:
 {
@@ -42,6 +53,10 @@ id:申请id
     "reson":"退回理由",
     "options":"BUG,文件未成功修改,发布问题"
 }
+
+
+
+权限相关------------------------------------------------
 
 获取管理组:get "/groups/<string:name>"
 name:组名 通配符 %
@@ -69,5 +84,41 @@ is_admin:管理员:1:是,0:不是
 删除用户:delete "/users/<string:uid>"
 uid:用户名
 
+
+
+采购相关------------------------------------------------
+
 上传文件:post "/upload"
+
+采购申请:post "/purchase"
+参考:
+{
+     "contract":{
+         "begin_time":"2015-01-01 01:01:01",
+         "end_time":"2015-01-02 01:01:01",
+         "path":"合同文件路径"
+     },
+     "imgs":[{
+             "b64":"图片编码内容",
+             "desc":"描述"
+     }],
+     "goods":[{
+         "name":"商品名称",
+         "price":"11.11",
+         "spec":"规格",
+         "amount":"10"
+     }],
+     "supplier_id":1,#供应商id
+     "use":"用途"
+}
+
+确认(退回)申请:put /release/<int:id>
+参考:
+{
+    "type":"审批类型",
+    "uid":"审批人",
+    "status":"审批状态",
+    "reson":"退回理由",
+    "options":""
+}
 

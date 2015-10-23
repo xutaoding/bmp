@@ -99,6 +99,10 @@ class Release(db.Model):
     def get(rid):
         return Release.query.filter(Release.id==rid).one()
 
+
+
+
+
     @staticmethod
     def add(submit):
         from bmp.models.user import User
