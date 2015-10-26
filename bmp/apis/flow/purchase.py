@@ -9,10 +9,6 @@ from bmp.const import USER_SESSION,PURCHASE
 class PurchaseApi(BaseApi):
     route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
 
-    def auth(self):
-        session[USER_SESSION]={"uid":"jim.zhao"}
-        return True
-
     def get(self,page=0,pre_page=0):
         g_dict={}
         for g in set(PURCHASE.FLOW).difference([PURCHASE.FLOW_ONE]):

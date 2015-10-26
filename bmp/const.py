@@ -28,14 +28,14 @@ class DEFAULT_GROUP:
 
 
 class RELEASE:
-    PASS="已确认"
-    FAIL="退回"
-    FLOW_OP=["运维发布"]
-    FLOW_QA=["内部测试","正式环境测试"]
+    PASS=u"已确认"
+    FAIL=u"退回"
+    FLOW_OP=[u"运维发布"]
+    FLOW_QA=[u"内部测试",u"正式环境测试"]
 
 class PURCHASE:
-    PASS="已确认"
-    FAIL="退回"
+    PASS=u"已确认"
+    FAIL=u"退回"
     FLOW_ONE="UP"
     FLOW_TWO="FIN"
     FLOW_THREE="BOSS"

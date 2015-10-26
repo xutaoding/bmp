@@ -17,23 +17,24 @@ def mail_to(r,submit=None):
 
 def __mail_to(r,submit):
     approvals=r.approvals
-    cc=[]
-    to_group=DEFAULT_GROUP.QA
-    to_group.extend(DEFAULT_GROUP.OP)
-    to=[u.mail for u in Group.get_users(to_group)]
+    to,cc=[],[]
+    to_group=[DEFAULT_GROUP.QA]
+    to_group.extend([DEFAULT_GROUP.OP])
+    for g in to_group:
+        to.extend([u.mail for u in Group.get_users(g)])
 
     user=User.get(r.apply_uid)
     sub=u"发布申请:%s"%r.project
-    if submit and submit["status"] is RELEASE.FAIL:
+    if submit and submit["status"]==RELEASE.FAIL:
         sub=u"发布退回:%s %s"%(r.project,submit["type"])
-        to.append(user["mail"])
+        to=[user["mail"]]
     elif approvals:
         sub=u"发布确认:%s %s"%(r.project,submit["type"])
         to.append(user["mail"])
 
     try:
         copy_to=User.get(r.copy_to_uid)
-        if copy_to:
+        if copy_to["mail"] not in to:
             cc.append(copy_to["mail"])
     except:pass
 
@@ -50,4 +51,4 @@ def __mail_to(r,submit):
         release=r,
         url=url)
 
-    mail.send(sub,html,to,cc)
+    mail.send(sub,html,list(set(to)),cc)

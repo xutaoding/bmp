@@ -9,6 +9,24 @@ from flask import request
 import json
 import traceback
 from bmp import log
+from bmp import app
+from functools import wraps
+
+def jsonp(func):
+    """Wraps JSONified output for JSONP requests."""
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        callback = request.args.get('callback', False)
+        if callback:
+            data = func(*args, **kwargs).data
+            content = str(callback) + '(' + data + ')'
+            mimetype = 'application/javascript'
+            return app.response_class(content, mimetype=mimetype)
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
+
+
 
 class BaseApi(MethodView):
 
@@ -29,7 +47,6 @@ class BaseApi(MethodView):
             log.exception(e)
             return self.fail("接口异常")
 
-
     def fail(self, error=""):
         return jsonify({
             "success":False,
@@ -45,12 +62,6 @@ class BaseApi(MethodView):
             log.exception(e)
         req=[request.form[j] for j in request.form][0]
         return json.loads(req)
-
-    def page(self,pages,items):
-        return {
-            "pages":pages,
-            "items":items
-        }
 
     def succ(self, data={}):
         return jsonify({

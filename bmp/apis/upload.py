@@ -1,3 +1,4 @@
+#coding: utf-8
 from bmp.apis.base import BaseApi
 from flask import request
 import base64
