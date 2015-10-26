@@ -4,7 +4,6 @@ from flask import session
 from bmp.const import USER_SESSION
 from datetime import datetime
 from bmp.const import PURCHASE
-from bmp.models.user import Group
 import bmp.utils.user_ldap as ldap
 
 
@@ -158,13 +157,9 @@ class Purchase(db.Model):
         return False
 
     @staticmethod
-    def __unfinished():
+    def __unfinished(user_groups):
         purchases=[]
         uid=session[USER_SESSION]["uid"]
-
-        g_dict={}
-        for g in set(PURCHASE.FLOW).difference([PURCHASE.FLOW_ONE]):
-            g_dict[g]=[user.uid for user in Group.get_users(g)]
 
         for purchase in Purchase.query.filter(Purchase.is_finished==False).all():
             approvals=purchase.approvals
@@ -180,8 +175,9 @@ class Purchase(db.Model):
                 #直接上级
                 if Purchase.__is_superior(uid,apply_uid):
                     purchases.append(purchase.id)
-                    continue
-            if uid in g_dict[cur_approval_type]:
+                continue
+
+            if uid in user_groups[cur_approval_type]:
                 return purchase.append(purchase.id)
 
             return True
@@ -189,8 +185,8 @@ class Purchase(db.Model):
 
     #全部可审批和历史审批
     @staticmethod
-    def unfinished(page=1,pre_page=20):
-        page=Purchase.query.filter(Purchase.id.in_(Purchase.__unfinished())).paginate(page,pre_page,False)
+    def unfinished(user_groups,page=1,pre_page=20):
+        page=Purchase.query.filter(Purchase.id.in_(Purchase.__unfinished(user_groups))).paginate(page,pre_page,False)
         return page.to_page(Purchase.__to_dict)
 
     @staticmethod

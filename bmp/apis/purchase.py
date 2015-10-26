@@ -2,8 +2,9 @@
 from bmp.apis.base import BaseApi
 from bmp.models.purchase import Purchase,PurchaseApproval,PurchaseGoods,PurchaseImg
 from bmp.models.asset import Supplier,Contract
+from bmp.models.user import Group
 from flask import session
-from bmp.const import USER_SESSION
+from bmp.const import USER_SESSION,PURCHASE
 
 class PurchaseApi(BaseApi):
     route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
@@ -13,7 +14,11 @@ class PurchaseApi(BaseApi):
         return True
 
     def get(self,page=0,pre_page=0):
-        page=Purchase.unfinished(page,pre_page)
+        g_dict={}
+        for g in set(PURCHASE.FLOW).difference([PURCHASE.FLOW_ONE]):
+            g_dict[g]=[user.uid for user in Group.get_users(g)]
+
+        page=Purchase.unfinished(g_dict,page,pre_page)
         return self.succ(page)
 
     def put(self,pid):
