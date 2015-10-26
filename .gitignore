@@ -6,3 +6,4 @@ static/
 templates/
 ops/
 bmp.log
+*.cfg

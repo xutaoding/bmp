@@ -10,6 +10,8 @@ from datetime import datetime
 from bmp.utils import time
 from database import Database
 
+import os
+
 
 class _RegexConverter(BaseConverter):
     def __init__(self, map, *args):
@@ -25,12 +27,7 @@ class Myapp(Flask):
             Myapp.__app=Myapp(name)
         return Myapp.__app
 
-    def __init__(self,name):
-        Flask.__init__(self,name)
-
-        self.config.from_object("bmp.config.Config")
-        self.db=Database(self)
-
+    def __init_log(self):
         log_fmt=logging.Formatter("%(asctime)s %(message)s")
         fileHandler=logging.FileHandler("%s/bmp.log"%self.root_path)
         fileHandler.setLevel(logging.ERROR)
@@ -41,7 +38,21 @@ class Myapp(Flask):
         self.logger.addHandler(streamHandler)
         self.logger.addHandler(fileHandler)
 
+    def __init_config(self):
+        r=re.compile("(.+)\.cfg")
+        cfg=[]
+        for name in os.listdir("%s%s.."%(self.root_path,os.sep)):
+            cfg=r.findall(name)
+            if cfg:break
+        cfg=cfg[0]
+        self.config.from_object("bmp.config.%s"%cfg.capitalize())
+
+    def __init__(self,name):
+        Flask.__init__(self,name)
         self.url_map.converters["regex"] = _RegexConverter
+        self.__init_config()
+        self.__init_log()
+        self.db=Database(self)
 
     def __add_api_rule(self,module):
         self.__add_rule("bmp.apis.%s"%module,"Api",

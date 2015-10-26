@@ -27,8 +27,8 @@ class Config(object):
     UPLOAD_FOLDER="/upload"
 
 
-class TestConfig(Config):
+class Test(Config):
     SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp_test"
 
-class DevConfig(Config):
+class Dev(Config):
     SQLALCHEMY_DATABASE_URI = ""
