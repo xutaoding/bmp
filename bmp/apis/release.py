@@ -33,7 +33,7 @@ class ReleaseApi(BaseApi):
     route=["/release","/release/<int:id>"]
 
     def get(self,id=0):
-        return self.succ(Release.selegct(id))
+        return self.succ(Release.select(id))
 
     def put(self,id):
         submit=self.request()

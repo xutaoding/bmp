@@ -29,7 +29,7 @@ def create_all():
     for group,uids in DEFAULT_GROUP.GROUPS.items():
         for uid in uids:
             result=user_ldap.search(uid)
-            dn,user=user_ldap.user_dict(result)
+            dn,user= user_ldap.__user_dict(result)
             if not User.add(user):
                 raise Exception("导入用户 %s 失败"%uid)
 

@@ -9,6 +9,7 @@ user_group=db.Table("user_group",
 class Group(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     name=db.Column(db.String(128),unique=True)
+    desc=db.Column(db.String(128))
     users=db.relationship("User",secondary=user_group,backref=db.backref("groups"))
 
     def __init__(self,name):
@@ -33,18 +34,20 @@ class Group(db.Model):
         return True
 
     @staticmethod
+    @db.transaction
     def add(name):
         if Group.query.filter(Group.name==name).count():
             return False
         db.session.add(Group(name))
-        db.session.commit()
+        db.session.flush()
         return True
 
     @staticmethod
+    @db.transaction
     def delete(name):
         group=Group.query.filter(Group.name==name).one()
         db.session.delete(group)
-        db.session.commit()
+        db.session.flush()
         return True
 
     @staticmethod
@@ -53,7 +56,8 @@ class Group(db.Model):
 
     @staticmethod
     def get_users(name):
-        return Group.get(name).users
+        g=Group.get(name)
+        return g.users
 
 
 class User(db.Model):
@@ -94,35 +98,38 @@ class User(db.Model):
         return User.__add_group(user)
 
     @staticmethod
+    @db.transaction
     def edit(uid,email,is_admin):
         user=User.query.filter(User.uid==uid).one()
         user.mail=email
         user.is_admin=is_admin
-        db.session.commit()
+        db.session.flush()
         return True
 
     @staticmethod
+    @db.transaction
     def delete(uid):
         user=User.query.filter(User.uid==uid).one()
         db.session.delete(user)
-        db.session.commit()
+        db.session.flush()
         return True
 
     @staticmethod
+    @db.transaction
     def add(_dict):
         new_user=User(_dict)
         user=User.query.filter(User.uid==new_user.uid)
         if user.count():
             user=user.one()
             user.last_time=datetime.now()
-            db.session.commit()
+            db.session.flush()
             return True
 
         new_user.is_admin=False
         new_user.create_time=datetime.now()
         new_user.last_time=datetime.now()
         db.session.add(new_user)
-        db.session.commit()
+        db.session.flush()
         return True
 
 

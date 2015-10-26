@@ -90,6 +90,11 @@ uid:用户名
 
 上传文件:post "/upload"
 
+获取采购申请:get "/purchase/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+
+
 采购申请:post "/purchase"
 参考:
 {
@@ -115,7 +120,7 @@ uid:用户名
 确认(退回)申请:put /release/<int:id>
 参考:
 {
-    "type":"审批类型",
+    "type":"审批类型",# "UP":直接上级,"FIN":财务,"BOSS":老板,"LAW":法务
     "uid":"审批人",
     "status":"审批状态",
     "reson":"退回理由",

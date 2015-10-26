@@ -19,11 +19,20 @@ def search(uid="*"):
     result=init.search_s(
         app.config["LDAP_BASE_DN"],
         ldap.SCOPE_SUBTREE,
-        "(uid=%s)"%(uid)
+        "(uid=%s)"%(uid),
+        [
+            "uid",
+            "displayName",
+            "businessCategory",
+            "mail",
+            "mobile",
+            "title",
+            "x-csf-emp-1stManager"#上级
+        ]
     )
     return result
 
-def user_dict(result):
+def __user_dict(result):
     dn,user=result[0]
     for k in user:
         user[k]=user[k][0]
@@ -34,12 +43,19 @@ def auth(uid,pwd):
     if not result:
         return False,None
 
-    dn,user=user_dict(result)
+    dn,user= __user_dict(result)
 
     if not __bind(dn,pwd):
         return False,None
     return True,user
 
+
+def get_superior(uid):
+    try:
+        dn,user=search(uid)[0]
+        return user["x-csf-emp-1stManager"][0].split(",")[0].split("=")[1].strip()
+    except:
+        return None
 
 '''
 主机：192.168.250.2
@@ -50,8 +66,7 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    for dn,user in search():
-        print(user)
+    print(get_superior("chenglong.yan"))
 
 
 

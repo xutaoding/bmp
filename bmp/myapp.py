@@ -8,6 +8,7 @@ import sys
 import re
 from datetime import datetime
 from bmp.utils import time
+from database import Database
 
 
 class _RegexConverter(BaseConverter):
@@ -24,40 +25,11 @@ class Myapp(Flask):
             Myapp.__app=Myapp(name)
         return Myapp.__app
 
-    @staticmethod
-    def __to_dict(self):
-        _dict={}
-        for c in self.__table__.columns:
-            attr=getattr(self, c.name, None)
-            if isinstance(attr,datetime):
-                _dict[c.name]=time.format(attr,"%Y-%m-%d %H:%M")
-            else:
-                _dict[c.name]=attr
-        return _dict
-        #return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
-
-    @staticmethod
-    def __to_page(self,_to_dict):
-        _dict={}
-
-        _dict["items"]=[_to_dict(item) for item in getattr(self,"items",None)]
-
-        for name in ["page","pages","per_page","total"]:
-            attr=getattr(self,name,None)
-            _dict[name]=attr
-
-        return _dict
-
     def __init__(self,name):
         Flask.__init__(self,name)
 
         self.config.from_object("bmp.config.Config")
-
-        self.db=SQLAlchemy(self)
-        self.db.Model.to_dict=Myapp.__to_dict
-        Pagination.to_page=Myapp.__to_page
-
-
+        self.db=Database(self)
 
         log_fmt=logging.Formatter("%(asctime)s %(message)s")
         fileHandler=logging.FileHandler("%s/bmp.log"%self.root_path)

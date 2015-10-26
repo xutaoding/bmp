@@ -37,7 +37,7 @@ if __name__=="__main__":
     from bmp.utils.post import test
 
     test("post",
-         "http://192.168.0.143:5001/apis/v1.0/purchase",
+         "http://192.168.0.143:5000/apis/v1.0/purchase",
          {
              "contract":{
                  "begin_time":"2015-01-01 01:01:01",

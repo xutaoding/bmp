@@ -5,6 +5,7 @@ from bmp.const import USER_SESSION
 from datetime import datetime
 from bmp.const import PURCHASE
 from bmp.models.user import Group
+import bmp.utils.user_ldap as ldap
 
 
 purchase_supplier = db.Table("purchase_supplier",
@@ -54,40 +55,43 @@ class PurchaseApproval(db.Model):
         self.options=_dict["options"]
         self.uid=_dict["uid"]
 
+
+    def __next_approval_type(self,type):
+        cur=PURCHASE.FLOW.index(type)
+        if cur==len(PURCHASE.FLOW)-1:
+            return PURCHASE.FLOW[cur]
+        return PURCHASE.FLOW[cur+1]
+
     @staticmethod
+    @db.transaction
     def edit(id,submit):
-        db.session.begin()
-        try:
+        approval=PurchaseApproval.query.filter(
+            PurchaseApproval.purchase_id==id,
+            PurchaseApproval.type==submit["type"])
+        if approval.count():
+            return False
 
-            approval=PurchaseApproval.query.filter(
-                PurchaseApproval.purchase_id==id,
-                PurchaseApproval.type==submit["type"])
-            if approval.count():
-                return False
+        _approval=PurchaseApproval(submit)
+        _approval.puchase_id=id
+        db.session.add(_approval)
 
-            _approval=PurchaseApproval(submit)
-            _approval.puchase_id=id
-            db.session.add(_approval)
+        purchase=Purchase.query.filter(Purchase.id==id).one()
+        purchase.cur_approval_type=_approval.type
 
-            purchase=Purchase.query.filter(Purchase.id==id).one()
-            #失败
-            if _approval.status is PURCHASE.FAIL:
+        #失败
+        if _approval.status is PURCHASE.FAIL:
+            purchase.is_finished=True
+        elif _approval.type is PURCHASE.FLOW_TWO:
+            total=sum([g.price*g.amount for g in Purchase.goods])
+            if total<PURCHASE.PRICE_LIMIT:
                 purchase.is_finished=True
-            elif _approval.status is PURCHASE.FLOW_TWO:
-                total=sum([g.price*g.amount for g in Purchase.goods])
-                if total<PURCHASE.PRICE_LIMIT:
-                    purchase.is_finished=True
-            elif _approval.status is PURCHASE.FLOW_THREE:
-                if not purchase.contract:
-                    purchase.is_finished=True
-            elif _approval.status is PURCHASE.FLOW_FOUR:
+        elif _approval.type is PURCHASE.FLOW_THREE:
+            if not purchase.contract:
                 purchase.is_finished=True
+        elif _approval.type is PURCHASE.FLOW_FOUR:
+            purchase.is_finished=True
 
-            db.session.commit()
-        except:
-            db.session.rollback()
-            raise
-
+        db.session.flush()
         return True
 
 class Purchase(db.Model):
@@ -114,8 +118,10 @@ class Purchase(db.Model):
         self.supplier=supplier
         if imgs:self.imgs=[PurchaseImg(img) for img in imgs]
         if contract:self.contract=contract
+        self.cur_approval_type=PURCHASE.FLOW_ONE
 
     @staticmethod
+    @db.transaction
     def add(submit):
         purchase=Purchase(
             submit["goods"],
@@ -125,7 +131,7 @@ class Purchase(db.Model):
 
         purchase.use=submit["use"]
         db.session.add(purchase)
-        db.session.commit()
+        db.session.flush()
 
     @staticmethod
     def select(id=0):
@@ -147,12 +153,9 @@ class Purchase(db.Model):
 
     @staticmethod
     def __is_superior(uid,apply_uid):
-        return True
-
-    @staticmethod
-    def __cur_approval_type(approvals):
-        diff=set(PURCHASE.FLOW).difference([a.type for a in approvals])
-        return PURCHASE.FLOW[min([ PURCHASE.FLOW.index(d) for d in diff])]
+        if uid==ldap.get_superior(apply_uid):
+            return True
+        return False
 
     @staticmethod
     def __unfinished():
@@ -160,20 +163,20 @@ class Purchase(db.Model):
         uid=session[USER_SESSION]["uid"]
 
         g_dict={}
-        for g in set(PURCHASE.FLOW).difference(PURCHASE.FLOW_ONE):
+        for g in set(PURCHASE.FLOW).difference([PURCHASE.FLOW_ONE]):
             g_dict[g]=[user.uid for user in Group.get_users(g)]
 
         for purchase in Purchase.query.filter(Purchase.is_finished==False).all():
             approvals=purchase.approvals
             apply_uid=purchase.apply_uid
+            cur_approval_type=purchase.cur_approval_type
 
             #参与过审批
             if uid in [a.uid for a in approvals]:
                 purchases.append(purchase.id)
                 continue
 
-            cur_approval_type=Purchase.__cur_approval_type(approvals)
-            if cur_approval_type is PURCHASE.FLOW_ONE:
+            if cur_approval_type==PURCHASE.FLOW_ONE:
                 #直接上级
                 if Purchase.__is_superior(uid,apply_uid):
                     purchases.append(purchase.id)
@@ -191,9 +194,10 @@ class Purchase(db.Model):
         return page.to_page(Purchase.__to_dict)
 
     @staticmethod
+    @db.transaction
     def delete(pid):
         db.session.delete(Purchase.query.filter(Purchase.id==pid).one())
-        db.session.commit()
+        db.session.flush()
 
 if __name__ == "__main__":
     pass

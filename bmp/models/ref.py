@@ -16,6 +16,7 @@ class Ref(db.Model):
         return [ref.to_dict() for ref in refs]
 
     @staticmethod
+    @db.transaction
     def add(name,type):
         if Ref.query\
             .filter(Ref.type==type)\
@@ -23,4 +24,4 @@ class Ref(db.Model):
             return False
 
         db.session.add(Ref(name,type))
-        db.session.commit()
+        db.session.flush()

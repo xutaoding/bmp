@@ -26,3 +26,14 @@ class Contract(db.Model):
         self.begin_time=_dict["begin_time"]
         self.end_time=_dict["end_time"]
         self.path=_dict["path"]
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    parent_id=db.Column(db.Integer)
+    name=db.Column(db.String(128))
+
+
+
+
+
