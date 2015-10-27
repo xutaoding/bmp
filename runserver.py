@@ -18,4 +18,4 @@ application.add_view_rule("index")
 application.add_api_rule()
 
 if __name__=="__main__":
-    application.run(host="192.168.0.143",port=5000,debug=True)
+    application.run(host=application.config["HOST"],port=application.config["PORT"],debug=True)

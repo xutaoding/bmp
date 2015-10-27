@@ -26,9 +26,18 @@ class Config(object):
 
     UPLOAD_FOLDER="/upload"
 
+    HOST=""
+    PORT=5000
+
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp_test"
+    HOST = "192.168.0.143"
 
 class Dev(Config):
-    SQLALCHEMY_DATABASE_URI = ""
+    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
+    HOST = "192.168.0.143"
+
+class Testserver(Config):
+    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
+    HOST = "dev.ops.chinascope.net"

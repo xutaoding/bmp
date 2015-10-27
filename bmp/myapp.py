@@ -95,4 +95,5 @@ class Myapp(Flask):
             self.__add_api_rule(mod)
 
     def run(self, host=None, port=None, debug=None, **options):
+        print("root:"+self.root_path)
         super(Myapp,self).run(host,port,debug,**options)
