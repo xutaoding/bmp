@@ -1,6 +1,6 @@
 #coding=utf-8
 from bmp import db
-
+from datetime import datetime
 
 class Supplier(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
@@ -23,8 +23,8 @@ class Contract(db.Model):
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
 
     def __init__(self,_dict):
-        self.begin_time=_dict["begin_time"]
-        self.end_time=_dict["end_time"]
+        self.begin_time=datetime.strptime(_dict["begin_time"],"%Y-%m-%d %H:%M")
+        self.end_time=datetime.strptime(_dict["end_time"],"%Y-%m-%d %H:%M")
         self.path=_dict["path"]
 
 
@@ -33,6 +33,19 @@ class Category(db.Model):
     parent_id=db.Column(db.Integer)
     name=db.Column(db.String(128))
 
+
+
+if __name__=="__main__":
+    from bmp.models.purchase import Purchase
+    from bmp import db
+    d=Contract({
+                 "id":"2",
+                 "begin_time":"2015-01-01 01:01",
+                 "end_time":"2015-01-02 01:01",
+                 "path":"合同文件路径2"
+             })
+    db.session.commit()
+    print(d)
 
 
 

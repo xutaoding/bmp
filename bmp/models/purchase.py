@@ -5,7 +5,7 @@ from bmp.const import USER_SESSION
 from datetime import datetime
 from bmp.const import PURCHASE
 import bmp.utils.user_ldap as ldap
-
+from bmp.database import Database
 
 purchase_supplier = db.Table("purchase_supplier",
                              db.Column("purchase_id", db.Integer, db.ForeignKey("purchase.id")),
@@ -26,7 +26,6 @@ class PurchaseGoods(db.Model):  # 采购物品
         self.spec=_dict["spec"]
         self.amount=_dict["amount"]
 
-
 class PurchaseImg(db.Model):  # 比价图片
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     b64 = db.Column(db.String(256))
@@ -36,6 +35,7 @@ class PurchaseImg(db.Model):  # 比价图片
     def __init__(self,_dict):
         self.b64=_dict["b64"]
         self.desc=_dict["desc"]
+
 
 
 class PurchaseApproval(db.Model):
@@ -106,39 +106,36 @@ class Purchase(db.Model):
 
     cur_approval_type=db.Column(db.String(128))
     is_finished=db.Column(db.Boolean,default=False)
+    is_draft=db.Column(db.Boolean,default=True)
     use=db.Column(db.String(128))
     apply_uid = db.Column(db.String(128), nullable=False)
+    apply_businessCategory=db.Column(db.String(128),nullable=False)
     apply_time = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self,goods,supplier,imgs=None,contract=None):
-        self.apply_uid=session[USER_SESSION]["uid"]
-        self.apply_time=datetime.now()
-        self.goods=[PurchaseGoods(g) for g in goods]
+    def __init__(self,submit):
+        goods,supplier,imgs,contract=submit["goods"],submit["supplier"],submit["imgs"],submit["contract"]
+        if not submit.__contains__("id"):
+            self.cur_approval_type=PURCHASE.FLOW_ONE
+            self.apply_time=datetime.now()
+            self.apply_businessCategory=session[USER_SESSION]["businessCategory"]
+            self.apply_uid=session[USER_SESSION]["uid"]
+
+        self.goods=[Database.to_cls(PurchaseGoods,g) for g in goods]
         self.supplier=supplier
-        if imgs:self.imgs=[PurchaseImg(img) for img in imgs]
+        if imgs:self.imgs=[Database.to_cls(PurchaseImg,img) for img in imgs]
         if contract:self.contract=contract
-        self.cur_approval_type=PURCHASE.FLOW_ONE
+        self.use=submit["use"]
 
     @staticmethod
     @db.transaction
     def add(submit):
-        purchase=Purchase(
-            submit["goods"],
-            submit["supplier"],
-            submit["imgs"],
-            submit["contract"])
-
-        purchase.use=submit["use"]
+        purchase=Purchase(submit)
         db.session.add(purchase)
         db.session.flush()
 
     @staticmethod
-    def select(id=0):
-        return Purchase.query.all()
-
-    @staticmethod
     def get(id):
-        return Purchase.query.filter(Purchase.id==id).one()
+        return Purchase.__to_dict(Purchase.query.filter(Purchase.id==id).one())
 
     @staticmethod
     def __to_dict(self):
@@ -161,26 +158,27 @@ class Purchase(db.Model):
         purchases=[]
         uid=session[USER_SESSION]["uid"]
 
-        for purchase in Purchase.query.filter(Purchase.is_finished==False).all():
+        for purchase in Purchase.query\
+                .filter(Purchase.is_saved==False)\
+                .filter(Purchase.is_finished==False).all():
+
             approvals=purchase.approvals
             apply_uid=purchase.apply_uid
             cur_approval_type=purchase.cur_approval_type
 
-            #参与过审批
-            if uid in [a.uid for a in approvals]:
+            if uid==purchase.apply_uid:
                 purchases.append(purchase.id)
-                continue
-
-            if cur_approval_type==PURCHASE.FLOW_ONE:
+            #参与过审批
+            elif uid in [a.uid for a in approvals]:
+                purchases.append(purchase.id)
+            elif cur_approval_type==PURCHASE.FLOW_ONE:
                 #直接上级
                 if Purchase.__is_superior(uid,apply_uid):
                     purchases.append(purchase.id)
-                continue
-
-            if uid in user_groups[cur_approval_type]:
+            elif uid in user_groups[cur_approval_type]:
                 return purchase.append(purchase.id)
-
-            return True
+            else:
+                raise
         return purchases
 
     #全部可审批和历史审批
@@ -190,10 +188,36 @@ class Purchase(db.Model):
         return page.to_page(Purchase.__to_dict)
 
     @staticmethod
+    def finished(page=1,pre_page=20):
+        page=Purchase.query.filter(Purchase.is_finished==True).paginate(page,pre_page,False)
+        return page.to_page(Purchase.__to_dict)
+    @staticmethod
+    def drafts(page=1,pre_page=20):
+        page=Purchase.query\
+            .filter(Purchase.apply_uid==session[USER_SESSION]["uid"])\
+            .filter(Purchase.is_draft==True).paginate(page,pre_page,False)
+        return page.to_page(Purchase.__to_dict)
+
+    @staticmethod
     @db.transaction
     def delete(pid):
         db.session.delete(Purchase.query.filter(Purchase.id==pid).one())
         db.session.flush()
+
+    @staticmethod
+    @db.transaction
+    def edit(submit):
+        purchase=Database.to_cls(Purchase,submit)
+        db.session.flush()
+
+    @staticmethod
+    def approval(pid):
+        purchase=Purchase.query.filter(Purchase.id==pid).one()
+        purchase.is_draft=False
+        db.session.commit()
+        return True
+
+
 
 if __name__ == "__main__":
     pass

@@ -1,3 +1,4 @@
+#coding=utf-8
 import os
 from datetime import timedelta
 
@@ -32,7 +33,7 @@ class Config(object):
 
 
 class Test(Config):
-    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp_test"
+    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp"
     HOST = "192.168.0.143"
 
 class Dev(Config):
