@@ -9,6 +9,7 @@ class Config(object):
     LDAP_BASE_DN = "dc=chinascopefinancial,dc=com"
 
     SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp"
+    SQLALCHEMY_TRACK_MODIFICATIONS=True
 
     SECRET_KEY="scope"#os.urandom(1024)
     SESSION_TYPE="filesystem"
@@ -40,4 +41,4 @@ class Dev(Config):
 
 class Testserver(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
-    HOST = "dev.ops.chinascope.net"
+    HOST = "127.0.0.1"

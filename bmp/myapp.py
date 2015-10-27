@@ -35,6 +35,7 @@ class Myapp(Flask):
         streamHandler=logging.StreamHandler()
         streamHandler.setLevel(logging.ERROR)
         streamHandler.setFormatter(log_fmt)
+        logging
         self.logger.addHandler(streamHandler)
         self.logger.addHandler(fileHandler)
 
