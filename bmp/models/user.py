@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from bmp import db
 from datetime import datetime
 
@@ -13,7 +13,7 @@ class Group(db.Model):
     users=db.relationship("User",secondary=user_group,backref=db.backref("groups"))
 
     def __init__(self,name):
-        self.name=name
+        self.name = name
 
     @staticmethod
     def join(name,users):
@@ -81,7 +81,10 @@ class User(db.Model):
 
     @staticmethod
     def __add_group(user):
+        # print 'aaa', user
         _user=user.to_dict()
+        # print 'bbb', _user
+        # print 'ccc', user.groups
         _user["group"]=[g.name for g in user.groups]
         return _user
 

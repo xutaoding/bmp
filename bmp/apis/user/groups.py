@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.user import Group
 

@@ -1,16 +1,14 @@
 from flask import Flask
 from flask import session
-from flask.ext.sqlalchemy import SQLAlchemy,Pagination
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.routing import BaseConverter
 from utils import path
 import logging
+
 import sys
 import re
 from datetime import datetime
 from bmp.utils import time
-from database import Database
-
-import os
 
 
 class _RegexConverter(BaseConverter):
@@ -27,7 +25,30 @@ class Myapp(Flask):
             Myapp.__app=Myapp(name)
         return Myapp.__app
 
-    def __init_log(self):
+    @staticmethod
+    def __to_dict(self):
+        _dict={}
+        for c in self.__table__.columns:
+            attr=getattr(self, c.name, None)
+            if isinstance(attr,datetime):
+                _dict[c.name]=time.format(attr,"%Y-%m-%d %H:%M")
+            else:
+                _dict[c.name]=attr
+        return _dict
+        #return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+
+    def __init__(self,name):
+        Flask.__init__(self,name)
+        if not self.debug:
+            self.config.from_object("bmp.config.Config")
+        else:
+            self.config.from_object("bmp.config.DebugConfig")
+
+
+        self.db = SQLAlchemy(self)
+
+        self.db.Model.to_dict=self.__to_dict
+
         log_fmt=logging.Formatter("%(asctime)s %(message)s")
         fileHandler=logging.FileHandler("%s/bmp.log"%self.root_path)
         fileHandler.setLevel(logging.ERROR)
@@ -39,21 +60,7 @@ class Myapp(Flask):
         self.logger.addHandler(streamHandler)
         self.logger.addHandler(fileHandler)
 
-    def __init_config(self):
-        r=re.compile("(.+)\.cfg")
-        cfg=[]
-        for name in os.listdir("%s%s.."%(self.root_path,os.sep)):
-            cfg=r.findall(name)
-            if cfg:break
-        cfg=cfg[0]
-        self.config.from_object("bmp.config.%s"%cfg.capitalize())
-
-    def __init__(self,name):
-        Flask.__init__(self,name)
         self.url_map.converters["regex"] = _RegexConverter
-        self.__init_config()
-        self.__init_log()
-        self.db=Database(self)
 
     def __add_api_rule(self,module):
         self.__add_rule("bmp.apis.%s"%module,"Api",
@@ -96,5 +103,4 @@ class Myapp(Flask):
             self.__add_api_rule(mod)
 
     def run(self, host=None, port=None, debug=None, **options):
-        print("root:"+self.root_path)
         super(Myapp,self).run(host,port,debug,**options)
