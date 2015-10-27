@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from bmp import db
 
 class Ref(db.Model):
