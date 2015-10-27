@@ -7,3 +7,4 @@ templates/
 ops/
 bmp.log
 *.cfg
+upload/
