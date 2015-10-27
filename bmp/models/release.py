@@ -1,4 +1,4 @@
-# coding: utf-8
+#coding: utf-8
 from bmp import db
 from datetime import datetime
 from flask import session
@@ -37,6 +37,7 @@ class ReleaseApproval(db.Model):
         self.uid=_dict["uid"]
 
     @staticmethod
+    @db.transaction
     def edit(id,submit):
         approval=ReleaseApproval.query.filter(
             ReleaseApproval.release_id==id,
@@ -46,14 +47,14 @@ class ReleaseApproval(db.Model):
             _approval=ReleaseApproval(submit)
             _approval.release_id=id
             db.session.add(_approval)
-            db.session.commit()
+            db.session.flush()
             return True
 
         _approval=approval.one()
         _approval.status=submit["status"]
         _approval.reson=submit["reson"]
         _approval.options=submit["options"]
-        db.session.commit()
+        db.session.flush()
         return True
 
 class Release(db.Model):
@@ -83,7 +84,6 @@ class Release(db.Model):
         def __to_dict(release):
             _release=release.to_dict()
             _release["approvals"]=[a.to_dict() for a in release.approvals]
-            print _release["approvals"]
             _release["service"]=release.service.to_dict()
             return _release
 
@@ -101,6 +101,7 @@ class Release(db.Model):
         return Release.query.filter(Release.id==rid).one()
 
     @staticmethod
+    @db.transaction
     def add(submit):
         from bmp.models.user import User
         user=User.query.filter(User.uid==session[USER_SESSION]["uid"]).one()
@@ -117,10 +118,11 @@ class Release(db.Model):
 
         release.apply_time=datetime.now()
         db.session.add(release)
-        db.session.commit()
+        db.session.flush()
         return release
 
     @staticmethod
+    @db.transaction
     def approval(id,submit):
 
         approvals=ReleaseApproval.query.filter(
@@ -142,5 +144,5 @@ class Release(db.Model):
         return True
 
 
-if __name__ == "__main__":
-    db.create_all()
+if __name__=="__main__":
+    pass

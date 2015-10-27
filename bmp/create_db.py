@@ -1,10 +1,11 @@
-# coding: utf-8
+#coding: utf-8
 from bmp import db
 from models.ref import Ref
 from const import REFS,DEFAULT_GROUP
 from models.user import user_group,Group,User
 from models.release import Release,ReleaseApproval,ReleaseService
-from models.supplier import Supplier
+from models.purchase import Purchase,PurchaseImg,PurchaseGoods,PurchaseApproval,purchase_supplier
+from models.asset import Supplier,Contract
 from bmp.utils import user_ldap
 
 '''
@@ -21,8 +22,6 @@ def create_all():
 
     #导入字典
     for type,names in REFS.items():
-        print type
-        print names
         for name in names:
             Ref.add(u(name),u(type))
 
@@ -30,7 +29,7 @@ def create_all():
     for group,uids in DEFAULT_GROUP.GROUPS.items():
         for uid in uids:
             result=user_ldap.search(uid)
-            dn,user=user_ldap.user_dict(result)
+            dn,user= user_ldap.__user_dict(result)
             if not User.add(user):
                 raise Exception("导入用户 %s 失败"%uid)
 

@@ -57,7 +57,6 @@ class BaseApi(MethodView):
     def request(self):
         try:
             req=[j for j in request.form][0]
-            print req
             return json.loads(req)
         except Exception,e:
             log.exception(e)
