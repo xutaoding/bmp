@@ -23,8 +23,8 @@ class Contract(db.Model):
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
 
     def __init__(self,_dict):
-        self.begin_time=datetime.strptime(_dict["begin_time"],"%Y-%m-%d %H:%M")
-        self.end_time=datetime.strptime(_dict["end_time"],"%Y-%m-%d %H:%M")
+        self.begin_time=datetime.strptime(_dict["begin_time"],"%Y-%m-%d")
+        self.end_time=datetime.strptime(_dict["end_time"],"%Y-%m-%d")
         self.path=_dict["path"]
 
 
@@ -39,10 +39,9 @@ if __name__=="__main__":
     from bmp.models.purchase import Purchase
     from bmp import db
     d=Contract({
-                 "id":"2",
-                 "begin_time":"2015-01-01 01:01",
-                 "end_time":"2015-01-02 01:01",
-                 "path":"合同文件路径2"
+                 "begin_time":"2015-01-01",
+                 "end_time":"2015-01-02",
+                 "path":""
              })
     db.session.commit()
     print(d)

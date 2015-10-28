@@ -27,23 +27,27 @@ class Config(object):
     LOG_MAX=""
 
     UPLOAD_FOLDER="/upload"
-
+    USE_WSGI=True
     HOST=""
     PORT=5000
 
 
 class Test(Config):
-    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp"
+    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "192.168.0.143"
+    USE_WSGI=False
 
 class Dev(Config):
-    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
+    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "192.168.0.143"
+    USE_WSGI=False
 
 class Testserver(Config):
-    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
+    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "127.0.0.1"
+    USE_WSGI=False
 
 class Yutest(Config):
     HOST = "192.168.0.57"
     SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/test"
+    USE_WSGI=False

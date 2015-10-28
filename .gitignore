@@ -3,7 +3,6 @@
 .idea/
 __pycache__/
 static/
-templates/
 ops/
 bmp.log
 *.cfg

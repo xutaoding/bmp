@@ -72,14 +72,14 @@ if __name__=="__main__":
 
     test(
         "put",
-        "http://192.168.0.143:5000/apis/v1.0/release/2",
+        "http://192.168.0.143:5000/apis/v1.0/release/32",
         {
             "type":"QA内部测试",
             "uid":"审批人",
             "status":"审批状态",
             "reson":"退回理由!",
             "options":"BUG,文件未成功修改,发布问题"
-        }
+        },True
     )
 
     test(
@@ -99,5 +99,5 @@ if __name__=="__main__":
             "release_time":datetime.now().strftime("%Y:%m:%d"),
             "copy_to_uid":"抄送人",
             "content":"更改内容"
-        },True
+        }
     )

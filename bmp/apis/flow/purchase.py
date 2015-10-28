@@ -8,17 +8,15 @@ from bmp.const import USER_SESSION,PURCHASE
 from bmp.database import Database
 
 class PurchaseApi(BaseApi):
-    route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
-
-    def auth(self):
-        session[USER_SESSION]={"uid":"chenglong.yan","businessCategory":"it"}
-        return True
+    route=["/purchase","/purchase/<int:page>","/purchase/<int:page>/<int:pre_page>"]
 
     def approval(self,pid):
         Purchase.approval(pid)
         return self.succ()
 
     def saved(self,page=0,pre_page=None):
+        if not page:
+            return self.succ(Purchase.get(page))
         page=Purchase.drafts(page,pre_page)
         return self.succ(page)
 
@@ -34,7 +32,7 @@ class PurchaseApi(BaseApi):
     def __submit(self):
         submit=self.request()
         submit["supplier"]=Supplier.get(submit["supplier_id"])
-        if submit["contract"]:
+        if submit.__contains__("contract"):
             submit["contract"]=Database.to_cls(Contract,submit["contract"])
         else:
             submit["contract"]=None
