@@ -82,15 +82,10 @@ class Myapp(Flask):
 
         if not isinstance(cls.route,list):
             route=root+cls.route
-            if hasattr(cls,"methods"):
-                methods.extend(cls.methods)
             self.add_url_rule(route,view_func=cls.as_view(route),methods=methods)
         else:
             for route in cls.route:
                 route=root+route
-                if hasattr(cls,"methods"):
-                    if cls.methods:
-                        methods.extend(cls.methods)
                 self.add_url_rule(route,view_func=cls.as_view(route),methods=methods)
 
     def add_api_rule(self):

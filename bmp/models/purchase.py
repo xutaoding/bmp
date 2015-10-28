@@ -159,7 +159,7 @@ class Purchase(db.Model):
         uid=session[USER_SESSION]["uid"]
 
         for purchase in Purchase.query\
-                .filter(Purchase.is_saved==False)\
+                .filter(Purchase.is_draft==False)\
                 .filter(Purchase.is_finished==False).all():
 
             approvals=purchase.approvals

@@ -8,8 +8,7 @@ from bmp.const import USER_SESSION,PURCHASE
 from bmp.database import Database
 
 class PurchaseApi(BaseApi):
-    route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>/<int:is_draft>"]
-    methods =["approval","saved"]
+    route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
 
     def auth(self):
         session[USER_SESSION]={"uid":"chenglong.yan","businessCategory":"it"}
@@ -63,8 +62,8 @@ class PurchaseApi(BaseApi):
 if __name__=="__main__":
     from bmp.utils.post import test
 
-    test("approval",
-         "http://192.168.0.143:5000/apis/v1.0/purchase",
+    test("GET",
+         "http://192.168.0.143:5000/apis/v1.0/purchase/1",
          {
              "id":"1",
              "contract":{
