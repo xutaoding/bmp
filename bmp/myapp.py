@@ -1,3 +1,4 @@
+#coding=utf-8
 from flask import Flask
 from flask import session
 from flask.ext.sqlalchemy import SQLAlchemy,Pagination
@@ -56,7 +57,7 @@ class Myapp(Flask):
 
     def __add_api_rule(self,module):
         self.__add_rule("bmp.apis.%s"%module,"Api",
-                        methods=["GET","POST","PUT","DELETE"],
+                        methods=["GET","POST","PUT","DELETE","SAVE"],
                         root="/apis/%s"%self.config["API_VERSION"])
 
     def add_view_rule(self,module):

@@ -94,6 +94,8 @@ uid:用户名
 page:页数 从1开始
 pre_page:每页长度
 
+获取采购详情:get "/purchase/<int:pid>"
+pid:采购申请的id
 
 采购申请:post "/purchase"
 参考:
@@ -126,4 +128,17 @@ pre_page:每页长度
     "reson":"退回理由",
     "options":""
 }
+
+
+采购提交审批:approval "/purchase/<int:pid>"
+pid:采购申请的id
+
+获取保存的采购申请:saved "/purchase/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+
+保存采购申请:save "/purchase"
+注:
+采购申请返回的结构直接上传
+
 

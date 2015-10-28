@@ -1,8 +1,7 @@
+#coding=utf-8
 from flask.ext.sqlalchemy import SQLAlchemy,Pagination
 from datetime import datetime
 import bmp.utils.time as time
-
-
 
 
 class Database(SQLAlchemy):
@@ -20,6 +19,17 @@ class Database(SQLAlchemy):
             else:
                 _dict[c.name]=attr
         return _dict
+
+    @staticmethod
+    def to_cls(cls,_dict):
+        self=None
+        if _dict.__contains__("id"):
+            self=cls.query.filter(cls.id==_dict["id"]).one()
+            cls.__init__(self,_dict)
+        else:
+            self=cls(_dict)
+
+        return self
 
     def transaction(self,fun):
         def __fun(*args,**kwargs):

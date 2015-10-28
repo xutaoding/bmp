@@ -39,7 +39,11 @@ class BaseApi(MethodView):
     def dispatch_request(self, *args, **kwargs):
         try:
             if self.auth():
-                return super(BaseApi,self).dispatch_request(*args,**kwargs)
+                if request.form.__contains__("method"):
+                    method=getattr(self,request.form["method"].lower(),None)
+                    return method(*args,**kwargs)
+                else:
+                    return super(BaseApi,self).dispatch_request(*args,**kwargs)
             else:
                 return self.fail("未登录")
         except Exception,e:
@@ -55,6 +59,8 @@ class BaseApi(MethodView):
         })
 
     def request(self):
+        if request.form.__contains__("method"):
+            return request.form["submit"]
         try:
             req=[j for j in request.form][0]
             return json.loads(req)
