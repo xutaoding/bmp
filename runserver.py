@@ -17,5 +17,5 @@ from bmp import app as application
 application.add_view_rule("index")
 application.add_api_rule()
 
-if __name__=="__main__":
+if __name__ == "__main__":
     application.run(host=application.config["HOST"],port=application.config["PORT"],debug=True)

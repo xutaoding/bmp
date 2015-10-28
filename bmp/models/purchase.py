@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 from bmp import db
 from flask import session
 from bmp.const import USER_SESSION
@@ -21,10 +21,10 @@ class PurchaseGoods(db.Model):  # 采购物品
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
 
     def __init__(self,_dict):
-        self.name=_dict["name"]
-        self.price=_dict["price"]
-        self.spec=_dict["spec"]
-        self.amount=_dict["amount"]
+        self.name = _dict["name"]
+        self.price = _dict["price"]
+        self.spec = _dict["spec"]
+        self.amount = _dict["amount"]
 
 
 class PurchaseImg(db.Model):  # 比价图片
@@ -48,38 +48,38 @@ class PurchaseApproval(db.Model):
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
 
     def __init__(self,_dict):
-        self.type=_dict["type"]
-        self.status=_dict["status"]
-        self.reson=_dict["reson"]
-        self.options=_dict["options"]
-        self.uid=_dict["uid"]
+        self.type = _dict["type"]
+        self.status = _dict["status"]
+        self.reson = _dict["reson"]
+        self.options = _dict["options"]
+        self.uid = _dict["uid"]
 
 
     def __next_approval_type(self,type):
-        cur=PURCHASE.FLOW.index(type)
-        if cur==len(PURCHASE.FLOW)-1:
+        cur = PURCHASE.FLOW.index(type)
+        if cur == len(PURCHASE.FLOW)-1:
             return PURCHASE.FLOW[cur]
         return PURCHASE.FLOW[cur+1]
 
     @staticmethod
     @db.transaction
     def edit(id,submit):
-        approval=PurchaseApproval.query.filter(
-            PurchaseApproval.purchase_id==id,
-            PurchaseApproval.type==submit["type"])
+        approval = PurchaseApproval.query.filter(
+            PurchaseApproval.purchase_id == id,
+            PurchaseApproval.type == submit["type"])
         if approval.count():
             return False
 
         _approval=PurchaseApproval(submit)
-        _approval.puchase_id=id
+        _approval.puchase_id = id
         db.session.add(_approval)
 
-        purchase=Purchase.query.filter(Purchase.id==id).one()
-        purchase.cur_approval_type=_approval.type
+        purchase = Purchase.query.filter(Purchase.id==id).one()
+        purchase.cur_approval_type = _approval.type
 
         #失败
         if _approval.status is PURCHASE.FAIL:
-            purchase.is_finished=True
+            purchase.is_finished = True
         elif _approval.type is PURCHASE.FLOW_TWO:
             total=sum([g.price*g.amount for g in Purchase.goods])
             if total<PURCHASE.PRICE_LIMIT:
@@ -104,9 +104,9 @@ class Purchase(db.Model):
                                backref=db.backref("purchases"),
                                uselist=False)
 
-    cur_approval_type=db.Column(db.String(128))
-    is_finished=db.Column(db.Boolean,default=False)
-    use=db.Column(db.String(128))
+    cur_approval_type = db.Column(db.String(128))
+    is_finished = db.Column(db.Boolean,default=False)
+    use = db.Column(db.String(128))
     apply_uid = db.Column(db.String(128), nullable=False)
     apply_time = db.Column(db.DateTime, nullable=False)
 

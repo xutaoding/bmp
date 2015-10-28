@@ -42,3 +42,7 @@ class Dev(Config):
 class Testserver(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
     HOST = "127.0.0.1"
+
+class Yutest(Config):
+    HOST = "192.168.0.57"
+    SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/test"

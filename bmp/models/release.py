@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from bmp import db
 from datetime import datetime
 from flask import session

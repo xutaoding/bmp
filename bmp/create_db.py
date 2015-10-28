@@ -1,11 +1,12 @@
-#coding: utf-8
+# coding: utf-8
 from bmp import db
 from models.ref import Ref
 from const import REFS,DEFAULT_GROUP
 from models.user import user_group,Group,User
 from models.release import Release,ReleaseApproval,ReleaseService
 from models.purchase import Purchase,PurchaseImg,PurchaseGoods,PurchaseApproval,purchase_supplier
-from models.asset import Supplier,Contract
+# from models.asset import Supplier, Contract, CategoryOne, CategoryTwo, CategoryThree
+from models.asset import Supplier, Contract
 from bmp.utils import user_ldap
 
 '''

@@ -2,7 +2,7 @@
 from flask import session
 from bmp.const import USER_SESSION
 from bmp.apis.base import BaseApi
-from bmp.models.supplier import Supplier
+from bmp.models.asset import Supplier
 import json
 
 class SupplierApi(BaseApi):
@@ -12,8 +12,8 @@ class SupplierApi(BaseApi):
         return True
 
     # 页面上是get请求？！，可以传参（参考）
-    def get(self, id=1):
-        return self.succ(Supplier.get(id))
+    def get(self, id=0):
+        return self.succ(Supplier.history())
 
     def post(self):
         submit = self.request()
@@ -42,8 +42,8 @@ if __name__ == "__main__":
         {
             "name":"惠普",
             "connector":"dgsg",
-            "mobile":"43564765",
-            "address":"上海市",
+            "tel":"43564765",
+            "addr":"上海市",
             "interfaceor":"上海数库"
 
         },True
@@ -58,8 +58,8 @@ if __name__ == "__main__":
     #         "id":1,
     #         "name":"惠普",
     #         "connector":"dgsg",
-    #         "mobile":"43564765",
-    #         "address":"上海市",
+    #         "tel":"43564765",
+    #         "addr":"上海市",
     #         "interfaceor":"上海数库"
     #     },True
     # )
@@ -71,8 +71,8 @@ if __name__ == "__main__":
     #         "id":1,
     #         "name":"联想",
     #         "connector":"dgsg",
-    #         "mobile":"43564765",
-    #         "address":"上海市",
+    #         "tel":"43564765",
+    #         "addr":"上海市",
     #         "interfaceor":"北京数库"
     #     },True
     # )

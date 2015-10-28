@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from bmp.apis.base import BaseApi
-from bmp.models.supplier import Contract
+from bmp.models.asset import Contract
 
 
 class ContractApi(BaseApi):
@@ -13,7 +13,6 @@ class ContractApi(BaseApi):
     def get(self, id=0):
         return self.succ(Contract.get(id))
 
-    # return self.succ()里面均可以为空
     def post(self):
         submit = self.request()
         Contract.add(submit)
