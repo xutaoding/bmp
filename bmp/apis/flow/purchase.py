@@ -8,21 +8,21 @@ from bmp.const import USER_SESSION,PURCHASE
 from bmp.database import Database
 
 class PurchaseApi(BaseApi):
-    route=["/purchase","/purchase/<int:page>","/purchase/<int:page>/<int:pre_page>"]
+    route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
 
     def approval(self,pid):
         Purchase.approval(pid)
         return self.succ()
 
-    def saved(self,page=0,pre_page=None):
-        if not page:
-            return self.succ(Purchase.get(page))
+    def saved(self,page=0,pre_page=None,pid=0):
+        if pid:
+            return self.succ(Purchase.get(pid))
         page=Purchase.drafts(page,pre_page)
         return self.succ(page)
 
-    def get(self,page=0,pre_page=None):
-        if not pre_page:
-            return self.succ(Purchase.get(page))
+    def get(self,page=0,pre_page=None,pid=0):
+        if pid:
+            return self.succ(Purchase.get(pid))
         g_dict={}
         for g in set(PURCHASE.FLOW).difference([PURCHASE.FLOW_ONE]):
             g_dict[g]=[user.uid for user in Group.get_users(g)]
@@ -56,6 +56,7 @@ class PurchaseApi(BaseApi):
     def delete(self,pid):
         Purchase.delete(pid)
         return self.succ()
+
 
 if __name__=="__main__":
     from bmp.utils.post import test
