@@ -2,10 +2,13 @@
 from bmp import app
 import ldap
 
-def __bind(account,pwd):
+def __bind(account,pwd,is_auth=False):
     try:
         init=ldap.initialize(app.config["LDAP_HOST"])
-        init.simple_bind(account,pwd)
+        if not is_auth:
+            init.simple_bind(account,pwd)
+        else:
+            init.simple_bind_s(account,pwd)
         return init
     except:
         return None
@@ -45,7 +48,7 @@ def auth(uid,pwd):
 
     dn,user= __user_dict(result)
 
-    if not __bind(dn,pwd):
+    if not __bind(dn,pwd,True):
         return False,None
     return True,user
 
@@ -66,8 +69,6 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    print(get_superior("chenglong.yan"))
-
-
+    print(auth("chenglong.yan","x"))
 
 

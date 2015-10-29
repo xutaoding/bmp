@@ -4,7 +4,7 @@ from bmp.utils import user_ldap
 from bmp.models.ref import Ref
 
 class RefsApi(BaseApi):
-    route="/refs/<string:type>"
+    route=["/refs","/refs/<string:type>"]
 
-    def get(self,type):
+    def get(self,type="%"):
         return self.succ(Ref.select(type))
