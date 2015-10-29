@@ -1,6 +1,5 @@
 from bmp import db
 from bmp.apis.base import BaseApi
-from bmp.models.asset import DeviceType, DeviceName, Elaborate
 
 
 class CategoryApi(BaseApi):
@@ -11,35 +10,35 @@ class CategoryApi(BaseApi):
     def auth(self):
         return True
 
-    def get(self, id=0):
-        return self.succ(DeviceType.history())
+    def get(self, id=0):pass
+        #return self.succ(DeviceType.history())
 
     def post_devicetype(self):
         submit = self.request()
-        DeviceType.add(submit)
+
         return self.succ()
 
     def post_devicename(self):
         submit = self.request()
-        DeviceName.add(submit)
+        #DeviceName.add(submit)
         return self.succ()
 
     def post_elaborate(self):
         submit = self.request()
-        Elaborate.add(submit)
+        #Elaborate.add(submit)
         return self.succ()
 
     def delete_devicetype(self, id):
-        DeviceType.delete(id)
-        DeviceName.delete()
+        #DeviceType.delete(id)
+        #DeviceName.delete()
         return self.succ()
 
     def delete_devicename(self, id):
-        DeviceName.delete(id)
+        #DeviceName.delete(id)
         return self.succ()
 
     def delete_elaborate(self, id):
-        Elaborate.delete(id)
+        #Elaborate.delete(id)
         return self.succ()
 
 

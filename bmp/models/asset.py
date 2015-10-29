@@ -120,52 +120,36 @@ class Category(db.Model):
         db.session.commit()
         return True
 
-    # @staticmethod
-    # def delete(id, parent_id):
-    #     def recur():
-    #
-    #
-    #
-    # # 要求给parent_id    如果删叶子节点并不影响前面的大类，
-    # # 一：删非叶子节点（parent_id）    二：删叶子节点
-    # def delete(id, parent_id):
-    #     # 删parent_id
-    #     while:
-    #         query = Category.query.filter(Category.parent_id == parent_id).all()
-    #
-    #         [category.to_dict() for category in query.all()]
-    #         db.session.delete(query)
-    #
-    #     query = Category.query.filter(Category.parent_id == id).all()
-    #
-    #
-    #
-    #
-    #
-    #     query = Category.query.filter(Category.id == id).one()
-    #     db.session.delete(query)
-    #     Category.query.filter(Category.parent_id == parent_id)
-    #     db.session.commit()
-    #     return True
-
     @staticmethod
     def edit(id,_dict):
         category = Category.query.filter(Category.id==id).one()
         category.name = _dict["name"]
         category.parent_id = _dict["parent_id"]
-
-
-        db.session.flush()
+        db.session.commit()
         return True
 
-    @staticmethod
-    def history():
-        query = DeviceType.query.order_by(DeviceType.id.desc())
-        return [devicetype.to_dict() for devicetype in query.all()]
 
+    @staticmethod
+    def __delete(_dict):
+        category=Category.query.filter(Category.parent_id==_dict["id"])
+        if category.count():
+            for child in category.all():
+                Category.__delete(child.to_dict())
+        db.session.delete(Category.query.filter(Category.id==_dict["id"]).one())
+
+    @staticmethod
+    @db.transaction
+    def delete(_dict):
+        Category.__delete(_dict)
 
 
 if __name__=="__main__":
+    _dict={"id":2}
+    Category.delete(_dict)
+
+
+
+'''
     from bmp.models.purchase import Purchase
     from bmp import db
     d=Contract({
@@ -185,5 +169,4 @@ if __name__=="__main__":
         self.begin_time=_dict["begin_time"]
         self.end_time=_dict["end_time"]
         self.path=_dict["path"]
-
-
+'''
