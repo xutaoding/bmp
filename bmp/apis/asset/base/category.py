@@ -37,9 +37,9 @@ class CategoryApi(BaseApi):
         #DeviceName.delete(id)
         return self.succ()
 
-    def delete_elaborate(self, id):
-        #Elaborate.delete(id)
-        return self.succ()
+    # def delete_elaborate(self, id):
+    #     Elaborate.delete(id)
+        # return self.succ()
 
 
 
