@@ -10,6 +10,7 @@ import re
 from datetime import datetime
 from bmp.utils import time
 from database import Database
+from werkzeug.contrib.cache import SimpleCache
 
 import os
 
@@ -24,7 +25,7 @@ class Myapp(Flask):
     __app=None
     @staticmethod
     def get_instance(name):
-        if Myapp.__app==None:
+        if Myapp.__app==None or not Myapp.__app.config["SINGLETON"]:
             Myapp.__app=Myapp(name)
         return Myapp.__app
 
@@ -50,10 +51,14 @@ class Myapp(Flask):
 
     def __init__(self,name):
         Flask.__init__(self,name)
+        self.__add_apis=False
+        self.__add_views=False
+
         self.url_map.converters["regex"] = _RegexConverter
         self.__init_config()
-        self.__init_log()
+        #self.__init_log()
         self.db=Database(self)
+        self.cache=SimpleCache()
 
     def __add_api_rule(self,module):
         self.__add_rule("bmp.apis.%s"%module,"Api",
@@ -61,7 +66,9 @@ class Myapp(Flask):
                         root="/apis/%s"%self.config["API_VERSION"])
 
     def add_view_rule(self,module):
+        if self.__add_views:return
         self.__add_rule("bmp.views.%s"%module,"View",methods=["GET"])
+        self.__add_views=True
 
     def __add_rule(self,module,suffix,methods,root=""):
         #bmp.views.index
@@ -89,11 +96,13 @@ class Myapp(Flask):
                 self.add_url_rule(route,view_func=cls.as_view(route),methods=methods)
 
     def add_api_rule(self):
+        if self.__add_apis:return
         apis="%s/apis"%self.root_path.replace("\\","/")
         regx=re.compile(r"^%s/(.+)\.py$"%apis)
         for name in path.files(apis,".+\.py$"):
             mod=regx.findall(name.replace("\\","/"))[0].replace("/",".")
             self.__add_api_rule(mod)
+        self.__add_apis=True
 
     def run(self, host=None, port=None, debug=None, **options):
         print("root:"+self.root_path)
