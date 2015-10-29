@@ -120,33 +120,33 @@ class Category(db.Model):
         db.session.commit()
         return True
 
-    @staticmethod
-    def delete(id, parent_id):
-        def recur():
-
-
-
-    # 要求给parent_id    如果删叶子节点并不影响前面的大类，
-    # 一：删非叶子节点（parent_id）    二：删叶子节点
-    def delete(id, parent_id):
-        # 删parent_id
-        while:
-            query = Category.query.filter(Category.parent_id == parent_id).all()
-
-            [category.to_dict() for category in query.all()]
-            db.session.delete(query)
-
-        query = Category.query.filter(Category.parent_id == id).all()
-
-
-
-
-
-        query = Category.query.filter(Category.id == id).one()
-        db.session.delete(query)
-        Category.query.filter(Category.parent_id == parent_id)
-        db.session.commit()
-        return True
+    # @staticmethod
+    # def delete(id, parent_id):
+    #     def recur():
+    #
+    #
+    #
+    # # 要求给parent_id    如果删叶子节点并不影响前面的大类，
+    # # 一：删非叶子节点（parent_id）    二：删叶子节点
+    # def delete(id, parent_id):
+    #     # 删parent_id
+    #     while:
+    #         query = Category.query.filter(Category.parent_id == parent_id).all()
+    #
+    #         [category.to_dict() for category in query.all()]
+    #         db.session.delete(query)
+    #
+    #     query = Category.query.filter(Category.parent_id == id).all()
+    #
+    #
+    #
+    #
+    #
+    #     query = Category.query.filter(Category.id == id).one()
+    #     db.session.delete(query)
+    #     Category.query.filter(Category.parent_id == parent_id)
+    #     db.session.commit()
+    #     return True
 
     @staticmethod
     def edit(id,_dict):
