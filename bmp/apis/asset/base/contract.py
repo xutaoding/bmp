@@ -11,7 +11,7 @@ class ContractApi(BaseApi):
         return True
 
     def get(self, id=0):
-        return self.succ(Contract.get(id))
+        return self.succ(Contract.history())
 
     def post(self):
         submit = self.request()
@@ -31,17 +31,16 @@ class ContractApi(BaseApi):
 if __name__ == "__main__":
     from bmp.utils.post import test
 
+
     # test(
     #     "post",
     #     "http://192.168.0.57:5000/apis/v1.0/contract",
     #     {
-    #         "id":1,
-    #         "signDate": "2014-02-12",
-    #         "stopDate": "2015-08-25",
-    #         "buyer": "yara.yu",
-    #         "seller": "联想",
-    #         "content":"联想电脑采购10台",
-    #         "detailed": "其配置为：inter"
+    #         "begin_time": "2014-02-12 08:45",
+    #         "end_time": "2015-08-25 11:22",
+    #         "purchase_id": 5,
+    #         "supplier_name": "联想",
+    #         "path": "D:\PythonCode"
     #
     #     }, True
     # )
@@ -50,26 +49,22 @@ if __name__ == "__main__":
     #     "delete",
     #     "http://192.168.0.57:5000/apis/v1.0/contract/1",
     #     {
-    #         "id": 1,
-    #         "signDate": "2014-02-12",
-    #         "stopDate": "2015-08-25",
-    #         "buyer": "yara.yu",
-    #         "seller": "联想",
-    #         "content":"联想电脑采购10台",
-    #         "detailed": "其配置为：inter"
+    #         "begin_time": "2014-02-12 08:45",
+    #         "end_time": "2015-08-25 11:22",
+    #         "purchase_id": 4,
+    #         "supplier_name": "联想",
+    #         "path": "D:\PythonCode"
     #     },True
     # )
-    #
+
     # test(
     #     "put",
     #     "http://192.168.0.57:5000/apis/v1.0/contract/1",
     #     {
-    #         "id": 1,
-    #         "signDate": "2005-09-22",
-    #         "stopDate": "2015-08-25",
-    #         "buyer": "yara.yu",
-    #         "seller": "惠普",
-    #         "content":"惠普电脑采购20台",
-    #         "detailed": "其配置为：inter"
+    #         "begin_time": "2014-02-12 05:33",
+    #         "end_time": "2014-08-13 23:00",
+    #         "purchase_id": 4,
+    #         "supplier_name": "联想",
+    #         "path": "D:\PythonCode"
     #     }, True
     # )
