@@ -60,20 +60,23 @@ class Supplier(db.Model):
         query = Supplier.query.order_by(Supplier.id.desc())
         return [supplier.to_dict() for supplier in query.all()]
 
+    @staticmethod
+    def get(sid):
+        return Supplier.query.filter(Supplier.id==sid).one()
+
 
 class Contract(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    begin_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    begin_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
-    supplier_name = db.Column(db.String(128), db.ForeignKey("supplier.name"))
     path = db.Column(db.String(256))  # 合同文件路径
 
     def __init__(self,_dict):
-        self.begin_time=datetime.strptime(_dict["begin_time"],"%Y-%m-%d %H:%M")
-        self.end_time=datetime.strptime(_dict["end_time"],"%Y-%m-%d %H:%M")
-        self.purchase_id = _dict["purchase_id"]
-        self.supplier_name = _dict["supplier_name"]
+        if _dict["begin_time"]:
+            self.begin_time=datetime.strptime(_dict["begin_time"],"%Y-%m-%d")
+        if _dict["end_time"]:
+            self.end_time=datetime.strptime(_dict["end_time"],"%Y-%m-%d")
         self.path=_dict["path"]
 
     @staticmethod

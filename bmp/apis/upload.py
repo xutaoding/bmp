@@ -21,7 +21,7 @@ class UploadApi(BaseApi):
 
         file_path=os.path.join(path,"%s_%s"%(uuid.uuid1(),file.filename))
         file.save(file_path)
-        return base64.urlsafe_b64encode(file_path)
+        return file_path
 
     def post(self):
         _dict={}

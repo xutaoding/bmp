@@ -59,15 +59,15 @@ class BaseApi(MethodView):
         })
 
     def request(self):
+        req=None
         if request.form.__contains__("method"):
-            return request.form["submit"]
-        try:
-            req=[j for j in request.form][0]
-            return json.loads(req)
-        except Exception,e:
-            log.exception(e)
-        req=[request.form[j] for j in request.form][0]
-        return json.loads(req)
+            req=request.form["submit"]
+        else:
+            try:
+                req=[j for j in request.form][0]
+            except Exception,e:
+                req=[request.form[j] for j in request.form][0]
+        return json.loads(req.replace("\n",""))
 
     def succ(self, data={}):
         return jsonify({

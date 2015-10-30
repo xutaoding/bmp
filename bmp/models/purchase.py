@@ -141,7 +141,8 @@ class Purchase(db.Model):
     def __to_dict(self):
         _dict=self.to_dict()
         _dict["approvals"]=[ a.to_dict() for a in self.approvals]
-        _dict["contract"]=self.contract.to_dict()
+        if self.contract:
+            _dict["contract"]=self.contract.to_dict()
         _dict["imgs"]=[img.to_dict() for img in self.imgs]
         _dict["goods"]=[g.to_dict() for g in self.goods]
         _dict["supplier"]=self.supplier.to_dict()
