@@ -150,6 +150,7 @@ class Purchase(db.Model):
 
     @staticmethod
     def __is_superior(uid,apply_uid):
+
         if uid==ldap.get_superior(apply_uid):
             return True
         return False

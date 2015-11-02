@@ -103,8 +103,6 @@ class Contract(db.Model):
         db.session.flush()
         return True
 
-
-
     @staticmethod
     def history():
         query = Contract.query.order_by(Contract.id.desc())
