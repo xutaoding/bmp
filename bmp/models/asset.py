@@ -115,14 +115,21 @@ class Category(db.Model):
     parent_id = db.Column(db.Integer)
 
 
+    def __init__(self, _dict):
+        self.name = _dict["name"]
+        self.parent_id = _dict["parent_id"]
+
     @staticmethod
     def add(_dict):
+        print type(db.session)
+        print _dict
         db.session.add(Category(_dict))
         db.session.commit()
         return True
 
     @staticmethod
     def edit(id,_dict):
+        print 'yy:', id,  _dict
         category = Category.query.filter(Category.id==id).one()
         category.name = _dict["name"]
         category.parent_id = _dict["parent_id"]
@@ -130,18 +137,67 @@ class Category(db.Model):
         return True
 
 
+    # 递归算法
     @staticmethod
-    def __delete(_dict):
-        category=Category.query.filter(Category.parent_id==_dict["id"])
+    def __delete(id):
+        # 若category.count() == 0  说明当前删除的记录是叶子节点；反之，删除的是非叶子节点
+        category = Category.query.filter(Category.parent_id == id)
+        # 非叶子节点的删除
         if category.count():
             for child in category.all():
                 Category.__delete(child.to_dict())
-        db.session.delete(Category.query.filter(Category.id==_dict["id"]).one())
+
+        # 删除叶子节点
+        db.session.delete(Category.query.filter(Category.id == id).one())
 
     @staticmethod
     @db.transaction
-    def delete(_dict):
-        Category.__delete(_dict)
+    def delete(id):
+        Category.__delete(id)
+
+    # 也要写递归?  给一个id,同一级别的所有id均要出来
+    # 特点：一、没有parent_id的，均是一级根节点    二、
+
+    @staticmethod
+    def middle_history(category, one_result_par_id):
+        all_child = []
+        for cur_each in category.all():
+            cur_each = cur_each.to_dict()
+            child = Category.query.filter(Category.parent_id == cur_each["id"])
+            # print 'aaa', child
+            for each_child in child:
+                each_child = each_child.to_dict()
+                if each_child["parent_id"] == one_result_par_id:
+                    return [result.to_dict() for result in child.all()]
+                else:
+                    continue
+            all_child.append(child)   # ????
+        Category.middle_history(all_child)
+
+
+
+    # 非根节点情况
+    @staticmethod
+    def __history(_dict, one_result_par_id):
+        # 非顶层  则一直往上层退
+        if _dict["parent_id"]:
+            up_example = Category.query.filter(Category.id == _dict["parent_id"]).first()
+            Category.__history(up_example)
+        # 退到了最顶层
+        else:
+            root = Category.query.filter(Category.parent_id == None)
+            Category.middle_history(root, one_result_par_id)
+
+    @staticmethod
+    @db.transaction
+    def history(parent_id, _dict):
+        if not _dict["parent_id"]:
+            root_category = Category.query.filter(Category.parent_id == None)
+            return [each_root.to_dict() for each_root in root_category.all()]
+        else:
+            Category.__history(_dict, parent_id)
+
+
 
 
 if __name__=="__main__":
