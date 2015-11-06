@@ -6,7 +6,6 @@ from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
 import bmp.utils.time as time
 
-
 class ReleaseService(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     name=db.Column(db.String(128),nullable=False)

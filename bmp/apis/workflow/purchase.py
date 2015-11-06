@@ -10,6 +10,9 @@ from bmp.database import Database
 class PurchaseApi(BaseApi):
     route=["/purchase","/purchase/<int:pid>","/purchase/<int:page>/<int:pre_page>"]
 
+    def auth(self):
+        return True
+
     def approval(self,pid):
         Purchase.approval(pid)
         return self.succ()
@@ -20,14 +23,14 @@ class PurchaseApi(BaseApi):
         page=Purchase.drafts(page,pre_page)
         return self.succ(page)
 
-    def get(self,page=0,pre_page=None,pid=0):
+    def get(self,pid=0):
         if pid:
             return self.succ(Purchase.get(pid))
         g_dict={}
         for g in set(PURCHASE.FLOW).difference([PURCHASE.FLOW_ONE]):
             g_dict[g]=[user.uid for user in Group.get_users(g)]
-        page=Purchase.unfinished(g_dict,page,pre_page)
-        return self.succ(page)
+        unfinished=Purchase.unfinished(g_dict)
+        return self.succ(unfinished)
 
     def __submit(self):
         submit=self.request()
@@ -57,9 +60,22 @@ class PurchaseApi(BaseApi):
         Purchase.delete(pid)
         return self.succ()
 
+    def search(self,page,pre_page):
+        submit=self.request()
+        return self.succ(Purchase.search(submit,page,pre_page))
+
 
 if __name__=="__main__":
     from bmp.utils.post import test
+    test("SEARCH",
+         "http://192.168.0.143:5000/apis/v1.0/purchase/1/5",
+         {
+             "goods":"3333",
+             "price":"2222"
+         },True)
+
+
+
 
     test("GET",
          "http://192.168.0.143:5000/apis/v1.0/purchase/1",
@@ -85,7 +101,7 @@ if __name__=="__main__":
              }],
              "supplier_id":1,#供应商id
              "use":"用途2"
-         },True)
+         })
 
 
 

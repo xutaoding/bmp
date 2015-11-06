@@ -30,11 +30,12 @@ class Config(object):
     USE_WSGI=True
     HOST=""
     PORT=5000
+    MAX_CONTENT_LENGTH=1*1024*1024*1024
 
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI="mysql://ops:Ops@192.168.250.10:3306/bmp_test"
-    HOST = "192.168.0.143"
+    HOST = "localhost"
     USE_WSGI=False
 
 class Dev(Config):

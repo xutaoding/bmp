@@ -88,6 +88,7 @@ is_admin:管理员:1:是,0:不是
 删除用户:delete "/users/<string:uid>"
 uid:用户名
 
+更新ldap用户:update "/users"
 
 
 采购相关------------------------------------------------
@@ -141,8 +142,91 @@ pid:采购申请的id
 page:页数 从1开始
 pre_page:每页长度
 
+
+采购查询:search "/purchase/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+
+{
+    "apply_time_begin":"申请时间",
+    "apply_time_end":"申请时间",
+    "apply_businessCategory":"部门",
+    "apply_uid":"申请人",
+    "goods":"商品名称",
+    "price":"商品价格"
+}
+
 保存采购申请:save "/purchase"
 注:
 采购申请返回的结构直接上传
 
+
+
+资产管理------------------------------------------------
+
+获取全部商品或分类:get "/asset/base/category"
+
+获取指定商品或分类:get "/asset/base/category/<int:id>"
+id:分类id
+
+更新商品或分类:put "/asset/base/category/<int:id>"
+商品或分类id
+
+添加商品:post "/asset/base/category"
+{
+    "name": "路由器",
+    "parent_id": "父级分类的id,没有就填0"
+}
+
+删除商品或分类:delete "/asset/base/category/<int:id>"
+商品或分类的id
+
+获取全部合同:get "/contract"
+
+获取指定合同:get "/contract/<int:id>"
+id:合同id
+
+新建合同: post "/contract"
+{
+    "begin_time": "2014-02-12 08:45",
+    "end_time": "2015-08-25 11:22",
+    "purchase_id": 5,
+    "supplier_name": "联想",
+    "path": "D:\PythonCode"
+}
+
+更新合同:put "/contract/<int:id>"
+{
+    "begin_time": "2014-02-12 08:45",
+    "end_time": "2015-08-25 11:22",
+    "purchase_id": 5,
+    "supplier_name": "联想",
+    "path": "D:\PythonCode"
+}
+
+删除合同:delete "/contract/<int:id>"
+
+新建供应商:post "/supplier"
+{
+    "name":"联想",
+    "connector":"联系人",
+    "tel":"43564765",
+    "addr":"上海市",
+    "interfaceor":"接口人"
+}
+
+获取全部供应商:get "/supplier"
+
+获取指定供应商:get "/supplier/<int:id>"
+
+更新供应商:put "/supplier/<int:id>"
+{
+    "name":"联想",
+    "connector":"dgsg",
+    "tel":"43564765",
+    "addr":"上海市",
+    "interfaceor":"上海数库"
+}
+
+删除供应商:delete "/supplier/<int:id>"
 

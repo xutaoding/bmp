@@ -28,15 +28,13 @@ class PurchaseGoods(db.Model):  # 采购物品
 
 class PurchaseImg(db.Model):  # 比价图片
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    b64 = db.Column(db.String(256))
+    b64 = db.Column(db.Text)
     desc = db.Column(db.String(128))
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
 
     def __init__(self,_dict):
         self.b64=_dict["b64"]
         self.desc=_dict["desc"]
-
-
 
 class PurchaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -55,7 +53,8 @@ class PurchaseApproval(db.Model):
         self.uid=_dict["uid"]
 
 
-    def __next_approval_type(self,type):
+    @staticmethod
+    def __next_approval_type(type):
         cur=PURCHASE.FLOW.index(type)
         if cur==len(PURCHASE.FLOW)-1:
             return PURCHASE.FLOW[cur]
@@ -64,31 +63,31 @@ class PurchaseApproval(db.Model):
     @staticmethod
     @db.transaction
     def edit(id,submit):
-        approval=PurchaseApproval.query.filter(
-            PurchaseApproval.purchase_id==id,
-            PurchaseApproval.type==submit["type"])
+        approval=PurchaseApproval.query\
+            .filter(PurchaseApproval.purchase_id==id)\
+            .filter(PurchaseApproval.type==submit["type"])
         if approval.count():
             return False
 
         _approval=PurchaseApproval(submit)
-        _approval.puchase_id=id
-        db.session.add(_approval)
-
         purchase=Purchase.query.filter(Purchase.id==id).one()
-        purchase.cur_approval_type=_approval.type
+        purchase.approvals.append(_approval)
 
         #失败
         if _approval.status is PURCHASE.FAIL:
             purchase.is_finished=True
-        elif _approval.type is PURCHASE.FLOW_TWO:
-            total=sum([g.price*g.amount for g in Purchase.goods])
-            if total<PURCHASE.PRICE_LIMIT:
+        else:
+            if _approval.type is PURCHASE.FLOW_TWO:
+                total=sum([g.price*g.amount for g in Purchase.goods])
+                if total<PURCHASE.PRICE_LIMIT:
+                    purchase.is_finished=True
+            elif _approval.type is PURCHASE.FLOW_THREE:
+                if not purchase.contract:
+                    purchase.is_finished=True
+            elif _approval.type is PURCHASE.FLOW_FOUR:
                 purchase.is_finished=True
-        elif _approval.type is PURCHASE.FLOW_THREE:
-            if not purchase.contract:
-                purchase.is_finished=True
-        elif _approval.type is PURCHASE.FLOW_FOUR:
-            purchase.is_finished=True
+
+        purchase.cur_approval_type=PurchaseApproval.__next_approval_type(_approval.type)
 
         db.session.flush()
         return True
@@ -96,7 +95,7 @@ class PurchaseApproval(db.Model):
 class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     approvals = db.relationship("PurchaseApproval")
-    contract = db.relationship("Contract",uselist=False)
+    contract = db.relationship("Contract",uselist=False,backref=db.backref("purchase"))
     imgs = db.relationship("PurchaseImg")
     goods = db.relationship("PurchaseGoods")
     supplier = db.relationship("Supplier",
@@ -135,11 +134,11 @@ class Purchase(db.Model):
 
     @staticmethod
     def get(id):
-        return Purchase.__to_dict(Purchase.query.filter(Purchase.id==id).one())
+        return Purchase.to_dict(Purchase.query.filter(Purchase.id==id).one())
 
     @staticmethod
-    def __to_dict(self):
-        _dict=self.to_dict()
+    def _to_dict(self,cols=[]):
+        _dict=self.to_dict(cols)
         _dict["approvals"]=[ a.to_dict() for a in self.approvals]
         if self.contract:
             _dict["contract"]=self.contract.to_dict()
@@ -150,55 +149,56 @@ class Purchase(db.Model):
 
     @staticmethod
     def __is_superior(uid,apply_uid):
-
         if uid==ldap.get_superior(apply_uid):
             return True
+        if uid=="mingming.zhang":
+            return  True
+
+
         return False
 
     @staticmethod
-    def __unfinished(user_groups):
+    def unfinished(user_groups):
         purchases=[]
         uid=session[USER_SESSION]["uid"]
 
         for purchase in Purchase.query\
                 .filter(Purchase.is_draft==False)\
-                .filter(Purchase.is_finished==False).all():
+                .filter(Purchase.is_finished==False).order_by(Purchase.apply_time.desc()).all():
 
             approvals=purchase.approvals
             apply_uid=purchase.apply_uid
             cur_approval_type=purchase.cur_approval_type
+            purchase.approval_enable=False
 
-            if uid==purchase.apply_uid:
-                purchases.append(purchase.id)
-            #参与过审批
-            elif uid in [a.uid for a in approvals]:
-                purchases.append(purchase.id)
-            elif cur_approval_type==PURCHASE.FLOW_ONE:
-                #直接上级
+            if cur_approval_type==PURCHASE.FLOW_ONE:
                 if Purchase.__is_superior(uid,apply_uid):
-                    purchases.append(purchase.id)
+                    purchase.approval_enable=True
+                    purchases.append(purchase)
             elif uid in user_groups[cur_approval_type]:
-                return purchase.append(purchase.id)
+                purchase.approval_enable=True
+                purchases.append(purchase)
+            elif uid==purchase.apply_uid:
+                purchases.append(purchase)
+            elif uid in [a.uid for a in approvals]:
+                purchases.append(purchase)
             else:
-                raise
-        return purchases
-
-    #全部可审批和历史审批
-    @staticmethod
-    def unfinished(user_groups,page=1,pre_page=20):
-        page=Purchase.query.filter(Purchase.id.in_(Purchase.__unfinished(user_groups))).paginate(page,pre_page,False)
-        return page.to_page(Purchase.__to_dict)
+                continue
+        return [Purchase._to_dict(p,["approval_enable"]) for p in purchases]
 
     @staticmethod
     def finished(page=1,pre_page=20):
         page=Purchase.query.filter(Purchase.is_finished==True).paginate(page,pre_page,False)
-        return page.to_page(Purchase.__to_dict)
+        return page.to_page(Purchase.to_dict)
+
     @staticmethod
     def drafts(page=1,pre_page=20):
         page=Purchase.query\
             .filter(Purchase.apply_uid==session[USER_SESSION]["uid"])\
-            .filter(Purchase.is_draft==True).paginate(page,pre_page,False)
-        return page.to_page(Purchase.__to_dict)
+            .filter(Purchase.is_draft==True)\
+            .order_by(Purchase.apply_time.desc())\
+            .paginate(page,pre_page,False)
+        return page.to_page(Purchase.to_dict)
 
     @staticmethod
     @db.transaction
@@ -220,6 +220,30 @@ class Purchase(db.Model):
         return True
 
 
+
+
+    @staticmethod
+    def search(submit,page,pre_page):
+        def check(s):
+            if submit.__contains__(s):
+                return submit[s]
+            return False
+
+        query=Purchase.query.join(PurchaseGoods,PurchaseGoods.purchase_id==Purchase.id)
+        if check("apply_businessCategory"):
+            query=query.filter(Purchase.apply_businessCategory==submit["apply_businessCategory"])
+        if  check("apply_uid"):
+            query=query.filter(Purchase.apply_uid==submit["apply_uid"])
+        if check("apply_time_begin") and check("apply_time_end"):
+            beg=datetime.strptime(submit["apply_time_begin"],"%Y-%m-%d")
+            end=datetime.strptime(submit["apply_time_end"],"%Y-%m-%d")
+            query=query.filter(Purchase.apply_time.between(beg,end))
+
+        if check("goods"):
+            query=query.filter(PurchaseGoods.name==submit["goods"])
+        if check("price"):
+            query=query.filter(PurchaseGoods.price==submit["price"])
+        return query.paginate(page,pre_page,False).to_page(Purchase.to_dict)
 
 if __name__ == "__main__":
     pass

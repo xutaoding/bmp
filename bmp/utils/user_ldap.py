@@ -14,6 +14,13 @@ def __bind(account,pwd,is_auth=False):
         return None
 
 
+def all():
+    users={}
+    for _user in search():
+        dn,user=__user_dict([_user])
+        users[user["uid"]]=user
+    return users
+
 def search(uid="*"):
     init=__bind(app.config["LDAP_ACCOUNT"],app.config["LDAP_PASSWORD"])
     if not init:
@@ -69,6 +76,7 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__=="__main__":
-    print(auth("chenglong.yan","x"))
+    for user in all():
+        print(user)
 
 

@@ -5,29 +5,26 @@ from bmp.models.asset import Category
 
 
 class CategoryApi(BaseApi):
-    route = ["/asset/base/category/<int:id>"]
-    # route=["/asset/base/category"]
+    route = ["/asset/base/category","/asset/base/category/<int:id>"]
 
-    def auth(self):
-        return True
 
-    def get(self, parent_id=0):
-        return self.succ(Category.history(parent_id))
+    def get(self, id=0):
+        return self.succ(Category.select(id))
 
     def post(self):
         submit = self.request()
-        Category.add(submit)
+        if not Category.add(submit):
+            return self.fail()
         return self.succ()
 
     def delete(self, id):
         Category.delete(id)
         return self.succ()
 
-
     def put(self, id):
-        print 'ss:', id
         submit = self.request()
-        Category.edit(id, submit)
+        if not Category.edit(id, submit):
+            return self.fail()
         return self.succ()
 
 

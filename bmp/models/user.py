@@ -71,6 +71,7 @@ class User(db.Model):
     is_admin=db.Column(db.Boolean)
     create_time=db.Column(db.DateTime)
     last_time=db.Column(db.DateTime)
+    is_dimiss=db.Column(db.Boolean,default=False)
 
     def __eq__(self, other):
         return self.uid==other.uid
@@ -91,9 +92,9 @@ class User(db.Model):
     @staticmethod
     def select(uid):
         if uid=="%":
-            return [User.__add_group(user) for user in User.query.all()]
+            return [User.__add_group(user) for user in User.query.order_by(User.uid.asc()).all()]
 
-        return [User.__add_group(user) for user in User.query.filter(User.uid==uid).all()]
+        return [User.__add_group(user) for user in User.query.filter(User.uid==uid).order_by(User.uid.asc()).all()]
 
     @staticmethod
     def get(uid):
@@ -134,6 +135,39 @@ class User(db.Model):
         db.session.add(new_user)
         db.session.flush()
         return True
+
+
+    @staticmethod
+    @db.transaction
+    def update(_ldaps):
+        users=User.query.all()
+        user_dict={}
+        for user in users:
+            user_dict[user.uid]=user
+
+        #删除离职的
+        for uid in set(user_dict.keys()).difference(_ldaps.keys()):
+            user_dict[uid].is_dimiss=True
+
+        #修改存在的
+        for uid in set(user_dict.keys()).intersection(_ldaps.keys()):
+            u,ldap=user_dict[uid],_ldaps[uid]
+            u.is_dimiss=False
+            for field in ldap.keys():
+                setattr(u,field,ldap[field])
+
+        #添加新增的
+        for uid in set(_ldaps.keys()).difference(user_dict.keys()):
+            user=User(_ldaps[uid])
+            user.create_time=datetime.now()
+            user.last_time=datetime.now()
+            user.is_admin=False
+            db.session.add(user)
+
+        db.session.flush()
+        return True
+
+
 
 
 if __name__=="__main__":

@@ -56,7 +56,7 @@ class Myapp(Flask):
 
         self.url_map.converters["regex"] = _RegexConverter
         self.__init_config()
-        #self.__init_log()
+        self.__init_log()
         self.db=Database(self)
         self.cache=SimpleCache()
 
