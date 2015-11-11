@@ -1,35 +1,37 @@
-#coding: utf-8
+# coding: utf-8
 from bmp import app
 import ldap
 
-def __bind(account,pwd,is_auth=False):
+
+def __bind(account, pwd, is_auth=False):
     try:
-        init=ldap.initialize(app.config["LDAP_HOST"])
+        init = ldap.initialize(app.config["LDAP_HOST"])
         if not is_auth:
-            init.simple_bind(account,pwd)
+            init.simple_bind(account, pwd)
         else:
-            init.simple_bind_s(account,pwd)
+            init.simple_bind_s(account, pwd)
         return init
     except:
         return None
 
 
 def all():
-    users={}
+    users = {}
     for _user in search():
-        dn,user=__user_dict([_user])
-        users[user["uid"]]=user
+        dn, user = __user_dict([_user])
+        users[user["uid"]] = user
     return users
 
+
 def search(uid="*"):
-    init=__bind(app.config["LDAP_ACCOUNT"],app.config["LDAP_PASSWORD"])
+    init = __bind(app.config["LDAP_ACCOUNT"], app.config["LDAP_PASSWORD"])
     if not init:
         return []
 
-    result=init.search_s(
+    result = init.search_s(
         app.config["LDAP_BASE_DN"],
         ldap.SCOPE_SUBTREE,
-        "(uid=%s)"%(uid),
+        "(uid=%s)" % (uid),
         [
             "uid",
             "displayName",
@@ -37,35 +39,38 @@ def search(uid="*"):
             "mail",
             "mobile",
             "title",
-            "x-csf-emp-1stManager"#上级
+            "x-csf-emp-1stManager"  # 上级
         ]
     )
     return result
 
+
 def __user_dict(result):
-    dn,user=result[0]
+    dn, user = result[0]
     for k in user:
-        user[k]=user[k][0]
-    return dn,user
+        user[k] = user[k][0]
+    return dn, user
 
-def auth(uid,pwd):
-    result=search(uid)
+
+def auth(uid, pwd):
+    result = search(uid)
     if not result:
-        return False,None
+        return False, None
 
-    dn,user= __user_dict(result)
+    dn, user = __user_dict(result)
 
-    if not __bind(dn,pwd,True):
-        return False,None
-    return True,user
+    if not __bind(dn, pwd, True):
+        return False, None
+    return True, user
 
 
 def get_superior(uid):
     try:
-        dn,user=search(uid)[0]
+        dn, user = search(uid)[0]
         return user["x-csf-emp-1stManager"][0].split(",")[0].split("=")[1].strip()
     except:
         return None
+
 
 '''
 主机：192.168.250.2
@@ -75,8 +80,6 @@ def get_superior(uid):
 base DN :dc=chinascopefinancial,dc=com
 '''
 
-if __name__=="__main__":
+if __name__ == "__main__":
     for user in all():
         print(user)
-
-

@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 from datetime import datetime
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release, ReleaseApproval
@@ -30,21 +30,21 @@ from bmp.tasks.release import mail_to
 
 
 class ReleaseApi(BaseApi):
-    route=["/release","/release/<int:id>"]
+    route = ["/release", "/release/<int:id>"]
 
-    def get(self,id=0):
+    def get(self, id=0):
         return self.succ(Release.select(id))
 
-    def put(self,id):
-        submit=self.request()
-        if ReleaseApproval.edit(id,submit):
-            mail_to(Release.get(id),submit)
+    def put(self, id):
+        submit = self.request()
+        if ReleaseApproval.edit(id, submit):
+            mail_to(Release.get(id), submit)
             return self.succ()
         return self.fail()
 
     def post(self):
-        submit=self.request()
-        release=Release.add(submit)
+        submit = self.request()
+        release = Release.add(submit)
         mail_to(release)
         return self.succ()
 
@@ -66,38 +66,37 @@ post={
     "content":"更改内容"
 }
 '''
-if __name__=="__main__":
-
+if __name__ == "__main__":
     from bmp.utils.post import test
 
     test(
         "put",
         "http://192.168.0.143:5000/apis/v1.0/release/32",
         {
-            "type":"QA内部测试",
-            "uid":"审批人",
-            "status":"审批状态",
-            "reson":"退回理由!",
-            "options":"BUG,文件未成功修改,发布问题"
-        },True
+            "type": "QA内部测试",
+            "uid": "审批人",
+            "status": "审批状态",
+            "reson": "退回理由!",
+            "options": "BUG,文件未成功修改,发布问题"
+        }, True
     )
 
     test(
         "post",
         "http://192.168.0.143:5000/apis/v1.0/release",
         {
-            "project":"项目名称",
+            "project": "项目名称",
             "service":
                 {
-                    "name":"服务",
-                    "type":"类型",
-                    "database":"数据库",
-                    "table":"表名"
+                    "name": "服务",
+                    "type": "类型",
+                    "database": "数据库",
+                    "table": "表名"
                 },
-            "_from":"从",
-            "to":"到",
-            "release_time":datetime.now().strftime("%Y:%m:%d"),
-            "copy_to_uid":"抄送人",
-            "content":"更改内容"
+            "_from": "从",
+            "to": "到",
+            "release_time": datetime.now().strftime("%Y:%m:%d"),
+            "copy_to_uid": "抄送人",
+            "content": "更改内容"
         }
     )

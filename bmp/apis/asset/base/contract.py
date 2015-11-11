@@ -28,7 +28,6 @@ class ContractApi(BaseApi):
 if __name__ == "__main__":
     from bmp.utils.post import test
 
-
     test(
         "post",
         "http://192.168.0.57:5000/apis/v1.0/contract",
@@ -39,7 +38,7 @@ if __name__ == "__main__":
             "supplier_name": "联想",
             "path": "D:\PythonCode"
 
-        }, True
+        }
     )
 
     test(
@@ -51,7 +50,7 @@ if __name__ == "__main__":
             "purchase_id": 4,
             "supplier_name": "联想",
             "path": "D:\PythonCode"
-        },True
+        }
     )
 
     test(
@@ -63,5 +62,5 @@ if __name__ == "__main__":
             "purchase_id": 4,
             "supplier_name": "联想",
             "path": "D:\PythonCode"
-        }, True
+        }
     )

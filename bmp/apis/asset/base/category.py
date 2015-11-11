@@ -5,8 +5,7 @@ from bmp.models.asset import Category
 
 
 class CategoryApi(BaseApi):
-    route = ["/asset/base/category","/asset/base/category/<int:id>"]
-
+    route = ["/asset/base/category", "/asset/base/category/<int:id>"]
 
     def get(self, id=0):
         return self.succ(Category.select(id))

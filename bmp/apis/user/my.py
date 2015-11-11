@@ -4,8 +4,10 @@ from flask import session
 from bmp.const import USER_SESSION
 from bmp.models.user import User
 
+
 class MyApi(BaseApi):
-    route=["/my"]
+    route = ["/my"]
+
     def get(self):
         return self.succ(User.get(session[USER_SESSION]["uid"]))
 

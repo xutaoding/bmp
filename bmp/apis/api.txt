@@ -139,6 +139,8 @@ pid:采购申请的id
 pid:采购申请的id
 
 获取保存的采购申请:saved "/purchase/<int:page>/<int:pre_page>"
+获取已经通过审批的采购申请:passed "/purchase/<int:page>/<int:pre_page>"
+
 page:页数 从1开始
 pre_page:每页长度
 
@@ -147,6 +149,7 @@ pre_page:每页长度
 page:页数 从1开始
 pre_page:每页长度
 
+导出采购:get "/export_purchase_search"
 {
     "apply_time_begin":"申请时间",
     "apply_time_end":"申请时间",
@@ -229,4 +232,68 @@ id:合同id
 }
 
 删除供应商:delete "/supplier/<int:id>"
+
+
+库存管理:
+
+获取全部库存: get "/asset/stock/<int:page>/<int:pre_page>"
+
+获取指定库存: get "/asset/stock/<int:id>"
+
+添加库存:post "/apis/v1.0/asset/stock"
+修改库存:put "/apis/v1.0/asset/stock/<int:id>"
+id:库存id
+参考:
+{
+    #固定资产编号	采购编号	名称	规格	入库类型	入库人	入库时间	过保日
+    "no": "固定资产编号1",
+    "category_id": "名称1",
+    "spec": "规格1",
+    "purchase_id":"44",#采购id
+    "stock_in_type":"入库类型1",
+    "stock_in_uid":"mingming.zhang",#入库人
+    "stock_in_time":"2000-01-01 00:00",#入库时间
+    "warranty_time":"2000-01-01 00:00",#过保日期
+}
+
+删除库存:delete "/apis/v1.0/asset/stock/<int:id>"
+id:库存编号
+
+
+库存添加（领用、借用、维修、报废等):post "/apis/v1.0/asset/stockopt"
+修改库存（领用、借用、维修、报废等):put "/apis/v1.0/asset/stockopt/<int:id>"
+id:（领用、借用、维修、报废等)id
+参考:
+{
+    "type":"领用1",
+    "uid":"mingming.zhang",#领用人
+    "time":"2000-01-01 00:00",#对应type的时间
+    "reson":"理由，故障，报废原因",
+    "remark":"备注",
+    "status":"状态",
+    "stock_id":"2",#库存的id
+}
+
+删除库存（领用、借用、维修、报废等):delete "/apis/v1.0/asset/stockopt/<int:id>"
+id:（领用、借用、维修、报废等)编号
+
+
+库存查询:search "/apis/v1.0/asset/stock/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+导出库存:get "/export_stock_search"
+{
+    "no":"固定资产编号",
+    "stock_in_time_begin":"2000-01-01 00:00",#入库时间范围
+    "stock_in_time_end":"2000-01-01 00:00",#入库时间范围
+    "uid":"申请人",
+    "businessCategory":"申请部门",
+    "category_id":"33",#物品类别
+    "price_start":"33.33",#价格范围
+    "price_end":"34.33",#价格范围
+    "status":"状态"
+}
+
+
+
 
