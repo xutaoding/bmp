@@ -27,13 +27,14 @@ class DEFAULT_GROUP:
     }
 
 
+#todo 清除unicode定义
 class RELEASE:
     PASS = u"已确认"
     FAIL = u"退回"
     FLOW_OP = [u"运维发布"]
     FLOW_QA = [u"内部测试", u"正式环境测试"]
 
-
+#todo 清除unicode定义
 class PURCHASE:
     PASS = u"已确认"
     FAIL = u"退回"
@@ -44,6 +45,7 @@ class PURCHASE:
     FLOW = [FLOW_ONE, FLOW_TWO, FLOW_THREE, FLOW_FOUR]
     PRICE_LIMIT = 10000
 
+#todo 清除unicode定义
 class SCRAP:
     PASS = u"已确认"
     FAIL = u"退回"

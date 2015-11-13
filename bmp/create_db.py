@@ -1,4 +1,8 @@
 # coding: utf-8
+
+
+#todo 自动import modules目录下表定义
+
 from bmp import db
 from models.ref import Ref
 from const import REFS, DEFAULT_GROUP
