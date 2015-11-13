@@ -7,6 +7,8 @@ from bmp.const import PURCHASE
 import bmp.utils.user_ldap as ldap
 from bmp.database import Database
 import collections
+from bmp.utils.exception import ExceptionEx
+import bmp.utils.time as time
 
 purchase_supplier = db.Table("purchase_supplier",
                              db.Column("purchase_id", db.Integer, db.ForeignKey("purchase.id")),
@@ -38,7 +40,9 @@ class PurchaseGoods(db.Model):  # 采购物品
     @staticmethod
     def _to_dict(self):
         _dict = self.to_dict()
-        _dict["category"] = self.category.to_dict()
+        category=self.category
+        if category:
+            _dict["category"] = self.category.to_dict()
         return _dict
 
 
@@ -83,24 +87,24 @@ class PurchaseApproval(db.Model):
             .filter(PurchaseApproval.purchase_id == id) \
             .filter(PurchaseApproval.type == submit["type"])
         if approval.count():
-            raise Exception("该节点已审批")
+            raise ExceptionEx("该节点已审批")
 
         _approval = PurchaseApproval(submit)
         purchase = Purchase.query.filter(Purchase.id == id).one()
         purchase.approvals.append(_approval)
 
         # 失败
-        if _approval.status is PURCHASE.FAIL:
+        if _approval.status == PURCHASE.FAIL:
             purchase.is_finished = True
         else:
-            if _approval.type is PURCHASE.FLOW_TWO:
-                total = sum([g.price * g.amount for g in Purchase.goods])
+            if _approval.type == PURCHASE.FLOW_TWO:
+                total = sum([g.price * g.amount for g in purchase.goods])
                 if total < PURCHASE.PRICE_LIMIT:
                     purchase.is_finished = True
-            elif _approval.type is PURCHASE.FLOW_THREE:
+            elif _approval.type == PURCHASE.FLOW_THREE:
                 if not purchase.contract:
                     purchase.is_finished = True
-            elif _approval.type is PURCHASE.FLOW_FOUR:
+            elif _approval.type == PURCHASE.FLOW_FOUR:
                 purchase.is_finished = True
 
         purchase.cur_approval_type = PurchaseApproval.__next_approval_type(_approval.type)
@@ -284,7 +288,7 @@ class Purchase(db.Model):
             _dict["数量"] = ",".join([str(g["amount"]) for g in purchase["goods"]])
             _dict["规格"] = ",".join([g["spec"] for g in purchase["goods"]])
             _dict["物品"] = ",".join([str(g["name"]) for g in purchase["goods"]])
-            _dict["申请时间"] = purchase["apply_time"].strftime("%Y-%m-%d %H:%M")
+            _dict["申请时间"] = time.format(purchase["apply_time"],"%Y-%m-%d")
             _dict["申请部门"] = str(purchase["apply_businessCategory"])
             _dict["申请人"] = str(purchase["apply_uid"])
             _export.append(_dict)

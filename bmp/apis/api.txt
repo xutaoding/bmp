@@ -237,8 +237,15 @@ id:合同id
 库存管理:
 
 获取全部库存: get "/asset/stock/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
 
 获取指定库存: get "/asset/stock/<int:id>"
+
+获取不在（领用、借用、维修、报废等)状态的库存"/asset/stock/<int:page>/<int:pre_page>/<int:nan_opt>"
+page:页数 从1开始
+pre_page:每页长度
+nan_opt:true
 
 添加库存:post "/apis/v1.0/asset/stock"
 修改库存:put "/apis/v1.0/asset/stock/<int:id>"
@@ -260,18 +267,22 @@ id:库存id
 id:库存编号
 
 
+获取全部 (领用、借用、维修、报废等): get "/asset/stockopt/<string:type>/<int:page>/<int:pre_page>"
+获取指定 (领用、借用、维修、报废等): get "/asset/stockopt/<string:type>/<int:id>"
+
 库存添加（领用、借用、维修、报废等):post "/apis/v1.0/asset/stockopt"
 修改库存（领用、借用、维修、报废等):put "/apis/v1.0/asset/stockopt/<int:id>"
 id:（领用、借用、维修、报废等)id
 参考:
 {
-    "type":"领用1",
+    "type":"入库类型",
     "uid":"mingming.zhang",#领用人
     "time":"2000-01-01 00:00",#对应type的时间
     "reson":"理由，故障，报废原因",
     "remark":"备注",
-    "status":"状态",
+    "status":"领用",
     "stock_id":"2",#库存的id
+    "approval_remark":"审批备注"
 }
 
 删除库存（领用、借用、维修、报废等):delete "/apis/v1.0/asset/stockopt/<int:id>"
@@ -294,6 +305,6 @@ pre_page:每页长度
     "status":"状态"
 }
 
-
+获取报废审批:get "/apis/v1.0/asset/scrap/<int:page>/<int:pre_page>"
 
 

@@ -1,11 +1,11 @@
 # coding=utf-8
 from bmp import db
 from flask import session
-from bmp.const import USER_SESSION
+from bmp.const import USER_SESSION,SCRAP
 from datetime import datetime
 from bmp.database import Database
-
-# 基础信息里的三张表
+from bmp.utils.exception import ExceptionEx
+import bmp.utils.time as time
 from datetime import datetime
 
 
@@ -68,7 +68,6 @@ class Supplier(db.Model):
     def get(sid):
         return Supplier.query.filter(Supplier.id == sid).one()
 
-
 class Contract(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     begin_time = db.Column(db.DateTime)
@@ -128,7 +127,6 @@ class Contract(db.Model):
     def select():
         query = Contract.query.order_by(Contract.id.desc())
         return [Contract._to_dict(contract) for contract in query.all()]
-
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -211,7 +209,6 @@ class Category(db.Model):
             ids.extend(Category.get_child_ids(category.id))
         return ids
 
-
 class StockOpt(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(64))
@@ -221,8 +218,21 @@ class StockOpt(db.Model):
     remark = db.Column(db.String(128))
     status = db.Column(db.String(128))
     stock_id = db.Column(db.Integer, db.ForeignKey("stock.id"))
+    approval_uid = db.Column(db.String(128),db.ForeignKey("user.uid"),default="",nullable=True)
+    approval_time = db.Column(db.DateTime,nullable=True)
+    approval_remark = db.Column(db.String(128),nullable=True)
+
 
     def __init__(self, _dict):
+        if not _dict.__contains__("id"):
+            _dict["status"] = ""
+        elif _dict["type"]==SCRAP.TYPE:
+            _dict["approval_uid"]=session[USER_SESSION]["uid"]
+            _dict["approval_time"]=datetime.now().strftime("%Y-%m-%d")
+
+        if not _dict.__contains__("stock_id"):
+            raise ExceptionEx("库存不能为空")
+
         Stock.init(self, _dict)
 
     @staticmethod
@@ -232,6 +242,7 @@ class StockOpt(db.Model):
         return True
 
     @staticmethod
+    @db.transaction
     def edit(_dict):
         opt = Database.to_cls(StockOpt, _dict)
         db.session.commit()
@@ -246,7 +257,7 @@ class StockOpt(db.Model):
 
     @staticmethod
     def _to_dict(self):
-        stock = self.stock.to_dict()
+        stock = Stock._to_dict(self.stock, False)
         opt = self.to_dict()
         opt["stock"] = stock
         return opt
@@ -257,16 +268,84 @@ class StockOpt(db.Model):
         return page.to_page(StockOpt._to_dict)
 
     @staticmethod
-    def get(type, id):
-        return StockOpt.query \
-            .filter(StockOpt.type == type) \
-            .filter(StockOpt.id == id).one().to_dict()
+    def approvals(page,pre_page):#todo 添加报废的审批组
+        page = StockOpt.query\
+            .filter(StockOpt.type == SCRAP.TYPE)\
+            .filter(StockOpt.status.in_(["",SCRAP.PASS,SCRAP.FAIL])).paginate(page, pre_page)
+        return page.to_page(StockOpt._to_dict)
 
+
+    @staticmethod
+    def get(type, id):
+        return StockOpt._to_dict(StockOpt.query \
+                                 .filter(StockOpt.type == type) \
+                                 .filter(StockOpt.id == id).one())
+
+    @staticmethod
+    def search(submit, page=None, pre_page=None):
+        from bmp.models.user import User
+        from bmp.models.purchase import Purchase, PurchaseGoods
+        # 固定资产编号	入库时间	申请人	申请部门	物品类别	价格范围	物品状态
+        def check(s):
+            if submit.__contains__(s):
+                return submit[s]
+            return False
+
+        query = StockOpt.query \
+            .join(Stock, Stock.id == StockOpt.stock_id) \
+            .join(stock_category) \
+            .join(Category)
+
+        if check("no"):
+            query = query.filter(Stock.no == submit["no"])
+
+        if check("stock_in_time_begin") and check("stock_in_time_end"):
+            beg = datetime.strptime(submit["stock_in_time_begin"], "%Y-%m-%d")
+            end = datetime.strptime(submit["stock_in_time_end"], "%Y-%m-%d")
+            query = query.filter(Stock.stock_in_time.between(beg, end))
+
+        if check("uid"):
+            query = query.filter(User.uid == submit["uid"])
+
+        if check("businessCategory"):
+            query = query.filter(User.businessCategory == submit["businessCategory"])
+
+        if check("category_id"):
+            ids = Category.get_child_ids(submit["category_id"]) + [submit["category_id"]]
+            query = query.filter(Category.id.in_(ids))
+
+        if check("price_start") and check("price_end"):
+            query = query \
+                .join(Purchase, Purchase.id == Stock.purchase_id) \
+                .filter(Purchase.goods.price.between(
+                submit["price_start"], submit["price_end"]))
+
+        if check("status"):
+            query = query.filter(StockOpt.type == check("status"))
+
+        if page == None:
+            return [StockOpt._to_dict(p) for p in query.all()]
+
+        return query.paginate(page, pre_page, False).to_page(StockOpt._to_dict)
+
+    @staticmethod
+    def export(submit):
+        # 固定资产编号	入库时间	申请人	名称	状态	详细
+        _export = []
+        for stockopt in StockOpt.search(submit):
+            _dict={}
+            stock=stockopt["stock"]
+            _dict["状态"] = stockopt["status"]
+            _dict["名称"] = stock["category"]["name"]
+            _dict["申请人"] = stockopt["uid"]
+            _dict["入库时间"] = time.format(stock["stock_in_time"],"%Y-%m-%d")
+            _dict["固定资产编号"] = stock["no"]
+            _export.append(_dict)
+        return _export
 
 stock_category = db.Table("stock_category",
                           db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
                           db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
-
 
 class Stock(db.Model):
     # 固定资产编号	采购编号	名称	规格	入库类型	入库人	入库时间	过保日
@@ -281,7 +360,7 @@ class Stock(db.Model):
 
     spec = db.Column(db.String(128))
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
-    stock_in_type = db.Column(db.Integer,db.ForeignKey("ref.id"))
+    stock_in_type = db.Column(db.String(128))
     stock_in_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     stock_in_time = db.Column(db.DateTime)
     warranty_time = db.Column(db.DateTime)
@@ -293,7 +372,7 @@ class Stock(db.Model):
             if k == "category_id":
                 self.category = Category.query.filter(Category.id == v).one()
             elif "time" in k:
-                setattr(self, k, datetime.strptime(v, "%Y-%m-%d %H:%M"))
+                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             elif k == "id":
                 pass
             else:
@@ -307,7 +386,10 @@ class Stock(db.Model):
     def add(_dict):
         if Stock.query \
                 .filter(Stock.no == _dict["no"]).count():
-            raise Exception("库存编号已存在")
+            raise ExceptionEx("库存编号已存在")
+
+        if not _dict.__contains__("category_id"):
+            raise ExceptionEx("名称不能为空")
 
         db.session.add(Stock(_dict))
         db.session.flush()
@@ -317,7 +399,7 @@ class Stock(db.Model):
     @db.transaction
     def edit(_dict):
         if Stock.query.filter(Stock.no == _dict["no"]).count():
-            raise Exception("库存编号已存在")
+            raise ExceptionEx("库存编号已存在")
 
         stock = Database.to_cls(Stock, _dict)
         db.session.flush()
@@ -329,10 +411,13 @@ class Stock(db.Model):
         db.session.commit()
 
     @staticmethod
-    def _to_dict(self):
+    def _to_dict(self, show_opt=False):
         _dict = self.to_dict()
-        _dict["category_id"] = self.category.id
-        _dict["opts"] = [opt.to_dict() for opt in self.opts]
+        category = self.category
+        if category:
+            _dict["category"] = category.to_dict()
+        if show_opt:
+            _dict["opts"] = [opt.to_dict() for opt in self.opts]
         return _dict
 
     @staticmethod
@@ -340,70 +425,15 @@ class Stock(db.Model):
         return Stock.query.filter(Stock.id == id).one().to_dict()
 
     @staticmethod
-    def select(page, pre_page):
-        page = Stock.query.paginate(page, pre_page)
+    def select(page, pre_page, nan_opt):
+        query = Stock.query
+        if nan_opt:
+            opts=StockOpt.query.filter(StockOpt.status.in_(["",SCRAP.PASS,SCRAP.TYPE])).all()
+            in_opts = [opt.stock_id for opt in opts]
+            query = query.filter(~Stock.id.in_(in_opts))
+        page = query.paginate(page, pre_page)
         return page.to_page(Stock._to_dict)
-
-    @staticmethod
-    def search(submit, page=None, pre_page=None):
-        from bmp.models.user import User
-        from bmp.models.purchase import Purchase, PurchaseGoods
-        # 固定资产编号	入库时间	申请人	申请部门	物品类别	价格范围	物品状态
-        def check(s):
-            if submit.__contains__(s):
-                return submit[s]
-            return False
-
-        query = Stock.query \
-            .join(StockOpt, Stock.id == StockOpt.stock_id) \
-            .join(stock_category) \
-            .join(Category)
-
-        if check("no"):
-            query = query.filter(Stock.no == submit["no"])
-
-        if check("stock_in_time_begin") and check("stock_in_time_end"):
-            beg = datetime.strptime(submit["stock_in_time_begin"], "%Y-%m-%d %H:%M")
-            end = datetime.strptime(submit["stock_in_time_end"], "%Y-%m-%d %H:%M")
-            query = query.filter(Stock.stock_in_time.between(beg, end))
-
-        if check("uid"):
-            query = query.filter(User.uid == submit["uid"])
-
-        if check("businessCategory"):
-            query = query.filter(User.businessCategory == submit["businessCategory"])
-
-        if check("category_id"):
-            ids = Category.get_child_ids(submit["category_id"]) + [submit["category_id"]]
-            query = query.filter(Category.id.in_(ids))
-
-        if check("price_start") and check("price_end"):
-            query.join(Purchase, Purchase.id == Stock.purchase_id)
-            start = check("price_start")
-            end = check("price_end")
-            query = query.filter(Purchase.goods.price.between(start, end))
-
-        if check("status"):
-            query = query.filter(StockOpt.type == check("status"))
-
-        if page == None:
-            return [Stock._to_dict(p) for p in query.all()]
-        return query.paginate(page, pre_page, False).to_page(Stock._to_dict)
-
-    @staticmethod
-    def export(submit):
-        # 固定资产编号	入库时间	申请人	名称	状态	详细
-        _export = []
-        for stock in Stock.search(submit):
-            _dict = {}
-            _dict["状态"] = stock["status"]
-            _dict["名称"] = stock["category"]["name"]
-            _dict["申请人"] = stock["apply_uid"]
-            _dict["入库时间"] = stock["apply_time"].strftime("%Y-%m-%d %H:%M")
-            _dict["固定资产编号"] = stock["no"]
-            _export.append(_dict)
-        return _export
 
 
 if __name__ == "__main__":
-    pass
+    from bmp.models.user import User

@@ -11,7 +11,7 @@ import traceback
 from bmp import log
 from bmp import app
 from functools import wraps
-
+from bmp.utils.exception import ExceptionEx
 
 def jsonp(func):
     """Wraps JSONified output for JSONP requests."""
@@ -47,6 +47,10 @@ class BaseApi(MethodView):
                     return super(BaseApi, self).dispatch_request(*args, **kwargs)
             else:
                 return self.fail("未登录")
+        except ExceptionEx,ex:
+            traceback.print_exc()
+            log.exception(ex)
+            return self.fail(ex.message)
         except Exception, e:
             traceback.print_exc()
             log.exception(e)

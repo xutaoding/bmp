@@ -46,7 +46,7 @@ def __mail_to(r, submit):
 
     regx = re.compile(r"^http://([a-z.]+)/")
 
-    url = ""  # http://%s/templates/release/release.html"%regx.findall(request.headers["Referer"])[0]
+    url ="http://%s/templates/release/release.html"%regx.findall(request.headers["Referer"])[0]
 
     html = render_template(
         "mail.tpl.html",

@@ -32,7 +32,6 @@ class PurchaseApi(BaseApi):
         unfinished = Purchase.unfinished(g_dict)
         return self.succ(unfinished)
 
-
     def passed(self,page=0,pre_page=None):
         return self.succ(Purchase.passed(page,pre_page))
 
@@ -68,7 +67,6 @@ class PurchaseApi(BaseApi):
     def search(self, page=None, pre_page=None):
         submit = self.request()
         return self.succ(Purchase.search(submit, page, pre_page))
-
 
 if __name__ == "__main__":
     from bmp.utils.post import test

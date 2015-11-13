@@ -44,6 +44,12 @@ class PURCHASE:
     FLOW = [FLOW_ONE, FLOW_TWO, FLOW_THREE, FLOW_FOUR]
     PRICE_LIMIT = 10000
 
+class SCRAP:
+    PASS = u"已确认"
+    FAIL = u"退回"
+    TYPE = u"报废"
+
+
 
 if __name__ == "__main__":
     pass

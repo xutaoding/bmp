@@ -4,15 +4,26 @@ from datetime import datetime
 from flask import session
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
-import bmp.utils.time as time
 
+
+class ReleaseTable(db.Model):#todo ReleaseService table 要拆分成当前表
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(128))
+    release_database_id=db.Column(db.Integer,db.ForeignKey("release_database.id"))
+
+class ReleaseDatabase(db.Model):#todo ReleaseService database 要拆分成当前表
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(128))
+    release_service_id=db.Column(db.Integer,db.ForeignKey("release_service.id"))
 
 class ReleaseService(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
     type = db.Column(db.String(128), nullable=False)
-    database = db.Column(db.String(128))
-    table = db.Column(db.String(128))
+    database = db.Column(db.String(128))#todo 需要替换
+    table = db.Column(db.String(128))#todo 需要替换
+    #databases = db.relationship("ReleaseDatabase")#todo database table拆分后的关联字段
+
     release_id = db.Column(db.Integer, db.ForeignKey("release.id"))
 
     def __init__(self, _dict):
@@ -20,7 +31,6 @@ class ReleaseService(db.Model):
         self.type = _dict["type"]
         self.database = _dict["database"]
         self.table = _dict["table"]
-
 
 class ReleaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -58,7 +68,6 @@ class ReleaseApproval(db.Model):
         _approval.options = submit["options"]
         db.session.flush()
         return True
-
 
 class Release(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -145,6 +154,26 @@ class Release(db.Model):
         db.session.commit()
         return True
 
-
 if __name__ == "__main__":
-    pass
+    services=ReleaseService.query.with_entities(
+            ReleaseService.name,
+            ReleaseService.database,
+            ReleaseService.table,
+            ReleaseService.type,
+            Release.project,
+            Release.release_time
+        ).join(Release,ReleaseService.release_id==Release.id)
+
+    import pandas as pd
+    from bmp import app
+
+    data=pd.read_sql_query("select * from release_service",app.config["SQLALCHEMY_DATABASE_URI"])
+
+    print data.groupby(["name","type","database","table"]).sum()
+
+
+
+
+
+
+

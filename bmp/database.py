@@ -2,6 +2,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy, Pagination
 from datetime import datetime
 import bmp.utils.time as time
+from bmp.utils.exception import ExceptionEx
 
 
 class Database(SQLAlchemy):
@@ -41,9 +42,11 @@ class Database(SQLAlchemy):
                 result = fun(*args, **kwargs)
                 self.session.commit()
                 return result
-            except:
-                self.session.rollback()
-                raise
+            except ExceptionEx,ex:
+                raise ex
+            except Exception,e:
+                raise e
+
 
         return __fun
 

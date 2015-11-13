@@ -5,15 +5,15 @@ from bmp.models.asset import Stock
 
 
 class StockApi(BaseApi):
-    route = ["/asset/stock", "/asset/stock/<int:sid>", "/asset/stock/<int:page>/<int:pre_page>"]
+    route = ["/asset/stock", "/asset/stock/<int:sid>","/asset/stock/<int:page>/<int:pre_page>/<int:nan_opt>" ,"/asset/stock/<int:page>/<int:pre_page>"]
 
     def auth(self):
         return True
 
-    def get(self, page=0, pre_page=None, sid=0):
+    def get(self, page=0, pre_page=None,sid=0,nan_opt=False):
         if sid:
             return self.succ(Stock.get(sid))
-        return self.succ(Stock.select(page, pre_page))
+        return self.succ(Stock.select(page, pre_page,nan_opt))
 
     def post(self):
         submit = self.request()
@@ -29,10 +29,6 @@ class StockApi(BaseApi):
         submit["id"] = sid
         Stock.edit(submit)
         return self.succ()
-
-    def search(self, page=None, pre_page=None):
-        submit = self.request()
-        return self.succ(Stock.search(submit, page, pre_page))
 
 
 if __name__ == "__main__":

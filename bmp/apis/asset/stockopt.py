@@ -2,11 +2,17 @@
 from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import StockOpt
-
+from flask import session
+from bmp.const import USER_SESSION
 
 class StockoptApi(BaseApi):
-    route = ["/asset/stockopt", "/asset/stockopt/<int:id>", "/asset/stockopt/<string:type>/<int:id>",
-             "/asset/stockopt/<string:type>/<int:page>/<int:pre_page>"]
+    route = [
+        "/asset/stockopt",
+        "/asset/stockopt/<int:id>",
+        "/asset/stockopt/<string:type>/<int:id>",
+        "/asset/stockopt/<string:type>/<int:page>/<int:pre_page>",
+        "/asset/stockopt/<int:page>/<int:pre_page>"
+    ]
 
     def auth(self):
         return True
@@ -29,6 +35,11 @@ class StockoptApi(BaseApi):
         submit["id"] = id
         StockOpt.edit(submit)
         return self.succ()
+
+    def search(self, page=None, pre_page=None):
+        submit = self.request()
+        return self.succ(StockOpt.search(submit, page, pre_page))
+
 
 
 if __name__ == "__main__":

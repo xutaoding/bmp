@@ -6,7 +6,7 @@ from models.user import user_group, Group, User
 from models.release import Release, ReleaseApproval, ReleaseService
 from models.purchase import Purchase, PurchaseImg, PurchaseGoods, PurchaseApproval, purchase_supplier, \
     purchase_goods_category
-from models.asset import Supplier, Contract, Stock, StockOpt, stock_category
+from models.asset import Supplier, Contract, Stock, StockOpt, stock_category,Category
 from bmp.utils import user_ldap
 
 '''

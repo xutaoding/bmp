@@ -27,3 +27,9 @@ class Ref(db.Model):
 
         db.session.add(Ref(name, type))
         db.session.flush()
+
+
+
+    @staticmethod
+    def get(id):
+        return Ref.query.filter(Ref.id==id).one().to_dict()
