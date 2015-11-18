@@ -1,6 +1,8 @@
 # coding: utf-8
 from bmp import db
 from datetime import datetime
+from flask import session
+from bmp.const import USER_SESSION
 
 user_group = db.Table("user_group",
                       db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
@@ -83,19 +85,22 @@ class User(db.Model):
 
     @staticmethod
     def __add_group(user):
-        # print 'aaa', user
         _user = user.to_dict()
-        # print 'bbb', _user
-        # print 'ccc', user.groups
         _user["group"] = [g.name for g in user.groups]
         return _user
 
     @staticmethod
     def select(uid):
-        if uid == "%":
-            return [User.__add_group(user) for user in User.query.order_by(User.uid.asc()).all()]
 
-        return [User.__add_group(user) for user in User.query.filter(User.uid == uid).order_by(User.uid.asc()).all()]
+        query=User.query.order_by(User.uid.asc())
+        if uid!="%":
+            query=User.query.filter(User.uid == uid).order_by(User.uid.asc())
+        user=User.query.filter(User.uid==session[USER_SESSION]["uid"]).one()
+        users=query.all()
+        users.pop(users.index(user))
+        users.insert(0,user)
+        return [User.__add_group(u) for u in users]
+
 
     @staticmethod
     def get(uid):
@@ -169,4 +174,7 @@ class User(db.Model):
 
 
 if __name__ == "__main__":
-    pass
+    user=User.query.filter(User.uid=="chenglong.yan").one()
+    users=[u for u in User.query.order_by(User.uid.asc()).all()]
+    users.pop(users.index(user))
+    users.insert(0,user)

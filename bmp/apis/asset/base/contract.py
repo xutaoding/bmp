@@ -8,6 +8,8 @@ class ContractApi(BaseApi):
     route = ["/contract", "/contract/<int:id>"]
 
     def get(self, id=0):
+        if id:
+            return self.succ(Contract.get(id))
         return self.succ(Contract.select())
 
     def post(self):

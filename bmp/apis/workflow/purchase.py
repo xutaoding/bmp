@@ -6,6 +6,7 @@ from bmp.models.user import Group
 from flask import session
 from bmp.const import USER_SESSION, PURCHASE
 from bmp.database import Database
+from bmp.utils.exception import ExceptionEx
 
 from flask.ext import excel
 
@@ -38,7 +39,11 @@ class PurchaseApi(BaseApi):
 
     def __submit(self):
         submit = self.request()
-        submit["supplier"] = Supplier.get(submit["supplier_id"])
+
+        if not submit.__contains__("supplier_id"):
+            raise ExceptionEx("供应商不能为空")
+
+        submit["supplier"] = Supplier.query.filter(Supplier.id == submit["supplier_id"]).one()
         if submit.__contains__("contract"):
             submit["contract"] = Database.to_cls(Contract, submit["contract"])
         else:

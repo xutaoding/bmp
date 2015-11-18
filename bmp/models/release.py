@@ -4,33 +4,68 @@ from datetime import datetime
 from flask import session
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
+from bmp.utils.exception import ExceptionEx
 
-
-class ReleaseTable(db.Model):#todo ReleaseService table 要拆分成当前表
+class ReleaseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     release_database_id=db.Column(db.Integer,db.ForeignKey("release_database.id"))
+    def __init__(self,_dict):
+        self.name=_dict["name"]
 
-class ReleaseDatabase(db.Model):#todo ReleaseService database 要拆分成当前表
+
+class ReleaseDatabase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
+    tables = db.relationship("ReleaseTable")
     release_service_id=db.Column(db.Integer,db.ForeignKey("release_service.id"))
+
+    @staticmethod
+    def _to_dict(self):
+        database=self.to_dict()
+        database["tables"]=[t.to_dict() for t in self.tables]
+        return database
+
+    def __init__(self,_dict):
+        self.name=_dict["name"]
+        self.tables = [ReleaseTable(t) for t in _dict["table"]]
 
 class ReleaseService(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
     type = db.Column(db.String(128), nullable=False)
-    database = db.Column(db.String(128))#todo 需要替换
-    table = db.Column(db.String(128))#todo 需要替换
-    #databases = db.relationship("ReleaseDatabase")#todo database table拆分后的关联字段
-
+    database = db.Column(db.String(128))
+    table = db.Column(db.String(128))
+    databases = db.relationship("ReleaseDatabase")
     release_id = db.Column(db.Integer, db.ForeignKey("release.id"))
+
+    @staticmethod
+    def _to_dict(self):
+        service=self.to_dict()
+        service["databases"] = [ReleaseDatabase._to_dict(d) for d in self.databases]
+        return service
 
     def __init__(self, _dict):
         self.name = _dict["name"]
         self.type = _dict["type"]
-        self.database = _dict["database"]
-        self.table = _dict["table"]
+        #self.database = _dict["database"]
+        #self.table = _dict["table"]
+        databases=[d for d in _dict["database"].split("|") if d!=""]
+        tables=[t for t in _dict["table"].split("|") if t!=""]
+        if len(databases)!=len(tables):
+            raise ExceptionEx("表格式错误")
+
+        def format_database(database,table):
+            _database={"name":database.strip()}
+            def format_tables(table):
+                return [{"name":t.strip()} for t in table.split(",")]
+            _database["table"]=[t for t in format_tables(table)]
+            return _database
+
+        _dict["database"]=[format_database(databases[i],tables[i]) for i in range(0,len(databases))]
+
+        self.databases = [ReleaseDatabase(t) for t in _dict["database"]]
+
 
 class ReleaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -96,7 +131,7 @@ class Release(db.Model):
         def __to_dict(release):
             _release = release.to_dict()
             _release["approvals"] = [a.to_dict() for a in release.approvals]
-            _release["service"] = release.service.to_dict()
+            _release["service"] = ReleaseService._to_dict(release.service)
             return _release
 
         query = Release.query.order_by(Release.apply_time.desc())
@@ -155,22 +190,17 @@ class Release(db.Model):
         return True
 
 if __name__ == "__main__":
-    services=ReleaseService.query.with_entities(
-            ReleaseService.name,
-            ReleaseService.database,
-            ReleaseService.table,
-            ReleaseService.type,
-            Release.project,
-            Release.release_time
-        ).join(Release,ReleaseService.release_id==Release.id)
-
-    import pandas as pd
-    from bmp import app
-
-    data=pd.read_sql_query("select * from release_service",app.config["SQLALCHEMY_DATABASE_URI"])
-
-    print data.groupby(["name","type","database","table"]).sum()
-
+    for service in ReleaseService.query.all():
+        databases=service.database.split("|")
+        tables=service.table.split("|")
+        def format_database(database,table):
+            _database={"name":database.strip()}
+            def format_tables(table):
+                return [{"name":t.strip()} for t in table.split(",")]
+            _database["table"]=[t for t in format_tables(table)]
+            return _database
+        _databases=[ReleaseDatabase(format_database(databases[i],tables[i])) for i in range(0,len(databases))]
+        service.databases=_databases
 
 
 

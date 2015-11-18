@@ -2,11 +2,25 @@
 USER_SESSION = "user"
 
 REFS = {
-    "项目名称": ["ichinascope", "chinascopefinancial", "智投", "数库云", "数库港", "后台系统"],
+    "项目名称": ["ichinascope", "chinascopefinancial","基金","智投", "数库云", "数库港", "后台系统"],
     "数据库": ["mongodb", "mysql", "oracle", "sqlserver"],
     "web": ["PHP", "Nginx", "Apache", "other"],
-    "应用服务": ["portalmobile", "ada", "datafeed", "datashift", "datareceiver", "datacloud", "hqservice", "csdata",
-             "otcds", "bts", "shukugang", "idexservice", "indexer"],
+    "应用服务": [
+        "portalmobile",
+        "ada",
+        "datafeed",
+        "datashift",
+        "datareceiver",
+        "datacloud",
+        "hqservice",
+        "csdata",
+        "otcds",
+        "bts",
+        "shukugang",
+        "idexservice",
+        "indexer",
+        "fund"
+    ],
     "服务": ["数据库", "web", "应用服务"],
     "地点": ["办公室", "上海IDC", "亚马逊(北京)", "亚马逊(新加坡)"],
     "审批": ["内部测试", "运维发布", "正式环境测试"],

@@ -11,7 +11,7 @@ from datetime import datetime
 
 class Supplier(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128), nullable=False, unique=True)
+    name = db.Column(db.String(128),unique=True)
     connector = db.Column(db.String(128))
     interfaceor = db.Column(db.String(128))
     tel = db.Column(db.String(128))
@@ -26,11 +26,9 @@ class Supplier(db.Model):
 
     @staticmethod
     def add(_dict):
-        # from bmp.models.user import User
-        # user = User.query.filter(User.uid == session[USER_SESSION].uid).one()
-
+        _dict["connector"]=session[USER_SESSION]["uid"]
+        if not _dict.__contains__("path"):_dict["path"]=""
         new_supplier = Supplier(_dict)
-        # new_supplier.interfaceor = user.uid
         new_supplier.create_time = datetime.now()
         new_supplier.last_time = datetime.now()
         db.session.add(new_supplier)
@@ -66,7 +64,7 @@ class Supplier(db.Model):
 
     @staticmethod
     def get(sid):
-        return Supplier.query.filter(Supplier.id == sid).one()
+        return Supplier.query.filter(Supplier.id == sid).one().to_dict()
 
 class Contract(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -85,7 +83,10 @@ class Contract(db.Model):
         else:
             self.end_time = datetime.now()
 
-        self.path = _dict["path"]
+        if _dict.__contains__("path"):
+            self.path = _dict["path"]
+        else:
+            self.path=""
 
     @staticmethod
     def add(_dict):
@@ -127,6 +128,12 @@ class Contract(db.Model):
     def select():
         query = Contract.query.order_by(Contract.id.desc())
         return [Contract._to_dict(contract) for contract in query.all()]
+
+
+    @staticmethod
+    def get(id):
+        return Contract._to_dict(Contract.query.filter(Contract.id==id).one())
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -384,6 +391,13 @@ class Stock(db.Model):
     @staticmethod
     @db.transaction
     def add(_dict):
+        '''
+        固定资产编号 格式固定一下
+        部门+年+月+0001
+        比如：IT2015050001
+        :param _dict:
+        :return:
+        '''
         if Stock.query \
                 .filter(Stock.no == _dict["no"]).count():
             raise ExceptionEx("库存编号已存在")
@@ -391,6 +405,16 @@ class Stock(db.Model):
         if not _dict.__contains__("category_id"):
             raise ExceptionEx("名称不能为空")
 
+        def create_no():
+            businessCategory=session[USER_SESSION]["businessCategory"]
+            today=datetime.strptime(_dict["stock_in_time"],"%Y-%m-%d")
+            year,month=today.year,today.month
+            stocks=[int(s.no[-4:]) for s in Stock.query.filter(
+                Stock.stock_in_time.between(datetime(year,1,1),datetime(year,12,31))).all()]
+            stocks.append(0)
+            return "%s%d%02d%04d"%(businessCategory.upper(),year,month,max(stocks)+1)
+
+        _dict["no"]=create_no()
         db.session.add(Stock(_dict))
         db.session.flush()
         return True
@@ -435,5 +459,6 @@ class Stock(db.Model):
         return page.to_page(Stock._to_dict)
 
 
+
 if __name__ == "__main__":
-    from bmp.models.user import User
+    pass

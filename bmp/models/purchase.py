@@ -132,6 +132,9 @@ class Purchase(db.Model):
     apply_businessCategory = db.Column(db.String(128), nullable=False)
     apply_time = db.Column(db.DateTime, nullable=False)
 
+    def __eq__(self, other):
+        return self.id==other.id
+
     def __init__(self, submit):
         goods, supplier, imgs, contract = submit["goods"], submit["supplier"], submit["imgs"], submit["contract"]
         if not submit.__contains__("id"):
@@ -192,6 +195,11 @@ class Purchase(db.Model):
             cur_approval_type = purchase.cur_approval_type
             purchase.approval_enable = False
 
+            if uid == purchase.apply_uid:
+                purchases.append(purchase)
+            if uid in [a.uid for a in approvals]:
+                purchases.append(purchase)
+
             if cur_approval_type == PURCHASE.FLOW_ONE:
                 if Purchase.__is_superior(uid, apply_uid):
                     purchase.approval_enable = True
@@ -199,13 +207,9 @@ class Purchase(db.Model):
             elif uid in user_groups[cur_approval_type]:
                 purchase.approval_enable = True
                 purchases.append(purchase)
-            elif uid == purchase.apply_uid:
-                purchases.append(purchase)
-            elif uid in [a.uid for a in approvals]:
-                purchases.append(purchase)
             else:
                 continue
-        return [Purchase._to_dict(p, ["approval_enable"]) for p in purchases]
+        return [Purchase._to_dict(p, ["approval_enable"]) for p in set(purchases)]
 
     @staticmethod
     def finished(page=1, pre_page=20):

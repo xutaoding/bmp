@@ -94,6 +94,9 @@ uid:用户名
 采购相关------------------------------------------------
 
 上传文件:post "/upload"
+下载文件:get "/upload?path=文件路径"
+
+
 
 获取采购申请:get "/purchase/<int:page>/<int:pre_page>"
 page:页数 从1开始

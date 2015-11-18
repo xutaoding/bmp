@@ -7,7 +7,7 @@ from bmp import db
 from models.ref import Ref
 from const import REFS, DEFAULT_GROUP
 from models.user import user_group, Group, User
-from models.release import Release, ReleaseApproval, ReleaseService
+from models.release import Release, ReleaseApproval, ReleaseService,ReleaseDatabase,ReleaseTable
 from models.purchase import Purchase, PurchaseImg, PurchaseGoods, PurchaseApproval, purchase_supplier, \
     purchase_goods_category
 from models.asset import Supplier, Contract, Stock, StockOpt, stock_category,Category

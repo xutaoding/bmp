@@ -9,3 +9,12 @@ class RefsApi(BaseApi):
 
     def get(self, type="%"):
         return self.succ(Ref.select(type))
+
+    def post(self):
+        submit=self.request()
+        Ref.add(submit["name"],submit["type"],submit["parent_id"])
+        return self.succ()
+
+    def delete(self,id):
+        Ref.delete(id)
+        return self.succ()
