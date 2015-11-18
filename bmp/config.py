@@ -28,7 +28,7 @@ class Config(object):
     LOG_MAX = ""
 
     UPLOAD_FOLDER = "/static/upload"
-    USE_WSGI = True
+    SINGLETON = True
     HOST = ""
     PORT = 5000
     MAX_CONTENT_LENGTH = 1 * 1024 * 1024 * 1024
@@ -37,22 +37,22 @@ class Config(object):
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "localhost"
-    USE_WSGI = False
+    SINGLETON = False
 
 
 class Dev(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "192.168.0.143"
-    USE_WSGI = False
+    SINGLETON = False
 
 
 class Testserver(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "127.0.0.1"
-    USE_WSGI = False
+    SINGLETON = False
 
 
 class Yutest(Config):
     HOST = "192.168.0.57"
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/test"
-    USE_WSGI = False
+    SINGLETON = False

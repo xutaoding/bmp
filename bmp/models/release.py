@@ -193,6 +193,9 @@ if __name__ == "__main__":
     for service in ReleaseService.query.all():
         databases=service.database.split("|")
         tables=service.table.split("|")
+        if len(databases)!=len(tables):
+            print(databases,tables)
+            continue
         def format_database(database,table):
             _database={"name":database.strip()}
             def format_tables(table):
