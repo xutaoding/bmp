@@ -1,5 +1,4 @@
 *.pyc
-*.html
 .idea/
 __pycache__/
 static/
