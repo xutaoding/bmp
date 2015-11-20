@@ -98,7 +98,13 @@ uid:用户名
 
 
 
+
+
+
 获取采购申请:get "/purchase/<int:page>/<int:pre_page>"
+
+获取已审批的采购申请:finished "/purchase/<int:page>/<int:pre_page>"
+
 page:页数 从1开始
 pre_page:每页长度
 

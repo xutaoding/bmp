@@ -45,4 +45,8 @@ def create_all():
 
 
 if __name__ == "__main__":
-    create_all()
+    #create_all()
+    # 导入字典
+    for type, names in REFS.items():
+        for name in names:
+            Ref.add(name,type)

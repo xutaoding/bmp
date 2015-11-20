@@ -33,6 +33,9 @@ class PurchaseApi(BaseApi):
         unfinished = Purchase.unfinished(g_dict)
         return self.succ(unfinished)
 
+    def finished(self,page=0,pre_page=None):
+        return self.succ(Purchase.finished(page,pre_page))
+
     def passed(self,page=0,pre_page=None):
         return self.succ(Purchase.passed(page,pre_page))
 
@@ -75,38 +78,5 @@ class PurchaseApi(BaseApi):
 
 if __name__ == "__main__":
     from bmp.utils.post import test
-
-    result = test("search",
-                  "http://localhost:5000/apis/v1.0/purchase",
-                  {
-                      "goods": "3333",
-                      "price": "2222"
-                  }, True)
-
-    with open("test.csv", "w") as t: t.write(result)
-
-    test("GET",
-         "http://192.168.0.143:5000/apis/v1.0/purchase/1",
-         {
-             "id": "1",
-             "contract": {
-                 "id": "2",
-                 "begin_time": "2015-01-01 01:01",
-                 "end_time": "2015-01-02 01:01",
-                 "path": "合同文件路径2"
-             },
-             "imgs": [{
-                 "id": "2",
-                 "b64": "图片编码内容2",
-                 "desc": "描述2"
-             }],
-             "goods": [{
-                 "id": "2",
-                 "name": "商品名称2",
-                 "price": "11.11",
-                 "spec": "规格2",
-                 "amount": "10"
-             }],
-             "supplier_id": 1,  # 供应商id
-             "use": "用途2"
-         })
+    test("finished",
+         "http://localhost:5000/apis/v1.0/purchase/1/20",{},exe=True)

@@ -9,6 +9,7 @@ from bmp.database import Database
 import collections
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
+from sqlalchemy import or_
 
 purchase_supplier = db.Table("purchase_supplier",
                              db.Column("purchase_id", db.Integer, db.ForeignKey("purchase.id")),
@@ -182,6 +183,20 @@ class Purchase(db.Model):
         return False
 
     @staticmethod
+    def finished(page=1, pre_page=20):
+        uid = session[USER_SESSION]["uid"]
+
+
+        page=Purchase.query\
+            .join(PurchaseApproval)\
+            .filter(or_(Purchase.apply_uid==uid,PurchaseApproval.uid==uid))\
+            .filter(Purchase.is_draft==False)\
+            .filter(Purchase.is_finished==True)\
+            .order_by(Purchase.apply_time.desc()).paginate(page, pre_page, False)
+
+        return page.to_page(Purchase._to_dict)
+
+    @staticmethod
     def unfinished(user_groups):
         purchases = []
         uid = session[USER_SESSION]["uid"]
@@ -210,11 +225,6 @@ class Purchase(db.Model):
             else:
                 continue
         return [Purchase._to_dict(p, ["approval_enable"]) for p in set(purchases)]
-
-    @staticmethod
-    def finished(page=1, pre_page=20):
-        page = Purchase.query.filter(Purchase.is_finished == True).paginate(page, pre_page, False)
-        return page.to_page(Purchase._to_dict)
 
     @staticmethod
     def passed(page=1,pre_page=20):
@@ -291,7 +301,7 @@ class Purchase(db.Model):
             _dict["总价"] = ",".join([str(g["amount"] * g["price"]) for g in purchase["goods"]])
             _dict["数量"] = ",".join([str(g["amount"]) for g in purchase["goods"]])
             _dict["规格"] = ",".join([g["spec"] for g in purchase["goods"]])
-            _dict["物品"] = ",".join([str(g["name"]) for g in purchase["goods"]])
+            _dict["物品"] = ",".join([str(g["category"]["name"]) for g in purchase["goods"]])
             _dict["申请时间"] = time.format(purchase["apply_time"],"%Y-%m-%d")
             _dict["申请部门"] = str(purchase["apply_businessCategory"])
             _dict["申请人"] = str(purchase["apply_uid"])

@@ -190,20 +190,7 @@ class Release(db.Model):
         return True
 
 if __name__ == "__main__":
-    for service in ReleaseService.query.all():
-        databases=service.database.split("|")
-        tables=service.table.split("|")
-        if len(databases)!=len(tables):
-            print(databases,tables)
-            continue
-        def format_database(database,table):
-            _database={"name":database.strip()}
-            def format_tables(table):
-                return [{"name":t.strip()} for t in table.split(",")]
-            _database["table"]=[t for t in format_tables(table)]
-            return _database
-        _databases=[ReleaseDatabase(format_database(databases[i],tables[i])) for i in range(0,len(databases))]
-        service.databases=_databases
+    pass
 
 
 
