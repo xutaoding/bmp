@@ -13,7 +13,6 @@ class ReleaseTable(db.Model):
     def __init__(self,_dict):
         self.name=_dict["name"]
 
-
 class ReleaseDatabase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
@@ -66,7 +65,6 @@ class ReleaseService(db.Model):
 
         self.databases = [ReleaseDatabase(t) for t in _dict["database"]]
 
-
 class ReleaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(128))
@@ -117,6 +115,7 @@ class Release(db.Model):
     to = db.Column(db.String(256), nullable=False)
     approvals = db.relationship("ReleaseApproval")
     service = db.relationship("ReleaseService", uselist=False)
+    release_type = db.Column(db.String(64),default="")
 
     def __init__(self, _dict):
         self.project = _dict["project"]
@@ -125,6 +124,7 @@ class Release(db.Model):
         self.release_time = datetime.strptime(_dict["release_time"], "%Y-%m-%d %H:%M")
         self.copy_to_uid = _dict["copy_to_uid"]
         self.content = _dict["content"]
+        self.release_type = _dict["release_type"]
 
     @staticmethod
     def select(id=0, uid=0):
