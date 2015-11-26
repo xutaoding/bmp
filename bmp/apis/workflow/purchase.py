@@ -39,7 +39,6 @@ class PurchaseApi(BaseApi):
     def passed(self,page=0,pre_page=None):
         return self.succ(Purchase.passed(page,pre_page))
 
-
     def __submit(self):
         submit = self.request()
 

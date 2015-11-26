@@ -60,6 +60,7 @@ class RELEASE:
     FAIL = u"退回"
     FLOW_OP = [u"运维发布"]
     FLOW_QA = [u"内部测试", u"正式环境测试"]
+    OPTIONS = "options"
 
 #todo 清除unicode定义
 class PURCHASE:

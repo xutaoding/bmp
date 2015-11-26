@@ -74,6 +74,9 @@ class Contract(db.Model):
     path = db.Column(db.String(256))  # 合同文件路径
 
     def __init__(self, _dict):
+        if _dict.__contains__("id"):
+            return
+
         if _dict["begin_time"]:
             self.begin_time = datetime.strptime(_dict["begin_time"], "%Y-%m-%d")
         else:

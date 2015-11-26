@@ -317,3 +317,13 @@ pre_page:每页长度
 获取报废审批:get "/apis/v1.0/asset/scrap/<int:page>/<int:pre_page>"
 
 
+
+统计------------------------------------------------
+发布应用统计:get "/stats/release/app/<string:begin_time>/<string:end_time>"
+发布状态统计:get "/stats/release/status/<string:begin_time>/<string:end_time>"
+格式:
+    begin_time:yyyy-mm-dd
+    end_time:yyyy-mm-dd
+例:
+    /apis/v1.0/stats/release/status/2015-01-01/2015-12-12
+    /apis/v1.0/stats/release/app/2015-01-01/2015-12-12

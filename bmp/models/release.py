@@ -65,6 +65,7 @@ class ReleaseService(db.Model):
 
         self.databases = [ReleaseDatabase(t) for t in _dict["database"]]
 
+
 class ReleaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(128))
@@ -127,20 +128,28 @@ class Release(db.Model):
         self.release_type = _dict["release_type"]
 
     @staticmethod
+    def __to_dict(release):
+        _release = release.to_dict()
+        _release["approvals"] = [a.to_dict() for a in release.approvals]
+        _release["service"] = ReleaseService._to_dict(release.service)
+        return _release
+
+    @staticmethod
     def select(id=0, uid=0):
-        def __to_dict(release):
-            _release = release.to_dict()
-            _release["approvals"] = [a.to_dict() for a in release.approvals]
-            _release["service"] = ReleaseService._to_dict(release.service)
-            return _release
+
 
         query = Release.query.order_by(Release.apply_time.desc())
 
         if not id:
             if not uid:
-                return [__to_dict(release) for release in query.all()]
-            return [__to_dict(release) for release in query.filter(Release.apply_uid == uid).all()]
-        return [__to_dict(release) for release in query.filter(Release.id == id).all()]
+                return [Release.__to_dict(release) for release in query.all()]
+            return [Release.__to_dict(release) for release in query.filter(Release.apply_uid == uid).all()]
+        return [Release.__to_dict(release) for release in query.filter(Release.id == id).all()]
+
+
+    @staticmethod
+    def between(begin,end):
+        return [Release.__to_dict(release) for release in Release.query.filter(Release.apply_time.between(begin,end)).all()]
 
     @staticmethod
     def get(rid):
