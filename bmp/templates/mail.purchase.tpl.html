@@ -1,0 +1,60 @@
+<html lang='en'>
+<head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <title>
+        {{ sub }}
+    </title>
+    </meta>
+</head>
+<style>
+    p.details {
+        font-style: italic;
+        color: #777
+    }
+</style>
+<body>
+<!--
+ id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    price = db.Column(db.Float)
+    spec = db.Column(db.String(128))
+    amount = db.Column(db.Integer)
+    purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
+    category = db.relationship("Category",
+                               secondary=purchase_goods_category,
+                               backref=db.backref("goods"),
+                               uselist=False)
+
+-->
+
+
+<div class='content'>
+    <p>申请时间:{{ purchase.apply_time.strftime("%Y-%m-%d %H:%M:%S") }}</p>
+    <p>申请人:{{ purchase.apply_uid }}</p>
+    <br/>
+    {% for g in goods %}
+    <p>物品:{{ g.category.name }}</p>
+    <p>规格:{{ g.spec }}</p>
+    <p>单价:{{ g.price }}</p>
+    <p>数量:{{ g.amount }}</p>
+    <p>合计:{{ g.price*g.amount }}</p>
+    <br/>
+    {% endfor %}
+
+    {% if approvals %}
+        {% for a in approvals %}
+            {% if a.status=="退回" %}
+                <p>{{ a.type }}:{{ a.uid }},{{ a.status }}</p>
+                <p>退回理由:{{ a.reson }} {{ a.options }}</p>
+            {% else %}
+                <p>{{ a.type }}:{{ a.uid }},{{ a.status }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <p>
+        <a href={{ url }}>详情</a>
+    </p>
+
+</div>
+
+</body>
+</html>

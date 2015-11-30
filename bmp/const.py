@@ -66,6 +66,7 @@ class RELEASE:
 class PURCHASE:
     PASS = u"已确认"
     FAIL = u"退回"
+    FIN = "FIN"
     FLOW_ONE = "UP"
     FLOW_TWO = "FIN"
     FLOW_THREE = "BOSS"

@@ -48,55 +48,5 @@ class ReleaseApi(BaseApi):
         mail_to(release)
         return self.succ()
 
-
-'''
-post={
-    "project":"项目名称",
-    "service":
-        {
-            "name":"服务",
-            "type":"类型",
-            "database":"数据库",
-            "table":"表名"
-        },
-    "_from":"从",
-    "to":"到",
-    "release_time":"发布时间",
-    "copy_to_uid":"抄送人",
-    "content":"更改内容"
-}
-'''
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test(
-        "put",
-        "http://192.168.0.143:5000/apis/v1.0/release/32",
-        {
-            "type": "QA内部测试",
-            "uid": "审批人",
-            "status": "审批状态",
-            "reson": "退回理由!",
-            "options": "BUG,文件未成功修改,发布问题"
-        }, True
-    )
-
-    test(
-        "post",
-        "http://192.168.0.143:5000/apis/v1.0/release",
-        {
-            "project": "项目名称",
-            "service":
-                {
-                    "name": "服务",
-                    "type": "类型",
-                    "database": "数据库",
-                    "table": "表名"
-                },
-            "_from": "从",
-            "to": "到",
-            "release_time": datetime.now().strftime("%Y:%m:%d"),
-            "copy_to_uid": "抄送人",
-            "content": "更改内容"
-        }
-    )
+    pass

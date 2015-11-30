@@ -137,7 +137,6 @@ class Contract(db.Model):
     def get(id):
         return Contract._to_dict(Contract.query.filter(Contract.id==id).one())
 
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))

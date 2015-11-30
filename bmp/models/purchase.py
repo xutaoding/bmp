@@ -46,7 +46,6 @@ class PurchaseGoods(db.Model):  # 采购物品
             _dict["category"] = self.category.to_dict()
         return _dict
 
-
 class PurchaseImg(db.Model):  # 比价图片
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     b64 = db.Column(db.Text)
@@ -56,7 +55,6 @@ class PurchaseImg(db.Model):  # 比价图片
     def __init__(self, _dict):
         self.b64 = _dict["b64"]
         self.desc = _dict["desc"]
-
 
 class PurchaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -111,8 +109,7 @@ class PurchaseApproval(db.Model):
         purchase.cur_approval_type = PurchaseApproval.__next_approval_type(_approval.type)
 
         db.session.flush()
-        return True
-
+        return purchase
 
 class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -156,6 +153,7 @@ class Purchase(db.Model):
         purchase = Purchase(submit)
         db.session.add(purchase)
         db.session.flush()
+        return purchase
 
     @staticmethod
     def get(id):
@@ -289,7 +287,7 @@ class Purchase(db.Model):
         if page == None:
             return [Purchase._to_dict(p) for p in query.all()]
 
-        return query.paginate(page, pre_page, False).to_page(Purchase._to_dict)
+        return query.order_by(Purchase.apply_time.desc()).paginate(page, pre_page, False).to_page(Purchase._to_dict)
 
     @staticmethod
     def export(submit):
