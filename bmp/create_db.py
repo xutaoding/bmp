@@ -9,7 +9,7 @@ from const import REFS, DEFAULT_GROUP
 from models.user import user_group, Group, User
 from models.release import Release, ReleaseApproval, ReleaseService,ReleaseDatabase,ReleaseTable
 from models.purchase import Purchase, PurchaseImg, PurchaseGoods, PurchaseApproval, purchase_supplier, \
-    purchase_goods_category
+    purchase_goods_category,purchase_goods_spec
 from models.asset import Supplier, Contract, Stock, StockOpt, stock_category,Category
 from bmp.utils import user_ldap
 
@@ -45,8 +45,4 @@ def create_all():
 
 
 if __name__ == "__main__":
-    #create_all()
-    # 导入字典
-    for type, names in REFS.items():
-        for name in names:
-            Ref.add(name,type)
+    create_all()

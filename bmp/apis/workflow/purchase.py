@@ -16,7 +16,7 @@ class PurchaseApi(BaseApi):
 
     def approval(self, pid):
         Purchase.approval(pid)
-        mail_to(Purchase.get(pid))
+        mail_to(Purchase.query.filter(Purchase.id==pid).one())
         return self.succ()
 
     def saved(self, page=0, pre_page=None, pid=0):
@@ -61,7 +61,7 @@ class PurchaseApi(BaseApi):
     def put(self, pid):
         submit = self.request()
         PurchaseApproval.edit(pid, submit)
-        mail_to(Purchase.get(pid))
+        mail_to(Purchase.query.filter(Purchase.id==pid).one())
         return self.succ()
 
     def post(self):

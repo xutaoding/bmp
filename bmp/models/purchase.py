@@ -19,11 +19,19 @@ purchase_goods_category = db.Table("purchase_goods_category",
                                    db.Column("purchase_goods_id", db.Integer, db.ForeignKey("purchase_goods.id")),
                                    db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
+purchase_goods_spec = db.Table("purchase_goods_spec",
+                                   db.Column("purchase_goods_id", db.Integer, db.ForeignKey("purchase_goods.id")),
+                                   db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
+
 
 class PurchaseGoods(db.Model):  # 采购物品
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     price = db.Column(db.Float)
-    spec = db.Column(db.String(128))
+    spec = db.relationship("Category",
+                               secondary=purchase_goods_spec,
+                               backref=db.backref("specs"),
+                               uselist=False)
+
     amount = db.Column(db.Integer)
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
     category = db.relationship("Category",
@@ -35,15 +43,21 @@ class PurchaseGoods(db.Model):  # 采购物品
         from bmp.models.asset import Category
         self.category = Category.query.filter(Category.id == _dict["category_id"]).one()
         self.price = _dict["price"]
-        self.spec = _dict["spec"]
+        self.spec = Category.query.filter(Category.id == _dict["spec"]).one()
         self.amount = _dict["amount"]
 
     @staticmethod
     def _to_dict(self):
         _dict = self.to_dict()
         category=self.category
+        spec=self.spec
+
         if category:
-            _dict["category"] = self.category.to_dict()
+            _dict["category"] = category.to_dict()
+
+        if spec:
+            _dict["spec"] = spec.to_dict()
+
         return _dict
 
 class PurchaseImg(db.Model):  # 比价图片
