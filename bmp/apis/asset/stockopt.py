@@ -14,9 +14,6 @@ class StockoptApi(BaseApi):
         "/asset/stockopt/<int:page>/<int:pre_page>"
     ]
 
-    def auth(self):
-        return True
-
     def get(self, type, page=0, pre_page=None, id=0):
         if id: return self.succ(StockOpt.get(type, id))
         return self.succ(StockOpt.select(type, page, pre_page))
@@ -39,8 +36,6 @@ class StockoptApi(BaseApi):
     def search(self, page=None, pre_page=None):
         submit = self.request()
         return self.succ(StockOpt.search(submit, page, pre_page))
-
-
 
 if __name__ == "__main__":
     from bmp.utils.post import test

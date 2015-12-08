@@ -64,14 +64,20 @@ id:申请id
 获取管理组:get "/groups/<string:name>"
 name:组名
 
-添加管理组:post "/groups/<string:name>"
+添加管理组:post "/groups/<string:name>/<string:desc>"
 name:组名
+desc:组别名
 
 更新管理组用户:put "/groups/<string:name>"
 name:组名
+
 参考:["用户1(uid)","用户2(uid)"]
 
-修改组名:put "/groups/<string:name>/<string:new>"
+修改组名或组别名:put "/groups/<string:name>/<string:new>/<string:desc>"
+name:原组名
+new:新组名
+desc:组别名
+
 
 删除管理组:delete "/groups/<string:name>"
 name:组名
@@ -84,6 +90,15 @@ uid:用户名
 uid:用户名
 mail:email
 is_admin:管理员:1:是,0:不是
+
+更新用户所属组:groups "/users/<string:uid>"
+uid:用户名
+groups:用户组
+
+例:
+{
+    "groups":"UP,QA,OP"
+}
 
 删除用户:delete "/users/<string:uid>"
 uid:用户名
@@ -302,6 +317,23 @@ id:（领用、借用、维修、报废等)编号
 page:页数 从1开始
 pre_page:每页长度
 导出库存:get "/export_stock_search"
+
+参数:
+{
+    "no":"固定资产编号",
+    "stock_in_time_begin":"2000-01-01 00:00",#入库时间范围
+    "stock_in_time_end":"2000-01-01 00:00",#入库时间范围
+    "category_id":"33",#物品类别
+    "price_start":"33.33",#价格范围
+    "price_end":"34.33",#价格范围
+}
+
+库存操作查询:search "/apis/v1.0/asset/stockopt/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+导出库存操作:get "/export_stockopt_search"
+
+参数:
 {
     "no":"固定资产编号",
     "stock_in_time_begin":"2000-01-01 00:00",#入库时间范围
@@ -313,6 +345,7 @@ pre_page:每页长度
     "price_end":"34.33",#价格范围
     "status":"状态"
 }
+
 
 获取报废审批:get "/apis/v1.0/asset/scrap/<int:page>/<int:pre_page>"
 

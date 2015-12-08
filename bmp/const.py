@@ -66,6 +66,7 @@ class RELEASE:
 class PURCHASE:
     PASS = u"已确认"
     FAIL = u"退回"
+    GROUP_NAMES = {"FIN":u"财务","UP":u"上级","BOSS":u"老板","LAW":u"法务"}
     FIN = "FIN"
     FLOW_ONE = "UP"
     FLOW_TWO = "FIN"

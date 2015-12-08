@@ -5,16 +5,11 @@ from flask import request
 import pyexcel.ext.xlsx
 from flask.ext import excel
 
-
-
 class Export_purchase_searchApi(BaseApi):
     route = ["/export_purchase_search"]
 
     def get(self):
         submit = request.args
-
-        print(pyexcel.ext.xlsx)
-
         resp = excel.make_response_from_records(Purchase.export(submit), "xlsx")
         resp.headers["Content-Disposition"] = "attachment; filename=purchase.xlsx"
         return resp

@@ -18,6 +18,11 @@ class UsersApi(BaseApi):
         User.delete(uid)
         return self.succ()
 
+    def groups(self,uid):
+        submit=self.request()
+        User.set_groups(uid,submit["groups"])
+        return self.succ()
+
     def update(self):
         if not User.update(ldap.all()):
             return self.fail()

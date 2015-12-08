@@ -171,7 +171,10 @@ class Purchase(db.Model):
 
     @staticmethod
     def get(id):
-        return Purchase._to_dict(Purchase.query.filter(Purchase.id == id).one())
+        from bmp.models.user import Group
+        purchase=Purchase.query.filter(Purchase.id == id).one()
+        purchase.cur_approval_type_desc=Group.get(purchase.cur_approval_type).desc
+        return Purchase._to_dict(purchase,["cur_approval_type_desc"])
 
     @staticmethod
     def _to_dict(self, cols=[]):
@@ -196,22 +199,27 @@ class Purchase(db.Model):
 
     @staticmethod
     def finished(page=1, pre_page=20):
+        from bmp.models.asset import Contract
+        from bmp.models.user import User
+
         uid = session[USER_SESSION]["uid"]
-
-
         page=Purchase.query\
             .join(PurchaseApproval)\
             .filter(or_(Purchase.apply_uid==uid,PurchaseApproval.uid==uid))\
             .filter(Purchase.is_draft==False)\
             .filter(Purchase.is_finished==True)\
-            .order_by(Purchase.apply_time.desc()).paginate(page, pre_page, False)
+            .order_by(Purchase.apply_time.desc()).paginate(page, pre_page)
 
         return page.to_page(Purchase._to_dict)
 
     @staticmethod
     def unfinished(user_groups):
+        from bmp.models.user import Group
         purchases = []
         uid = session[USER_SESSION]["uid"]
+        groups={}
+        for g in Group.select(to_dict=False):
+            groups[g.name.upper()]=g.desc
 
         for purchase in Purchase.query \
                 .filter(Purchase.is_draft == False) \
@@ -220,7 +228,11 @@ class Purchase(db.Model):
             approvals = purchase.approvals
             apply_uid = purchase.apply_uid
             cur_approval_type = purchase.cur_approval_type
+            purchase.cur_approval_type_desc=""
             purchase.approval_enable = False
+
+            if groups.__contains__(cur_approval_type.upper()):
+                purchase.cur_approval_type_desc=groups[cur_approval_type.upper()]
 
             if uid == purchase.apply_uid:
                 purchases.append(purchase)
@@ -236,7 +248,7 @@ class Purchase(db.Model):
                 purchases.append(purchase)
             else:
                 continue
-        return [Purchase._to_dict(p, ["approval_enable"]) for p in set(purchases)]
+        return [Purchase._to_dict(p, ["approval_enable","cur_approval_type_desc"]) for p in set(purchases)]
 
     @staticmethod
     def passed(page=1,pre_page=20):
@@ -277,13 +289,21 @@ class Purchase(db.Model):
 
     @staticmethod
     def search(submit, page=None, pre_page=None):
+        from bmp.models.asset import Category
+
         def check(s):
             if submit.__contains__(s):
                 return submit[s]
             return False
 
         query = Purchase.query \
-            .join(PurchaseGoods, PurchaseGoods.purchase_id == Purchase.id)
+            .join(PurchaseGoods, PurchaseGoods.purchase_id == Purchase.id)\
+            .join(purchase_goods_category)\
+            .join(PurchaseApproval)\
+            .join(Category)\
+            .filter(Purchase.is_finished==True)\
+            .filter(PurchaseApproval.status!=PURCHASE.FAIL)
+
         if check("apply_businessCategory"):
             query = query.filter(Purchase.apply_businessCategory == submit["apply_businessCategory"])
         if check("apply_uid"):
@@ -294,9 +314,17 @@ class Purchase(db.Model):
             query = query.filter(Purchase.apply_time.between(beg, end))
 
         if check("goods"):
-            query = query.filter(PurchaseGoods.category.name == submit["goods"])
-        if check("price"):
-            query = query.filter(PurchaseGoods.price == submit["price"])
+            parent=Category.query.filter(Category.name==submit["goods"]).one()
+            childs=[c.id for c in Category.query.filter(Category.parent_id==parent.id).all()]
+            query = query.filter(Category.id.in_(childs))
+        if check("price_begin") and check("price_end"):
+            goods=PurchaseGoods.query.filter(PurchaseGoods.purchase_id!=None).all()
+            pgoods=[]
+            for g in goods:
+                total=g.price*g.amount
+                if total>=int(submit["price_begin"]) and total<=int(submit["price_end"]):
+                    pgoods.append(g.id)
+            query = query.filter(PurchaseGoods.id.in_(pgoods))
 
         if page == None:
             return [Purchase._to_dict(p) for p in query.all()]
@@ -308,18 +336,30 @@ class Purchase(db.Model):
         # 申请人	申请部门	申请时间	物品	规格	数量	总价	审批人
         _export = []
         for purchase in Purchase.search(submit):
-            _dict = collections.OrderedDict()
-            _dict["审批人"] = ",".join([str(p["uid"] + p["status"]) for p in purchase["approvals"]])
-            _dict["总价"] = ",".join([str(g["amount"] * g["price"]) for g in purchase["goods"]])
-            _dict["数量"] = ",".join([str(g["amount"]) for g in purchase["goods"]])
-            _dict["规格"] = ",".join([g["spec"] for g in purchase["goods"]])
-            _dict["物品"] = ",".join([str(g["category"]["name"]) for g in purchase["goods"]])
-            _dict["申请时间"] = time.format(purchase["apply_time"],"%Y-%m-%d")
-            _dict["申请部门"] = str(purchase["apply_businessCategory"])
-            _dict["申请人"] = str(purchase["apply_uid"])
-            _export.append(_dict)
+            for g in purchase["goods"]:
+                _dict = collections.OrderedDict()
+                _dict["采购编号"] = str(purchase["id"])
+                _dict["总价"] = g["amount"] * g["price"]
+                _dict["数量"] = g["amount"]
+                _dict["规格"] = str(g["spec"]["name"])
+                _dict["物品"] = str(g["category"]["name"])
+                _dict["申请时间"] = time.format(purchase["apply_time"],"%Y-%m-%d")
+                _dict["申请部门"] = str(purchase["apply_businessCategory"])
+                _dict["申请人"] = str(purchase["apply_uid"])
+                _export.append(_dict)
         return _export
 
 
 if __name__ == "__main__":
-    pass
+    from bmp.models.asset import Contract
+    from bmp.models.user import User
+    from bmp import db
+    submit={}
+    submit["apply_time_begin"]=None
+    submit["apply_time_end"]=None
+    submit["apply_businessCategory"]=None
+    submit["apply_uid"]=""
+    submit["goods"]=""
+    submit["price_begin"]=1
+    submit["price_end"]=100
+    print Purchase.search(submit,1,6)

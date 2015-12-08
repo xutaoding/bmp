@@ -3,6 +3,7 @@ from bmp import db
 from datetime import datetime
 from flask import session
 from bmp.const import USER_SESSION
+from bmp.utils.exception import ExceptionEx
 
 user_group = db.Table("user_group",
                       db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
@@ -13,10 +14,12 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)
     desc = db.Column(db.String(128))
+    is_buildin = db.Column(db.Boolean,default=False)
     users = db.relationship("User", secondary=user_group, backref=db.backref("groups"))
 
-    def __init__(self, name):
+    def __init__(self, name,desc):
         self.name = name
+        self.desc = desc
 
     @staticmethod
     def join(name, users):
@@ -29,19 +32,23 @@ class Group(db.Model):
         return True
 
     @staticmethod
-    def edit(name, new):
-        name, new = name.upper(), new.upper()
+    def edit(name, new_name,new_desc):
+        name, new_name = name.upper(), new_name.upper()
         group = Group.query.filter(Group.name == name).one()
-        group.name = new
+        if name!=new_name and group.is_buildin:
+            raise ExceptionEx("内建组禁止修改组名")
+
+        group.name = new_name
+        group.desc = new_desc
         db.session.commit()
         return True
 
     @staticmethod
     @db.transaction
-    def add(name):
+    def add(name,desc):
         if Group.query.filter(Group.name == name).count():
             return False
-        db.session.add(Group(name))
+        db.session.add(Group(name,desc))
         db.session.flush()
         return True
 
@@ -49,6 +56,8 @@ class Group(db.Model):
     @db.transaction
     def delete(name):
         group = Group.query.filter(Group.name == name).one()
+        if group.is_buildin:
+            raise ExceptionEx("禁止删除内建组")
         db.session.delete(group)
         db.session.flush()
         return True
@@ -56,6 +65,20 @@ class Group(db.Model):
     @staticmethod
     def get(name):
         return Group.query.filter(Group.name.like(name)).one()
+
+
+    @staticmethod
+    def _to_dict(group):
+        g=group.to_dict()
+        g["users"]=[u.uid for u in group.users]
+        return g
+
+    @staticmethod
+    def select(name="%",to_dict=True):
+        if to_dict:
+            return [Group._to_dict(g) for g in Group.query.filter(Group.name.like(name)).all()]
+        return Group.query.filter(Group.name.like(name)).all()
+
 
     @staticmethod
     def get_users(name):
@@ -115,6 +138,15 @@ class User(db.Model):
         user.is_admin = is_admin
         db.session.flush()
         return True
+
+
+    @staticmethod
+    @db.transaction
+    def set_groups(uid,groups):
+        user = User.query.filter(User.uid == uid).one()
+        user.groups=Group.query.filter(Group.name.in_(groups.split(","))).all()
+        db.session.flush()
+
 
     @staticmethod
     @db.transaction

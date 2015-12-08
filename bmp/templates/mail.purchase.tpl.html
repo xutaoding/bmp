@@ -33,7 +33,7 @@
     <br/>
     {% for g in goods %}
     <p>物品:{{ g.category.name }}</p>
-    <p>规格:{{ g.spec }}</p>
+    <p>规格:{{ g.spec.name }}</p>
     <p>单价:{{ g.price }}</p>
     <p>数量:{{ g.amount }}</p>
     <p>合计:{{ g.price*g.amount }}</p>
@@ -43,7 +43,12 @@
     {% if approvals %}
         {% for a in approvals %}
             {% if a.status=="退回" %}
+                {% if a.type in group_names.keys() %}
+                <p>{{ group_names[a.type] }}:{{ a.uid }},{{ a.status }}</p>
+                {% else %}
                 <p>{{ a.type }}:{{ a.uid }},{{ a.status }}</p>
+                {% endif %}
+
                 <p>退回理由:{{ a.reson }} {{ a.options }}</p>
             {% else %}
                 <p>{{ a.type }}:{{ a.uid }},{{ a.status }}</p>

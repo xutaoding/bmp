@@ -45,6 +45,7 @@ def __mail_to(p):
         purchase=p,
         goods=p.goods,
         approvals=approvals,
+        group_names=PURCHASE.GROUP_NAMES,
         url=url)
 
     mail.send(sub, html, list(set(to)))

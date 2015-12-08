@@ -4,14 +4,17 @@ from bmp.models.user import Group
 
 
 class GroupsApi(BaseApi):
-    route = ["/groups", "/groups/<string:name>", "/groups/<string:name>/<string:new>"]
+    route = ["/groups",
+             "/groups/<string:name>/<string:desc>",
+             "/groups/<string:name>",
+             "/groups/<string:name>/<string:new>/<string:desc>"]
 
     def get(self, name="%"):
-        return self.succ([g.to_dict() for g in Group.query.filter(Group.name.like(name)).all()])
+        return self.succ(Group.select(name))
 
-    def put(self, name, new=""):
+    def put(self, name, new="",desc=""):
         if new:
-            if not Group.edit(name, new):
+            if not Group.edit(name,new,desc):
                 return self.fail()
             return self.succ()
 
@@ -20,8 +23,8 @@ class GroupsApi(BaseApi):
             return self.fail()
         return self.succ()
 
-    def post(self, name):
-        if not Group.add(name):
+    def post(self, name,desc):
+        if not Group.add(name,desc):
             return self.fail()
         return self.succ()
 
