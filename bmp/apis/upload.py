@@ -15,7 +15,7 @@ class UploadApi(BaseApi):
         return True
 
     def __save_file(self, file):
-        path = "%s/%s/%s" % (app.root_path, app.config["UPLOAD_FOLDER"], datetime.now().strftime("%Y-%m-%d"))
+        path = "%s/%s" % (app.config["UPLOAD_FOLDER"], datetime.now().strftime("%Y-%m-%d"))
         path = path.replace("/", os.sep)
         if not os.path.exists(path):
             os.makedirs(path)

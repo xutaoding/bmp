@@ -106,21 +106,23 @@ class PurchaseApproval(db.Model):
         purchase = Purchase.query.filter(Purchase.id == id).one()
         purchase.approvals.append(_approval)
 
-        # 失败
+        purchase.cur_approval_type = PurchaseApproval.__next_approval_type(_approval.type)
+
         if _approval.status == PURCHASE.FAIL:
             purchase.is_finished = True
         else:
             if _approval.type == PURCHASE.FLOW_TWO:
                 total = sum([g.price * g.amount for g in purchase.goods])
                 if total < PURCHASE.PRICE_LIMIT:
-                    purchase.is_finished = True
+                    if not purchase.contract:
+                        purchase.is_finished = True
+                    else:
+                        purchase.cur_approval_type=PURCHASE.FLOW_FOUR
             elif _approval.type == PURCHASE.FLOW_THREE:
                 if not purchase.contract:
                     purchase.is_finished = True
             elif _approval.type == PURCHASE.FLOW_FOUR:
                 purchase.is_finished = True
-
-        purchase.cur_approval_type = PurchaseApproval.__next_approval_type(_approval.type)
 
         db.session.flush()
         return purchase

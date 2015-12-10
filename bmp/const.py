@@ -81,6 +81,8 @@ class SCRAP:
     FAIL = u"退回"
     TYPE = u"报废"
 
+class STOCK:
+    TYPE = u"库存"
 
 
 if __name__ == "__main__":

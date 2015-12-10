@@ -1,12 +1,13 @@
 # coding=utf-8
 from bmp import db
 from flask import session
-from bmp.const import USER_SESSION,SCRAP
+from bmp.const import USER_SESSION,SCRAP,STOCK
 from datetime import datetime
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
 from datetime import datetime
+from sqlalchemy import and_
 
 stock_category = db.Table("stock_category",
                           db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
@@ -59,6 +60,7 @@ class Supplier(db.Model):
         supplier.tel = _dict["tel"]
         supplier.addr = _dict["addr"]
         supplier.interfaceor = _dict["interfaceor"]
+        supplier.path = _dict["path"]
         # supplier.create_time = datetime.now()
 
         supplier.last_time = datetime.now()
@@ -76,6 +78,7 @@ class Supplier(db.Model):
 
 class Contract(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    desc = db.Column(db.String(128))
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
@@ -99,6 +102,10 @@ class Contract(db.Model):
         else:
             self.path=""
 
+        if _dict.__contains__("desc"):
+            self.desc=_dict["desc"]
+
+
     @staticmethod
     def add(_dict):
         db.session.add(Contract(_dict))
@@ -118,8 +125,14 @@ class Contract(db.Model):
         contract = Contract.query.filter(Contract.id == id).one()
         contract.begin_time = datetime.strptime(_dict["begin_time"], "%Y-%m-%d")
         contract.end_time = datetime.strptime(_dict["end_time"], "%Y-%m-%d")
-        contract.purchase_id = _dict["purchase_id"]
         contract.path = _dict["path"]
+
+        if _dict.__contains__("purchase_id") and _dict["purchase_id"]:
+            contract.purchase_id = _dict["purchase_id"]
+
+        if _dict.__contains__("desc"):
+            contract.desc=_dict["desc"]
+
         db.session.flush()
         return True
 
@@ -219,10 +232,12 @@ class Category(db.Model):
     @staticmethod
     @db.transaction
     def get_child_ids(_id):
-        ids = []
         categorys = Category.query.filter(Category.parent_id == _id).all()
         if not categorys:
             return []
+
+        ids=[c.id for c in categorys]
+
         for category in categorys:
             ids.extend(Category.get_child_ids(category.id))
         return ids
@@ -394,9 +409,21 @@ class Stock(db.Model):
                 return submit[s]
             return False
 
-        query = Stock.query \
-            .join(stock_category) \
-            .join(Category)
+        query = Stock.query\
+                .join(stock_category) \
+                .join(Category)
+
+        if check("status"):
+            status=check("status")
+            if status==STOCK.TYPE:
+                stock_ids=[s.stock_id for s in StockOpt.query.filter(StockOpt.status.in_(["",SCRAP.TYPE])).all()]
+                query=query.filter(~Stock.id.in_(stock_ids))
+            else:
+                query = Stock.query\
+                    .join(StockOpt, Stock.id == StockOpt.stock_id)\
+                    .join(stock_category) \
+                    .join(Category)
+                query = query.filter(and_(StockOpt.status.in_(["",SCRAP.TYPE]),StockOpt.type==status))
 
 
         if check("no"):
@@ -414,6 +441,7 @@ class Stock(db.Model):
 
         if check("category_id"):
             ids = Category.get_child_ids(submit["category_id"]) + [submit["category_id"]]
+            print(ids)
             query = query.filter(Category.id.in_(ids))
 
         if check("price_start") and check("price_end"):
@@ -447,10 +475,15 @@ class Stock(db.Model):
     def init(self, _dict):
         for k, v in _dict.items():
             if k == "category_id":
-                self.category = Category.query.filter(Category.id == v).one()
+                query=Category.query.filter(Category.id == v)
+                if not query.count():
+                    raise ExceptionEx("不存在的商品id")
+                self.category = query.one()
             if k == "spec_id":
-                self.spec = Category.query.filter(Category.id == v).one()
-
+                query=Category.query.filter(Category.id == v)
+                if not query.count():
+                    raise ExceptionEx("不存在的规格id")
+                self.spec = query.one()
             if "time" in k:
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             elif k == "id":
@@ -502,21 +535,32 @@ class Stock(db.Model):
         db.session.flush()
 
     @staticmethod
+    @db.transaction
     def delete(id):
         stock = Stock.query.filter(Stock.id == id).one()
-        db.session.delete(stock.opts)
+        for opt in stock.opts:
+            db.session.delete(opt)
         db.session.delete(stock)
-        db.session.commit()
+        db.session.flush()
 
     @staticmethod
     def _to_dict(self, show_opt=False):
         _dict = self.to_dict()
         category = self.category
         spec =self.spec
+        _dict["status"]=""
 
         if spec:_dict["spec"] = spec.to_dict()
         if category:_dict["category"] = category.to_dict()
-        if show_opt:_dict["opts"] = [opt.to_dict() for opt in self.opts]
+
+        opts=self.opts
+        for opt in opts:
+            if opt.status.strip() in ["",SCRAP.TYPE]:
+                _dict["status"]=opt.type
+
+        if show_opt:
+            _dict["opts"] = [opt.to_dict() for opt in opts]
+
         return _dict
 
     @staticmethod
@@ -536,4 +580,4 @@ class Stock(db.Model):
 
 
 if __name__ == "__main__":
-    pass
+    print len(Stock.search({"category_id":"39"}))
