@@ -5,7 +5,7 @@ from bmp import app
 from datetime import datetime
 import os
 import uuid
-from flask import send_from_directory
+from flask import send_file
 
 
 class UploadApi(BaseApi):
@@ -26,11 +26,8 @@ class UploadApi(BaseApi):
 
 
     def get(self):
-        path=request.args["path"]
-        paths=path.split(os.sep)
-        return send_from_directory(os.sep.join(paths[:-1]),paths[-1])
-
-
+        submit = request.args["path"]
+        return send_file(submit,as_attachment=True)
 
     def post(self):
         _dict = {}
