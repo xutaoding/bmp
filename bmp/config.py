@@ -27,7 +27,7 @@ class Config(object):
     LOG_PATH = "bmp.log"
     LOG_MAX = ""
 
-    UPLOAD_FOLDER = "/upload"
+    UPLOAD_FOLDER = "/static/upload"
     SINGLETON = True
     HOST = ""
     PORT = 5000
