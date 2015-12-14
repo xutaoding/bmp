@@ -17,8 +17,8 @@ class UploadApi(BaseApi):
         if not os.path.exists(path):
             os.makedirs(path)
 
-        file_path = os.path.join(app.root_path+path, "%s_%s" % (uuid.uuid1(), file.filename))
-        file.save(file_path)
+        file_path = os.path.join(path, "%s_%s" % (uuid.uuid1(), file.filename))
+        file.save(app.root_path+file_path)
         return file_path
 
 
