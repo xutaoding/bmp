@@ -108,14 +108,6 @@ uid:用户名
 
 采购相关------------------------------------------------
 
-上传文件:post "/upload"
-下载文件:get "/upload?path=文件路径"
-
-
-
-
-
-
 获取采购申请:get "/purchase/<int:page>/<int:pre_page>"
 
 获取已审批的采购申请:finished "/purchase/<int:page>/<int:pre_page>"
@@ -258,7 +250,7 @@ id:合同id
 删除供应商:delete "/supplier/<int:id>"
 
 
-库存管理:
+库存管理------------------------------------------------
 
 获取全部库存: get "/asset/stock/<int:page>/<int:pre_page>"
 page:页数 从1开始
@@ -348,12 +340,77 @@ pre_page:每页长度
 
 
 获取报废审批:get "/apis/v1.0/asset/scrap/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
 
+项目相关------------------------------------------------
+
+获取全部项目: get "/apis/v1.0/project/<int:page>/<int:pre_page>"
+获取指定项目: get "/apis/v1.0/project/<int:pid>"
+pid:项目id
+
+删除项目:delete "/apis/v1.0/project/<int:pid>"
+pid:项目id
+
+新建项目: post "/apis/v1.0/project"
+参数:pid:项目id
+{
+    "name":"项目名称",
+    "desc":"项目描述",
+    "summarize":"项目小结",
+    "begin_time":"1990-01-01",#开始时间
+    "end_time":"1990-01-02",#计划完成时间
+    "demand_uid":"chenglong.yan",#需求负责人
+    "develop_uid":"chenglong.yan",#研发负责人
+    "test_uid":"chenglong.yan",#测试负责人
+    "release_uid":"chenglong.yan",#发布负责人
+    "man_day":"10",#人/天
+    "resource":"资源预分配"
+}
+
+更新相关资料:put "/project/doc/<int:pid>"
+{
+ "docs":[#相关资料
+         {"url":"资料url1"},
+         {"url":"资料url2"}
+        ]
+}
+
+更新相关人员: put "/project/member/<int:sid>"
+sid:阶段信息(需求、研发、测试、发布)id
+参数:
+{
+ "members":[#相关人员
+            {"uid":"chenglong.yan"},
+            {"uid":"mingming.zhang"}
+        ]
+}
+
+更新阶段信息(需求、研发、测试、发布) put "/project/schedule/<int:pid>"
+新增阶段信息(需求、研发、测试、发布) post "/project/schedule/<int:pid>"
+pid:项目id
+参数:
+{
+ "type":"demand",#项目阶段 需求:demand,研发:develop,测试:test,发布:release
+ "begin_time":"1990-01-01",#需求周期
+ "end_time":"1990-01-02",#需求周期
+ "status":"1",#refs的id,项目状态
+ "reson":"变更原因",
+ "desc":""
+}
+
+
+
+
+文件上传/下载------------------------------------------------
+上传文件:post "/upload"
+下载文件:get "/upload?path=文件路径"
 
 
 统计------------------------------------------------
 发布应用统计:get "/stats/release/app/<string:begin_time>/<string:end_time>"
 发布状态统计:get "/stats/release/status/<string:begin_time>/<string:end_time>"
+发布类型统计:get "/stats/release/type/<string:begin_time>/<string:end_time>"
 格式:
     begin_time:yyyy-mm-dd
     end_time:yyyy-mm-dd

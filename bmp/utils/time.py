@@ -6,7 +6,9 @@ from datetime import timedelta
 def format(dt, fmt):
     if isinstance(dt, datetime):
         dt = dt.strftime(fmt)
-    return datetime.strptime(dt, fmt) - timedelta(hours=8)
+
+    #dt=datetime.strptime(dt, fmt) - timedelta(hours=8)
+    return dt.__str__()
 
 
 

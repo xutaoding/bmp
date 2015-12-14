@@ -64,11 +64,15 @@ class PurchaseImg(db.Model):  # 比价图片
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     b64 = db.Column(db.Text)
     desc = db.Column(db.String(128))
+    path = db.Column(db.String(256))
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
 
     def __init__(self, _dict):
-        self.b64 = _dict["b64"]
+        if _dict.__contains__("b64"):
+            self.b64 = _dict["b64"]
+        else:self.b64 = ""
         self.desc = _dict["desc"]
+        self.path = _dict["path"]
 
 class PurchaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

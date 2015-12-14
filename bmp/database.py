@@ -11,6 +11,7 @@ class Database(SQLAlchemy):
         self.Model.to_dict = Database.__to_dict
         self.Query.paginate =Database.__paginate
         self.Query.to_page = Database.__to_page
+        self.Query.to_json = Database.__to_json
 
     @staticmethod
     def __to_page(self, _to_dict):
@@ -36,6 +37,20 @@ class Database(SQLAlchemy):
             self.pages+=1
 
         return self
+
+    @staticmethod
+    def __to_json(self, cols=[]):
+        _dict = {}
+        for c in self.__table__.columns:
+            attr = getattr(self, c.name, None)
+            if isinstance(attr, datetime):
+                _dict[c.name] = time.format(attr, "%Y-%m-%d %H:%M")
+            else:
+                _dict[c.name] = attr
+
+        for c in cols:
+            _dict[c] = getattr(self, c, None)
+        return _dict
 
     @staticmethod
     def __to_dict(self, cols=[]):
@@ -73,8 +88,6 @@ class Database(SQLAlchemy):
                 raise ex
             except Exception,e:
                 raise e
-
-
         return __fun
 
 

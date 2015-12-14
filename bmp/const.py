@@ -85,5 +85,21 @@ class STOCK:
     TYPE = u"库存"
 
 
+class PROJECT:
+
+
+    EDIT_PROJ="编辑项目"
+    EDIT_DOC="编辑文档"
+
+    @staticmethod
+    def EDIT_MEMBER(type):
+        return "编辑%s成员"%type
+
+    @staticmethod
+    def EDIT_SCHEDULE(type):
+        return "编辑%s阶段"%type
+
+
+
 if __name__ == "__main__":
     pass

@@ -11,6 +11,7 @@ from models.release import Release, ReleaseApproval, ReleaseService,ReleaseDatab
 from models.purchase import Purchase, PurchaseImg, PurchaseGoods, PurchaseApproval, purchase_supplier, \
     purchase_goods_category,purchase_goods_spec
 from models.asset import Supplier, Contract, Stock, StockOpt, stock_category,Category,stock_spec_category
+from models.project import *
 from bmp.utils import user_ldap
 
 '''
@@ -45,4 +46,4 @@ def create_all():
 
 
 if __name__ == "__main__":
-    create_all()
+    db.create_all()

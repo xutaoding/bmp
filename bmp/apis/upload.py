@@ -11,9 +11,6 @@ from flask import send_file
 class UploadApi(BaseApi):
     route = ["/upload"]
 
-    def auth(self):
-        return True
-
     def __save_file(self, file):
         path = "%s/%s" % (app.config["UPLOAD_FOLDER"], datetime.now().strftime("%Y-%m-%d"))
         path = path.replace("/", os.sep)

@@ -38,40 +38,4 @@ class StockoptApi(BaseApi):
         return self.succ(StockOpt.search(submit, page, pre_page))
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    # 固定资产编号	名称	规格	借用人	借用时间	备注	状态
-    test(
-        "post",
-        "http://localhost:5000/apis/v1.0/asset/stockopt",
-        {
-            "type": "领用1",
-            "uid": "mingming.zhang",  # 领用人
-            "time": "2000-01-01 00:00",  # 对应type的时间
-            "reson": "理由，故障，报废原因",
-            "remark": "备注",
-            "status": "状态",
-            "stock_id": "2",  # 库存的id
-        }
-    )
-
-    test(
-        "put",
-        "http://localhost:5000/apis/v1.0/asset/stockopt/1",
-        {
-            "id": "1",
-            "type": "领用1",
-            "uid": "mingming.zhang",  # 领用人
-            "time": "2000-01-01 00:00",  # 对应type的时间
-            "reson": "理由，故障，报废原因",
-            "remark": "备注",
-            "status": "状态",
-            "stock_id": "2",  # 库存的id
-        }, True
-    )
-
-    test(
-        "delete",
-        "http://localhost:5000/apis/v1.0/asset/stockopt/2",
-        {}
-    )
+    pass
