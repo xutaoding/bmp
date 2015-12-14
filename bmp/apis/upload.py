@@ -17,14 +17,14 @@ class UploadApi(BaseApi):
         if not os.path.exists(path):
             os.makedirs(path)
 
-        file_path = os.path.join(path, "%s_%s" % (uuid.uuid1(), file.filename))
+        file_path = os.path.join(app.root_path+path, "%s_%s" % (uuid.uuid1(), file.filename))
         file.save(file_path)
         return file_path
 
 
     def get(self):
         submit = request.args["path"]
-        return send_file(submit,as_attachment=True)
+        return send_file(app.root_path+submit,as_attachment=True)
 
     def post(self):
         _dict = {}
