@@ -236,25 +236,30 @@ class Purchase(db.Model):
             cur_approval_type = purchase.cur_approval_type
             purchase.cur_approval_type_desc=""
             purchase.approval_enable = False
+            is_append=False
 
             if groups.__contains__(cur_approval_type.upper()):
                 purchase.cur_approval_type_desc=groups[cur_approval_type.upper()]
 
             if uid == purchase.apply_uid:
                 purchases.append(purchase)
-            if uid in [a.uid for a in approvals]:
+                is_append=True
+            elif uid in [a.uid for a in approvals]:
                 purchases.append(purchase)
+                is_append=True
 
             if cur_approval_type == PURCHASE.FLOW_ONE:
                 if Purchase.__is_superior(uid, apply_uid):
                     purchase.approval_enable = True
-                    purchases.append(purchase)
+                    if not is_append:
+                        purchases.append(purchase)
             elif uid in user_groups[cur_approval_type]:
                 purchase.approval_enable = True
-                purchases.append(purchase)
+                if not is_append:
+                    purchases.append(purchase)
             else:
                 continue
-        return [Purchase._to_dict(p, ["approval_enable","cur_approval_type_desc"]) for p in set(purchases)]
+        return [Purchase._to_dict(p, ["approval_enable","cur_approval_type_desc"]) for p in purchases]
 
     @staticmethod
     def passed(page=1,pre_page=20):
