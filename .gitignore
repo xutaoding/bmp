@@ -1,4 +1,3 @@
-/bmp/apis/workflow/project/project.py
 *.pyc
 .idea/
 __pycache__/

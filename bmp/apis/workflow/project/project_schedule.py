@@ -7,7 +7,7 @@ from bmp.const import USER_SESSION
 class Project_scheduleApi(BaseApi):
     route = ["/project/schedule/<int:pid>"]
     def auth(self):
-        session[USER_SESSION]["uid"]="chenglong.yan"
+        session[USER_SESSION]={"uid":"chenglong.yan"}
         return True
 
     def post(self,pid):
@@ -26,7 +26,7 @@ class Project_scheduleApi(BaseApi):
 if __name__ == "__main__":
     from bmp.utils.post import test
     test("post",
-         "127.0.0.1:5000/apis/v1.0/project",
+         "http://127.0.0.1:5000/apis/v1.0/project/schedule/1",
          {
              "type":"demand",#需求阶段
              "begin_time":"1990-01-01",#需求周期

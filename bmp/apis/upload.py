@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 import uuid
 from flask import send_file
+from bmp.models.upload import Upload
 
 
 class UploadApi(BaseApi):
@@ -17,14 +18,23 @@ class UploadApi(BaseApi):
         if not os.path.exists(app.root_path+path):
             os.makedirs(app.root_path+path)
 
-        file_path = os.path.join(path, "%s_%s" % (uuid.uuid1(), file.filename))
+        uid="%s"%uuid.uuid1()
+
+        Upload.add(file.filename,uid)
+
+        file_path = os.path.join(path,uid)
         file.save(app.root_path+file_path)
         return file_path
 
 
     def get(self):
         submit = request.args["path"]
-        return send_file(app.root_path+submit,as_attachment=True)
+        uuid=submit.split(os.sep)[-1]
+        name=Upload.get_name(uuid)
+        if not name:
+            return send_file(app.root_path+submit,as_attachment=True)
+        return send_file(app.root_path+submit,as_attachment=True,attachment_filename=name)
+
 
     def post(self):
         _dict = {}

@@ -19,7 +19,7 @@ class ProjectHistory(db.Model):
 
     def __init__(self, _dict):
         self.fields = json.dumps(_dict)
-        self.project_id = _dict["id"]
+        self.project_id = _dict["project_id"]
         self.modify_uid = session[USER_SESSION]["uid"]
         self.modify_time = datetime.now()
 
@@ -123,9 +123,9 @@ class Project(db.Model):
     @staticmethod
     @db.transaction
     def edit_doc(_dict):
-        ps=Project.query.filter(ProjectSchedule.id==_dict["project_id"]).one()
-        ps.members=[Database.to_cls(ProjectDoc,d) for d in _dict["docs"]]
-        ProjectHistory.add(ps.project_id,PROJECT.EDIT_DOC,_dict)
+        ps=Project.query.filter(Project.id==_dict["project_id"]).one()
+        ps.docs=[Database.to_cls(ProjectDoc,d) for d in _dict["docs"]]
+        ProjectHistory.add(ps.id,PROJECT.EDIT_DOC,_dict)
         db.session.flush()
 
     @staticmethod
@@ -147,7 +147,11 @@ class Project(db.Model):
 
         def _relation_to_dict(obj, func=None):
             if not obj: return None
-            if not func: return obj.to_dict()
+            if not func:
+                if isinstance(obj,list):
+                    return [o.to_dict() for o in obj]
+                return obj.to_dict()
+
             return func(obj)
 
         _dict["schedules"] = _relation_to_dict(self.schedules)

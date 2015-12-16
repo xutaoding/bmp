@@ -12,6 +12,7 @@ from models.purchase import Purchase, PurchaseImg, PurchaseGoods, PurchaseApprov
     purchase_goods_category,purchase_goods_spec
 from models.asset import Supplier, Contract, Stock, StockOpt, stock_category,Category,stock_spec_category
 from models.project import *
+from models.upload import Upload
 from bmp.utils import user_ldap
 
 '''

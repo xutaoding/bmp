@@ -8,7 +8,7 @@ from bmp.const import USER_SESSION
 class Project_docApi(BaseApi):
     route = ["/project/doc/<int:pid>"]
     def auth(self):
-        session[USER_SESSION]["uid"]="chenglong.yan"
+        session[USER_SESSION]={"uid":"chenglong.yan"}
         return True
 
 
@@ -22,7 +22,7 @@ class Project_docApi(BaseApi):
 if __name__ == "__main__":
     from bmp.utils.post import test
     test("put",
-         "127.0.0.1:5000/apis/v1.0/project",
+         "http://127.0.0.1:5000/apis/v1.0/project/doc/1",
          {
              "docs":[#相关资料
                      {"url":"资料url1"},
