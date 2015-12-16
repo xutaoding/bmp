@@ -96,6 +96,37 @@ class ProjectDoc(db.Model):
         self.url = _dict["url"]
 
 
+class ProjectNotice(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    type = db.Column(db.String(128))
+    txt = db.Column(db.Text)
+    uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+    time = db.Column(db.DateTime)
+
+    def __init__(self, _dict):
+        for k, v in _dict.items():
+            setattr(self, k, v)
+
+        self.uid=session[USER_SESSION]["uid"]
+        self.time=datetime.now()
+
+
+    @staticmethod
+    def add(_dict):
+        db.session.add(ProjectNotice(_dict))
+        db.session.commit()
+        return True
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
+
+    @staticmethod
+    def select(page=0, pre_page=None):
+        return ProjectNotice.query.paginate(page, pre_page, False).order_by(ProjectNotice.time.asc()).to_page(
+            ProjectNotice._to_dict)
+
+
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)
