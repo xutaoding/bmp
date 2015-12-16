@@ -2,7 +2,7 @@
 USER_SESSION = "user"
 
 REFS = {
-    "项目名称": ["ichinascope", "chinascopefinancial","基金","智投", "数库云", "数库港", "后台系统"],
+    "项目名称": ["ichinascope", "chinascopefinancial", "基金", "智投", "数库云", "数库港", "后台系统"],
     "数据库": ["mongodb", "mysql", "oracle", "sqlserver"],
     "web": ["PHP", "Nginx", "Apache", "other"],
     "应用服务": [
@@ -54,7 +54,7 @@ class DEFAULT_GROUP:
     }
 
 
-#todo 清除unicode定义
+# todo 清除unicode定义
 class RELEASE:
     PASS = u"已确认"
     FAIL = u"退回"
@@ -62,11 +62,12 @@ class RELEASE:
     FLOW_QA = [u"内部测试", u"正式环境测试"]
     OPTIONS = "options"
 
-#todo 清除unicode定义
+
+# todo 清除unicode定义
 class PURCHASE:
     PASS = u"已确认"
     FAIL = u"退回"
-    GROUP_NAMES = {"FIN":u"财务","UP":u"上级","BOSS":u"老板","LAW":u"法务"}
+    GROUP_NAMES = {"FIN": u"财务", "UP": u"上级", "BOSS": u"老板", "LAW": u"法务"}
     FIN = "FIN"
     FLOW_ONE = "UP"
     FLOW_TWO = "FIN"
@@ -75,30 +76,29 @@ class PURCHASE:
     FLOW = [FLOW_ONE, FLOW_TWO, FLOW_THREE, FLOW_FOUR]
     PRICE_LIMIT = 10000
 
-#todo 清除unicode定义
+
+# todo 清除unicode定义
 class SCRAP:
     PASS = u"已确认"
     FAIL = u"退回"
     TYPE = u"报废"
+
 
 class STOCK:
     TYPE = u"库存"
 
 
 class PROJECT:
-
-
-    EDIT_PROJ="编辑项目"
-    EDIT_DOC="编辑文档"
+    EDIT_PROJ = "编辑项目"
+    EDIT_DOC = "编辑文档"
 
     @staticmethod
     def EDIT_MEMBER(type):
-        return "编辑%s成员"%type
+        return "编辑%s成员" % type
 
     @staticmethod
     def EDIT_SCHEDULE(type):
-        return "编辑%s阶段"%type
-
+        return "编辑%s阶段" % type
 
 
 if __name__ == "__main__":

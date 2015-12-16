@@ -1,18 +1,12 @@
 # coding: utf-8
 
 
-#todo 自动import modules目录下表定义
+# todo 自动import modules目录下表定义
 
-from bmp import db
 from models.ref import Ref
 from const import REFS, DEFAULT_GROUP
-from models.user import user_group, Group, User
-from models.release import Release, ReleaseApproval, ReleaseService,ReleaseDatabase,ReleaseTable
-from models.purchase import Purchase, PurchaseImg, PurchaseGoods, PurchaseApproval, purchase_supplier, \
-    purchase_goods_category,purchase_goods_spec
-from models.asset import Supplier, Contract, Stock, StockOpt, stock_category,Category,stock_spec_category
+from models.user import Group, User
 from models.project import *
-from models.upload import Upload
 from bmp.utils import user_ldap
 
 '''

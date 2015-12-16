@@ -1,6 +1,7 @@
 # coding: utf-8
-from bmp import app
 import ldap
+
+from bmp import app
 
 
 def __bind(account, pwd, is_auth=False):

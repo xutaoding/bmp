@@ -1,9 +1,6 @@
 # coding: utf-8
-from flask import session
-from bmp.const import USER_SESSION
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Supplier
-import json
 
 
 class SupplierApi(BaseApi):

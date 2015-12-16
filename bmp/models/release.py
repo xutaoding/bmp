@@ -1,33 +1,39 @@
 # coding: utf-8
-from bmp import db
 from datetime import datetime
+
 from flask import session
+
+from bmp import db
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
 from bmp.utils.exception import ExceptionEx
 
+
 class ReleaseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
-    release_database_id=db.Column(db.Integer,db.ForeignKey("release_database.id"))
-    def __init__(self,_dict):
-        self.name=_dict["name"]
+    release_database_id = db.Column(db.Integer, db.ForeignKey("release_database.id"))
+
+    def __init__(self, _dict):
+        self.name = _dict["name"]
+
 
 class ReleaseDatabase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     tables = db.relationship("ReleaseTable")
-    release_service_id=db.Column(db.Integer,db.ForeignKey("release_service.id"))
+    release_service_id = db.Column(db.Integer, db.ForeignKey("release_service.id"))
 
     @staticmethod
     def _to_dict(self):
-        database=self.to_dict()
-        database["tables"]=[t.to_dict() for t in self.tables]
+        database = self.to_dict()
+        database["tables"] = [t.to_dict() for t in self.tables]
         return database
 
-    def __init__(self,_dict):
-        self.name=_dict["name"]
+    def __init__(self, _dict):
+        self.name = _dict["name"]
         self.tables = [ReleaseTable(t) for t in _dict["table"]]
+
 
 class ReleaseService(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -40,28 +46,30 @@ class ReleaseService(db.Model):
 
     @staticmethod
     def _to_dict(self):
-        service=self.to_dict()
+        service = self.to_dict()
         service["databases"] = [ReleaseDatabase._to_dict(d) for d in self.databases]
         return service
 
     def __init__(self, _dict):
         self.name = _dict["name"]
         self.type = _dict["type"]
-        #self.database = _dict["database"]
-        #self.table = _dict["table"]
-        databases=[d for d in _dict["database"].split("|") if d!=""]
-        tables=[t for t in _dict["table"].split("|") if t!=""]
-        if len(databases)!=len(tables):
+        # self.database = _dict["database"]
+        # self.table = _dict["table"]
+        databases = [d for d in _dict["database"].split("|") if d != ""]
+        tables = [t for t in _dict["table"].split("|") if t != ""]
+        if len(databases) != len(tables):
             raise ExceptionEx("表格式错误")
 
-        def format_database(database,table):
-            _database={"name":database.strip()}
+        def format_database(database, table):
+            _database = {"name": database.strip()}
+
             def format_tables(table):
-                return [{"name":t.strip()} for t in table.split(",")]
-            _database["table"]=[t for t in format_tables(table)]
+                return [{"name": t.strip()} for t in table.split(",")]
+
+            _database["table"] = [t for t in format_tables(table)]
             return _database
 
-        _dict["database"]=[format_database(databases[i],tables[i]) for i in range(0,len(databases))]
+        _dict["database"] = [format_database(databases[i], tables[i]) for i in range(0, len(databases))]
 
         self.databases = [ReleaseDatabase(t) for t in _dict["database"]]
 
@@ -103,6 +111,7 @@ class ReleaseApproval(db.Model):
         db.session.flush()
         return True
 
+
 class Release(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     project = db.Column(db.String(128), nullable=False)
@@ -116,7 +125,7 @@ class Release(db.Model):
     to = db.Column(db.String(256), nullable=False)
     approvals = db.relationship("ReleaseApproval")
     service = db.relationship("ReleaseService", uselist=False)
-    release_type = db.Column(db.String(64),default="")
+    release_type = db.Column(db.String(64), default="")
 
     def __init__(self, _dict):
         self.project = _dict["project"]
@@ -137,7 +146,6 @@ class Release(db.Model):
     @staticmethod
     def select(id=0, uid=0):
 
-
         query = Release.query.order_by(Release.apply_time.desc())
 
         if not id:
@@ -146,10 +154,10 @@ class Release(db.Model):
             return [Release.__to_dict(release) for release in query.filter(Release.apply_uid == uid).all()]
         return [Release.__to_dict(release) for release in query.filter(Release.id == id).all()]
 
-
     @staticmethod
-    def between(begin,end):
-        return [Release.__to_dict(release) for release in Release.query.filter(Release.apply_time.between(begin,end)).all()]
+    def between(begin, end):
+        return [Release.__to_dict(release) for release in
+                Release.query.filter(Release.apply_time.between(begin, end)).all()]
 
     @staticmethod
     def get(rid):
@@ -198,11 +206,6 @@ class Release(db.Model):
         db.session.commit()
         return True
 
+
 if __name__ == "__main__":
     pass
-
-
-
-
-
-

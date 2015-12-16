@@ -1,51 +1,53 @@
 # coding: utf-8
-from bmp import db
+from flask import session
+
 from bmp.apis.base import BaseApi
 from bmp.models.project import Project
-from flask import session
 from bmp.const import USER_SESSION
 
+
 class ProjectApi(BaseApi):
-    route = ["/project/<int:page>/<int:pre_page>","/project/<int:pid>","/project"]
+    route = ["/project/<int:page>/<int:pre_page>", "/project/<int:pid>", "/project"]
+
     def auth(self):
-        session[USER_SESSION]={"uid":"chenglong.yan"}
+        session[USER_SESSION] = {"uid": "chenglong.yan"}
         return True
 
-    def get(self,page=0, pre_page=None,pid=0):
+    def get(self, page=0, pre_page=None, pid=0):
         if pid:
             return self.succ(Project.get(pid))
-        return self.succ(Project.select(page,pre_page))
+        return self.succ(Project.select(page, pre_page))
 
     def post(self):
-        submit=self.request()
+        submit = self.request()
         Project.add(submit)
         return self.succ()
 
-    def put(self,pid):
-        submit=self.request()
-        Project.edit(pid,submit)
+    def put(self, pid):
+        submit = self.request()
+        Project.edit(pid, submit)
         return self.succ()
 
-    def delete(self,pid):
+    def delete(self, pid):
         Project.delete(pid)
         return self.succ()
 
 
-
 if __name__ == "__main__":
     from bmp.utils.post import test
+
     test("post",
          "http://127.0.0.1:5000/apis/v1.0/project",
          {
-            "name":"项目名称",
-            "desc":"项目描述",
-            "summarize":"项目小结",
-            "begin_time":"1990-01-01",#开始时间
-            "end_time":"1990-01-02",#计划完成时间
-            "demand_uid":"chenglong.yan",#需求负责人
-            "develop_uid":"chenglong.yan",#研发负责人
-            "test_uid":"chenglong.yan",#测试负责人
-            "release_uid":"chenglong.yan",#发布负责人
-            "man_day":"10",#人/天
-            "resource":"资源预分配"
-         },True)
+             "name": "项目名称",
+             "desc": "项目描述",
+             "summarize": "项目小结",
+             "begin_time": "1990-01-01",  # 开始时间
+             "end_time": "1990-01-02",  # 计划完成时间
+             "demand_uid": "chenglong.yan",  # 需求负责人
+             "develop_uid": "chenglong.yan",  # 研发负责人
+             "test_uid": "chenglong.yan",  # 测试负责人
+             "release_uid": "chenglong.yan",  # 发布负责人
+             "man_day": "10",  # 人/天
+             "resource": "资源预分配"
+         }, True)

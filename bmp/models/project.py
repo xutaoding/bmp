@@ -1,14 +1,13 @@
 # coding=utf-8
-from bmp import db
-from flask import session
-from bmp.const import USER_SESSION, SCRAP, STOCK, PROJECT
 from datetime import datetime
-from bmp.database import Database
-from bmp.utils.exception import ExceptionEx
-import bmp.utils.time as time
-from datetime import datetime
-from sqlalchemy import and_
 import json
+
+from flask import session
+
+from bmp import db
+from bmp.const import USER_SESSION, PROJECT
+from bmp.database import Database
+
 
 class ProjectHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -24,11 +23,12 @@ class ProjectHistory(db.Model):
         self.modify_time = datetime.now()
 
     @staticmethod
-    def add(pid,action, _dict):
+    def add(pid, action, _dict):
         _dict["action"] = action
-        _dict["project_id"] =pid
+        _dict["project_id"] = pid
         ph = ProjectHistory(_dict)
         db.session.add(ph)
+
 
 class ProjectScheduleMember(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -37,6 +37,7 @@ class ProjectScheduleMember(db.Model):
 
     def __init__(self, _dict):
         self.uid = _dict["uid"]
+
 
 class ProjectSchedule(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -51,12 +52,18 @@ class ProjectSchedule(db.Model):
 
     def __init__(self, _dict):
         for k, v in _dict.items():
-            if k == "members":  # ,"schedules","historys"]:
+            if k == "members":
                 self.members = Database.to_cls(ProjectScheduleMember, _dict["members"])
             elif "time" in k:
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
                 setattr(self, k, v)
+
+    @staticmethod
+    def _to_dict(self):
+        _dict = self.to_dict()
+        _dict["members"] = [m.to_dict() for m in self.members]
+        return _dict
 
     @staticmethod
     def add(_dict):
@@ -67,17 +74,18 @@ class ProjectSchedule(db.Model):
     @staticmethod
     def edit(_dict):
         ps = Database.to_cls(ProjectSchedule, _dict)
-        ProjectHistory.add(ps.project_id,PROJECT.EDIT_SCHEDULE(ps.type),_dict)
+        ProjectHistory.add(ps.project_id, PROJECT.EDIT_SCHEDULE(ps.type), _dict)
         db.session.commit()
         return True
 
     @staticmethod
     @db.transaction
     def edit_members(_dict):
-        ps=ProjectSchedule.query.filter(ProjectSchedule.id==_dict["schedule_id"]).one()
-        ps.members=[Database.to_cls(ProjectScheduleMember,m) for m in _dict["members"]]
-        ProjectHistory.add(ps.project_id,PROJECT.EDIT_MEMBER(ps.type),_dict)
+        ps = ProjectSchedule.query.filter(ProjectSchedule.id == _dict["schedule_id"]).one()
+        ps.members = [Database.to_cls(ProjectScheduleMember, m) for m in _dict["members"]]
+        ProjectHistory.add(ps.project_id, PROJECT.EDIT_MEMBER(ps.type), _dict["members"])
         db.session.flush()
+
 
 class ProjectDoc(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -86,6 +94,7 @@ class ProjectDoc(db.Model):
 
     def __init__(self, _dict):
         self.url = _dict["url"]
+
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -116,16 +125,16 @@ class Project(db.Model):
     @db.transaction
     def edit(_dict):
         proj = Database.to_cls(Project, _dict)
-        ProjectHistory.add(proj.id,PROJECT.EDIT_PROJ,_dict)
+        ProjectHistory.add(proj.id, PROJECT.EDIT_PROJ, _dict)
         db.session.flush()
         return True
 
     @staticmethod
     @db.transaction
     def edit_doc(_dict):
-        ps=Project.query.filter(Project.id==_dict["project_id"]).one()
-        ps.docs=[Database.to_cls(ProjectDoc,d) for d in _dict["docs"]]
-        ProjectHistory.add(ps.id,PROJECT.EDIT_DOC,_dict)
+        ps = Project.query.filter(Project.id == _dict["project_id"]).one()
+        ps.docs = [Database.to_cls(ProjectDoc, d) for d in _dict["docs"]]
+        ProjectHistory.add(ps.id, PROJECT.EDIT_DOC, _dict["docs"])
         db.session.flush()
 
     @staticmethod
@@ -145,23 +154,14 @@ class Project(db.Model):
     def _to_dict(self):
         _dict = self.to_dict()
 
-        def _relation_to_dict(obj, func=None):
-            if not obj: return None
-            if not func:
-                if isinstance(obj,list):
-                    return [o.to_dict() for o in obj]
-                return obj.to_dict()
-
-            return func(obj)
-
-        _dict["schedules"] = _relation_to_dict(self.schedules)
-        _dict["historys"] = _relation_to_dict(self.historys)
-        _dict["docs"] = _relation_to_dict(self.docs)
+        _dict["schedules"] = [ProjectSchedule._to_dict(s) for s in self.schedules]
+        _dict["historys"] = [h.to_dict() for h in self.historys]
+        _dict["docs"] = [d.to_dict() for d in self.docs]
         return _dict
 
     @staticmethod
     def get(pid):
-        return Project._to_dict(Project.query.filter(Project.id==pid).one())
+        return Project._to_dict(Project.query.filter(Project.id == pid).one())
 
     @staticmethod
     def select(page=0, pre_page=None):

@@ -1,9 +1,7 @@
 # coding: utf-8
-from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import StockOpt
-from flask import session
-from bmp.const import USER_SESSION
+
 
 class StockoptApi(BaseApi):
     route = [
@@ -36,6 +34,7 @@ class StockoptApi(BaseApi):
     def search(self, page=None, pre_page=None):
         submit = self.request()
         return self.succ(StockOpt.search(submit, page, pre_page))
+
 
 if __name__ == "__main__":
     pass

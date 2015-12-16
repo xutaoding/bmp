@@ -1,15 +1,17 @@
 # coding=utf-8
-from bmp import db
-from flask import session
-from bmp.const import USER_SESSION
 from datetime import datetime
+import collections
+
+from flask import session
+from sqlalchemy import or_
+
+from bmp import db
+from bmp.const import USER_SESSION
 from bmp.const import PURCHASE
 import bmp.utils.user_ldap as ldap
 from bmp.database import Database
-import collections
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
-from sqlalchemy import or_
 
 purchase_supplier = db.Table("purchase_supplier",
                              db.Column("purchase_id", db.Integer, db.ForeignKey("purchase.id")),
@@ -20,17 +22,17 @@ purchase_goods_category = db.Table("purchase_goods_category",
                                    db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 purchase_goods_spec = db.Table("purchase_goods_spec",
-                                   db.Column("purchase_goods_id", db.Integer, db.ForeignKey("purchase_goods.id")),
-                                   db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
+                               db.Column("purchase_goods_id", db.Integer, db.ForeignKey("purchase_goods.id")),
+                               db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 
 class PurchaseGoods(db.Model):  # 采购物品
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     price = db.Column(db.Float)
     spec = db.relationship("Category",
-                               secondary=purchase_goods_spec,
-                               backref=db.backref("specs"),
-                               uselist=False)
+                           secondary=purchase_goods_spec,
+                           backref=db.backref("specs"),
+                           uselist=False)
 
     amount = db.Column(db.Integer)
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
@@ -49,8 +51,8 @@ class PurchaseGoods(db.Model):  # 采购物品
     @staticmethod
     def _to_dict(self):
         _dict = self.to_dict()
-        category=self.category
-        spec=self.spec
+        category = self.category
+        spec = self.spec
 
         if category:
             _dict["category"] = category.to_dict()
@@ -59,6 +61,7 @@ class PurchaseGoods(db.Model):  # 采购物品
             _dict["spec"] = spec.to_dict()
 
         return _dict
+
 
 class PurchaseImg(db.Model):  # 比价图片
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -70,9 +73,11 @@ class PurchaseImg(db.Model):  # 比价图片
     def __init__(self, _dict):
         if _dict.__contains__("b64"):
             self.b64 = _dict["b64"]
-        else:self.b64 = ""
+        else:
+            self.b64 = ""
         self.desc = _dict["desc"]
         self.path = _dict["path"]
+
 
 class PurchaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -121,7 +126,7 @@ class PurchaseApproval(db.Model):
                     if not purchase.contract:
                         purchase.is_finished = True
                     else:
-                        purchase.cur_approval_type=PURCHASE.FLOW_FOUR
+                        purchase.cur_approval_type = PURCHASE.FLOW_FOUR
             elif _approval.type == PURCHASE.FLOW_THREE:
                 if not purchase.contract:
                     purchase.is_finished = True
@@ -130,6 +135,7 @@ class PurchaseApproval(db.Model):
 
         db.session.flush()
         return purchase
+
 
 class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -151,7 +157,7 @@ class Purchase(db.Model):
     apply_time = db.Column(db.DateTime, nullable=False)
 
     def __eq__(self, other):
-        return self.id==other.id
+        return self.id == other.id
 
     def __init__(self, submit):
         goods, supplier, imgs, contract = submit["goods"], submit["supplier"], submit["imgs"], submit["contract"]
@@ -178,9 +184,9 @@ class Purchase(db.Model):
     @staticmethod
     def get(id):
         from bmp.models.user import Group
-        purchase=Purchase.query.filter(Purchase.id == id).one()
-        purchase.cur_approval_type_desc=Group.get(purchase.cur_approval_type).desc
-        return Purchase._to_dict(purchase,["cur_approval_type_desc"])
+        purchase = Purchase.query.filter(Purchase.id == id).one()
+        purchase.cur_approval_type_desc = Group.get(purchase.cur_approval_type).desc
+        return Purchase._to_dict(purchase, ["cur_approval_type_desc"])
 
     @staticmethod
     def _to_dict(self, cols=[]):
@@ -209,11 +215,11 @@ class Purchase(db.Model):
         from bmp.models.user import User
 
         uid = session[USER_SESSION]["uid"]
-        page=Purchase.query\
-            .join(PurchaseApproval)\
-            .filter(or_(Purchase.apply_uid==uid,PurchaseApproval.uid==uid))\
-            .filter(Purchase.is_draft==False)\
-            .filter(Purchase.is_finished==True)\
+        page = Purchase.query \
+            .join(PurchaseApproval) \
+            .filter(or_(Purchase.apply_uid == uid, PurchaseApproval.uid == uid)) \
+            .filter(Purchase.is_draft == False) \
+            .filter(Purchase.is_finished == True) \
             .order_by(Purchase.apply_time.desc()).paginate(page, pre_page)
 
         return page.to_page(Purchase._to_dict)
@@ -223,9 +229,9 @@ class Purchase(db.Model):
         from bmp.models.user import Group
         purchases = []
         uid = session[USER_SESSION]["uid"]
-        groups={}
+        groups = {}
         for g in Group.select(to_dict=False):
-            groups[g.name.upper()]=g.desc
+            groups[g.name.upper()] = g.desc
 
         for purchase in Purchase.query \
                 .filter(Purchase.is_draft == False) \
@@ -234,19 +240,19 @@ class Purchase(db.Model):
             approvals = purchase.approvals
             apply_uid = purchase.apply_uid
             cur_approval_type = purchase.cur_approval_type
-            purchase.cur_approval_type_desc=""
+            purchase.cur_approval_type_desc = ""
             purchase.approval_enable = False
-            is_append=False
+            is_append = False
 
             if groups.__contains__(cur_approval_type.upper()):
-                purchase.cur_approval_type_desc=groups[cur_approval_type.upper()]
+                purchase.cur_approval_type_desc = groups[cur_approval_type.upper()]
 
             if uid == purchase.apply_uid:
                 purchases.append(purchase)
-                is_append=True
+                is_append = True
             elif uid in [a.uid for a in approvals]:
                 purchases.append(purchase)
-                is_append=True
+                is_append = True
 
             if cur_approval_type == PURCHASE.FLOW_ONE:
                 if Purchase.__is_superior(uid, apply_uid):
@@ -259,16 +265,15 @@ class Purchase(db.Model):
                     purchases.append(purchase)
             else:
                 continue
-        return [Purchase._to_dict(p, ["approval_enable","cur_approval_type_desc"]) for p in purchases]
+        return [Purchase._to_dict(p, ["approval_enable", "cur_approval_type_desc"]) for p in purchases]
 
     @staticmethod
-    def passed(page=1,pre_page=20):
-         return Purchase.query\
-             .join(PurchaseApproval,PurchaseApproval.purchase_id==Purchase.id)\
-             .filter(Purchase.is_finished == True)\
-             .filter(PurchaseApproval.status!=PURCHASE.FAIL)\
-             .paginate(page, pre_page, False).to_page(Purchase._to_dict)
-
+    def passed(page=1, pre_page=20):
+        return Purchase.query \
+            .join(PurchaseApproval, PurchaseApproval.purchase_id == Purchase.id) \
+            .filter(Purchase.is_finished == True) \
+            .filter(PurchaseApproval.status != PURCHASE.FAIL) \
+            .paginate(page, pre_page, False).to_page(Purchase._to_dict)
 
     @staticmethod
     def drafts(page=1, pre_page=20):
@@ -308,12 +313,12 @@ class Purchase(db.Model):
             return False
 
         query = Purchase.query \
-            .join(PurchaseGoods, PurchaseGoods.purchase_id == Purchase.id)\
-            .join(purchase_goods_category)\
-            .join(PurchaseApproval)\
-            .join(Category)\
-            .filter(Purchase.is_finished==True)\
-            .filter(PurchaseApproval.status!=PURCHASE.FAIL)
+            .join(PurchaseGoods, PurchaseGoods.purchase_id == Purchase.id) \
+            .join(purchase_goods_category) \
+            .join(PurchaseApproval) \
+            .join(Category) \
+            .filter(Purchase.is_finished == True) \
+            .filter(PurchaseApproval.status != PURCHASE.FAIL)
 
         if check("apply_businessCategory"):
             query = query.filter(Purchase.apply_businessCategory == submit["apply_businessCategory"])
@@ -325,15 +330,15 @@ class Purchase(db.Model):
             query = query.filter(Purchase.apply_time.between(beg, end))
 
         if check("goods"):
-            parent=Category.query.filter(Category.name==submit["goods"]).one()
-            childs=[c.id for c in Category.query.filter(Category.parent_id==parent.id).all()]
+            parent = Category.query.filter(Category.name == submit["goods"]).one()
+            childs = [c.id for c in Category.query.filter(Category.parent_id == parent.id).all()]
             query = query.filter(Category.id.in_(childs))
         if check("price_begin") and check("price_end"):
-            goods=PurchaseGoods.query.filter(PurchaseGoods.purchase_id!=None).all()
-            pgoods=[]
+            goods = PurchaseGoods.query.filter(PurchaseGoods.purchase_id != None).all()
+            pgoods = []
             for g in goods:
-                total=g.price*g.amount
-                if total>=int(submit["price_begin"]) and total<=int(submit["price_end"]):
+                total = g.price * g.amount
+                if total >= int(submit["price_begin"]) and total <= int(submit["price_end"]):
                     pgoods.append(g.id)
             query = query.filter(PurchaseGoods.id.in_(pgoods))
 
@@ -354,7 +359,7 @@ class Purchase(db.Model):
                 _dict["数量"] = g["amount"]
                 _dict["规格"] = str(g["spec"]["name"])
                 _dict["物品"] = str(g["category"]["name"])
-                _dict["申请时间"] = time.format(purchase["apply_time"],"%Y-%m-%d")
+                _dict["申请时间"] = time.format(purchase["apply_time"], "%Y-%m-%d")
                 _dict["申请部门"] = str(purchase["apply_businessCategory"])
                 _dict["申请人"] = str(purchase["apply_uid"])
                 _export.append(_dict)
@@ -365,12 +370,13 @@ if __name__ == "__main__":
     from bmp.models.asset import Contract
     from bmp.models.user import User
     from bmp import db
-    submit={}
-    submit["apply_time_begin"]=None
-    submit["apply_time_end"]=None
-    submit["apply_businessCategory"]=None
-    submit["apply_uid"]=""
-    submit["goods"]=""
-    submit["price_begin"]=1
-    submit["price_end"]=100
-    print Purchase.search(submit,1,6)
+
+    submit = {}
+    submit["apply_time_begin"] = None
+    submit["apply_time_end"] = None
+    submit["apply_businessCategory"] = None
+    submit["apply_uid"] = ""
+    submit["goods"] = ""
+    submit["price_begin"] = 1
+    submit["price_end"] = 100
+    print Purchase.search(submit, 1, 6)

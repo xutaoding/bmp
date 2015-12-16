@@ -1,5 +1,4 @@
 # coding: utf-8
-from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
 
@@ -10,9 +9,9 @@ class StockApi(BaseApi):
              "/asset/stock/<int:page>/<int:pre_page>/<int:nan_opt>",
              "/asset/stock/<int:page>/<int:pre_page>"]
 
-    def get(self, page=0, pre_page=None,sid=0,nan_opt=False):
-        if sid:return self.succ(Stock.get(sid))
-        return self.succ(Stock.select(page, pre_page,nan_opt))
+    def get(self, page=0, pre_page=None, sid=0, nan_opt=False):
+        if sid: return self.succ(Stock.get(sid))
+        return self.succ(Stock.select(page, pre_page, nan_opt))
 
     def post(self):
         submit = self.request()
@@ -32,6 +31,7 @@ class StockApi(BaseApi):
     def search(self, page=None, pre_page=None):
         submit = self.request()
         return self.succ(Stock.search(submit, page, pre_page))
+
 
 if __name__ == "__main__":
     pass

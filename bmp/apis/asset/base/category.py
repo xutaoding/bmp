@@ -1,5 +1,4 @@
 # coding: utf-8
-from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Category
 

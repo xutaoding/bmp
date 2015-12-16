@@ -12,9 +12,9 @@ class GroupsApi(BaseApi):
     def get(self, name="%"):
         return self.succ(Group.select(name))
 
-    def put(self, name, new="",desc=""):
+    def put(self, name, new="", desc=""):
         if new:
-            if not Group.edit(name,new,desc):
+            if not Group.edit(name, new, desc):
                 return self.fail()
             return self.succ()
 
@@ -23,8 +23,8 @@ class GroupsApi(BaseApi):
             return self.fail()
         return self.succ()
 
-    def post(self, name,desc):
-        if not Group.add(name,desc):
+    def post(self, name, desc):
+        if not Group.add(name, desc):
             return self.fail()
         return self.succ()
 

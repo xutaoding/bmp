@@ -1,7 +1,9 @@
 # coding: utf-8
-from bmp import db
 from datetime import datetime
+
 from flask import session
+
+from bmp import db
 from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
 
@@ -14,10 +16,10 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)
     desc = db.Column(db.String(128))
-    is_buildin = db.Column(db.Boolean,default=False)
+    is_buildin = db.Column(db.Boolean, default=False)
     users = db.relationship("User", secondary=user_group, backref=db.backref("groups"))
 
-    def __init__(self, name,desc):
+    def __init__(self, name, desc):
         self.name = name
         self.desc = desc
 
@@ -32,10 +34,10 @@ class Group(db.Model):
         return True
 
     @staticmethod
-    def edit(name, new_name,new_desc):
+    def edit(name, new_name, new_desc):
         name, new_name = name.upper(), new_name.upper()
         group = Group.query.filter(Group.name == name).one()
-        if name!=new_name and group.is_buildin:
+        if name != new_name and group.is_buildin:
             raise ExceptionEx("内建组禁止修改组名")
 
         group.name = new_name
@@ -45,10 +47,10 @@ class Group(db.Model):
 
     @staticmethod
     @db.transaction
-    def add(name,desc):
+    def add(name, desc):
         if Group.query.filter(Group.name == name).count():
             return False
-        db.session.add(Group(name,desc))
+        db.session.add(Group(name, desc))
         db.session.flush()
         return True
 
@@ -66,19 +68,17 @@ class Group(db.Model):
     def get(name):
         return Group.query.filter(Group.name.like(name)).one()
 
-
     @staticmethod
     def _to_dict(group):
-        g=group.to_dict()
-        g["users"]=[u.uid for u in group.users]
+        g = group.to_dict()
+        g["users"] = [u.uid for u in group.users]
         return g
 
     @staticmethod
-    def select(name="%",to_dict=True):
+    def select(name="%", to_dict=True):
         if to_dict:
             return [Group._to_dict(g) for g in Group.query.filter(Group.name.like(name)).all()]
         return Group.query.filter(Group.name.like(name)).all()
-
 
     @staticmethod
     def get_users(name):
@@ -115,15 +115,14 @@ class User(db.Model):
     @staticmethod
     def select(uid):
 
-        query=User.query.order_by(User.uid.asc())
-        if uid!="%":
-            query=User.query.filter(User.uid == uid).order_by(User.uid.asc())
-        user=User.query.filter(User.uid==session[USER_SESSION]["uid"]).one()
-        users=query.all()
+        query = User.query.order_by(User.uid.asc())
+        if uid != "%":
+            query = User.query.filter(User.uid == uid).order_by(User.uid.asc())
+        user = User.query.filter(User.uid == session[USER_SESSION]["uid"]).one()
+        users = query.all()
         users.pop(users.index(user))
-        users.insert(0,user)
+        users.insert(0, user)
         return [User.__add_group(u) for u in users]
-
 
     @staticmethod
     def get(uid):
@@ -139,14 +138,12 @@ class User(db.Model):
         db.session.flush()
         return True
 
-
     @staticmethod
     @db.transaction
-    def set_groups(uid,groups):
+    def set_groups(uid, groups):
         user = User.query.filter(User.uid == uid).one()
-        user.groups=Group.query.filter(Group.name.in_(groups.split(","))).all()
+        user.groups = Group.query.filter(Group.name.in_(groups.split(","))).all()
         db.session.flush()
-
 
     @staticmethod
     @db.transaction
@@ -206,7 +203,7 @@ class User(db.Model):
 
 
 if __name__ == "__main__":
-    user=User.query.filter(User.uid=="chenglong.yan").one()
-    users=[u for u in User.query.order_by(User.uid.asc()).all()]
+    user = User.query.filter(User.uid == "chenglong.yan").one()
+    users = [u for u in User.query.order_by(User.uid.asc()).all()]
     users.pop(users.index(user))
-    users.insert(0,user)
+    users.insert(0, user)

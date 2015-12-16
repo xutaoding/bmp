@@ -1,26 +1,27 @@
 # coding=utf-8
-from bmp import db
-from flask import session
-from bmp.const import USER_SESSION,SCRAP,STOCK
 from datetime import datetime
+
+from flask import session
+from sqlalchemy import and_
+
+from bmp import db
+from bmp.const import USER_SESSION, SCRAP, STOCK
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
-from datetime import datetime
-from sqlalchemy import and_
 
 stock_category = db.Table("stock_category",
                           db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
                           db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 stock_spec_category = db.Table("stock_spec_category",
-                          db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
-                          db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
+                               db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
+                               db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 
 class Supplier(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128),unique=True)
+    name = db.Column(db.String(128), unique=True)
     connector = db.Column(db.String(128))
     interfaceor = db.Column(db.String(128))
     tel = db.Column(db.String(128))
@@ -35,8 +36,8 @@ class Supplier(db.Model):
 
     @staticmethod
     def add(_dict):
-        _dict["connector"]=session[USER_SESSION]["uid"]
-        if not _dict.__contains__("path"):_dict["path"]=""
+        _dict["connector"] = session[USER_SESSION]["uid"]
+        if not _dict.__contains__("path"): _dict["path"] = ""
         new_supplier = Supplier(_dict)
         new_supplier.create_time = datetime.now()
         new_supplier.last_time = datetime.now()
@@ -76,6 +77,7 @@ class Supplier(db.Model):
     def get(sid):
         return Supplier.query.filter(Supplier.id == sid).one().to_dict()
 
+
 class Contract(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc = db.Column(db.String(128))
@@ -100,11 +102,10 @@ class Contract(db.Model):
         if _dict.__contains__("path"):
             self.path = _dict["path"]
         else:
-            self.path=""
+            self.path = ""
 
         if _dict.__contains__("desc"):
-            self.desc=_dict["desc"]
-
+            self.desc = _dict["desc"]
 
     @staticmethod
     def add(_dict):
@@ -131,7 +132,7 @@ class Contract(db.Model):
             contract.purchase_id = _dict["purchase_id"]
 
         if _dict.__contains__("desc"):
-            contract.desc=_dict["desc"]
+            contract.desc = _dict["desc"]
 
         db.session.flush()
         return True
@@ -153,10 +154,10 @@ class Contract(db.Model):
         query = Contract.query.order_by(Contract.id.desc())
         return [Contract._to_dict(contract) for contract in query.all()]
 
-
     @staticmethod
     def get(id):
-        return Contract._to_dict(Contract.query.filter(Contract.id==id).one())
+        return Contract._to_dict(Contract.query.filter(Contract.id == id).one())
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -236,11 +237,12 @@ class Category(db.Model):
         if not categorys:
             return []
 
-        ids=[c.id for c in categorys]
+        ids = [c.id for c in categorys]
 
         for category in categorys:
             ids.extend(Category.get_child_ids(category.id))
         return ids
+
 
 class StockOpt(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -251,21 +253,20 @@ class StockOpt(db.Model):
     remark = db.Column(db.String(128))
     status = db.Column(db.String(128))
     stock_id = db.Column(db.Integer, db.ForeignKey("stock.id"))
-    approval_uid = db.Column(db.String(128),db.ForeignKey("user.uid"),default="",nullable=True)
-    approval_time = db.Column(db.DateTime,nullable=True)
-    approval_remark = db.Column(db.String(128),nullable=True)
-
+    approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default="", nullable=True)
+    approval_time = db.Column(db.DateTime, nullable=True)
+    approval_remark = db.Column(db.String(128), nullable=True)
 
     def __init__(self, _dict):
         if not _dict.__contains__("id"):
             _dict["status"] = ""
-        elif _dict["type"]==SCRAP.TYPE:
-            _dict["approval_uid"]=session[USER_SESSION]["uid"]
-            _dict["approval_time"]=datetime.now().strftime("%Y-%m-%d")
+        elif _dict["type"] == SCRAP.TYPE:
+            _dict["approval_uid"] = session[USER_SESSION]["uid"]
+            _dict["approval_time"] = datetime.now().strftime("%Y-%m-%d")
 
         if not _dict.__contains__("stock_id"):
             raise ExceptionEx("库存不能为空")
-        elif not Stock.query.filter(Stock.id==_dict["stock_id"]).count():
+        elif not Stock.query.filter(Stock.id == _dict["stock_id"]).count():
             raise ExceptionEx("库存不存在")
 
         Stock.init(self, _dict)
@@ -299,16 +300,16 @@ class StockOpt(db.Model):
 
     @staticmethod
     def select(type, page, pre_page):
-        page = StockOpt.query\
-            .filter(StockOpt.type == type)\
+        page = StockOpt.query \
+            .filter(StockOpt.type == type) \
             .paginate(page, pre_page)
         return page.to_page(StockOpt._to_dict)
 
     @staticmethod
-    def approvals(page,pre_page):#todo 添加报废的审批组
-        page = StockOpt.query\
-            .filter(StockOpt.type == SCRAP.TYPE)\
-            .filter(StockOpt.status.in_(["",SCRAP.PASS,SCRAP.FAIL])).paginate(page, pre_page)
+    def approvals(page, pre_page):  # todo 添加报废的审批组
+        page = StockOpt.query \
+            .filter(StockOpt.type == SCRAP.TYPE) \
+            .filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.FAIL])).paginate(page, pre_page)
         return page.to_page(StockOpt._to_dict)
 
     @staticmethod
@@ -369,18 +370,18 @@ class StockOpt(db.Model):
         # 固定资产编号	入库时间	申请人	名称	状态	详细
         _export = []
         for stockopt in StockOpt.search(submit):
-            _dict={}
-            stock=stockopt["stock"]
+            _dict = {}
+            stock = stockopt["stock"]
             _dict["状态"] = stockopt["status"]
             _dict["名称"] = stock["category"]["name"]
             _dict["申请人"] = stockopt["uid"]
-            _dict["入库时间"] = time.format(stock["stock_in_time"],"%Y-%m-%d")
+            _dict["入库时间"] = time.format(stock["stock_in_time"], "%Y-%m-%d")
             _dict["固定资产编号"] = stock["no"]
             _export.append(_dict)
         return _export
 
-class Stock(db.Model):
 
+class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     no = db.Column(db.String(128), unique=True)
     category = db.relationship("Category",
@@ -389,8 +390,8 @@ class Stock(db.Model):
                                uselist=False)
 
     spec = db.relationship("Category",
-                               secondary=stock_spec_category,
-                               uselist=False)
+                           secondary=stock_spec_category,
+                           uselist=False)
 
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
     stock_in_type = db.Column(db.String(128))
@@ -409,25 +410,24 @@ class Stock(db.Model):
                 return submit[s]
             return False
 
-        query = Stock.query\
-                .join(stock_category) \
-                .join(Category)
+        query = Stock.query \
+            .join(stock_category) \
+            .join(Category)
 
         if check("status"):
-            status=check("status")
-            if status==STOCK.TYPE:
-                stock_ids=[s.stock_id for s in StockOpt.query.filter(StockOpt.status.in_(["",SCRAP.TYPE])).all()]
-                query=query.filter(~Stock.id.in_(stock_ids))
+            status = check("status")
+            if status == STOCK.TYPE:
+                stock_ids = [s.stock_id for s in StockOpt.query.filter(StockOpt.status.in_(["", SCRAP.TYPE])).all()]
+                query = query.filter(~Stock.id.in_(stock_ids))
             else:
-                query = Stock.query\
-                    .join(StockOpt, Stock.id == StockOpt.stock_id)\
+                query = Stock.query \
+                    .join(StockOpt, Stock.id == StockOpt.stock_id) \
                     .join(stock_category) \
                     .join(Category)
-                query = query.filter(and_(StockOpt.status.in_(["",SCRAP.TYPE]),StockOpt.type==status))
-
+                query = query.filter(and_(StockOpt.status.in_(["", SCRAP.TYPE]), StockOpt.type == status))
 
         if check("no"):
-            query=query.filter(Stock.no==submit["no"])
+            query = query.filter(Stock.no == submit["no"])
 
         if check("stock_in_time_begin") and check("stock_in_time_end"):
             beg = datetime.strptime(submit["stock_in_time_begin"], "%Y-%m-%d")
@@ -460,27 +460,25 @@ class Stock(db.Model):
         # 固定资产编号	入库时间	申请人	名称	状态	详细
         _export = []
         for stockopt in Stock.search(submit):
-            _dict={}
-            stock=stockopt["stock"]
+            _dict = {}
+            stock = stockopt["stock"]
             _dict["名称"] = stock["category"]["name"]
             _dict["规格"] = stock["spec"]["name"]
-            _dict["入库时间"] = time.format(stock["stock_in_time"],"%Y-%m-%d")
+            _dict["入库时间"] = time.format(stock["stock_in_time"], "%Y-%m-%d")
             _dict["固定资产编号"] = stock["no"]
             _export.append(_dict)
         return _export
-
-
 
     @staticmethod
     def init(self, _dict):
         for k, v in _dict.items():
             if k == "category_id":
-                query=Category.query.filter(Category.id == v)
+                query = Category.query.filter(Category.id == v)
                 if not query.count():
                     raise ExceptionEx("不存在的商品id")
                 self.category = query.one()
             if k == "spec_id":
-                query=Category.query.filter(Category.id == v)
+                query = Category.query.filter(Category.id == v)
                 if not query.count():
                     raise ExceptionEx("不存在的规格id")
                 self.spec = query.one()
@@ -512,15 +510,15 @@ class Stock(db.Model):
             raise ExceptionEx("名称不能为空")
 
         def create_no():
-            businessCategory=session[USER_SESSION]["businessCategory"]
-            today=datetime.strptime(_dict["stock_in_time"],"%Y-%m-%d")
-            year,month=today.year,today.month
-            stocks=[int(s.no[-4:]) for s in Stock.query.filter(
-                Stock.stock_in_time.between(datetime(year,1,1),datetime(year,12,31))).all()]
+            businessCategory = session[USER_SESSION]["businessCategory"]
+            today = datetime.strptime(_dict["stock_in_time"], "%Y-%m-%d")
+            year, month = today.year, today.month
+            stocks = [int(s.no[-4:]) for s in Stock.query.filter(
+                Stock.stock_in_time.between(datetime(year, 1, 1), datetime(year, 12, 31))).all()]
             stocks.append(0)
-            return "%s%d%02d%04d"%(businessCategory.upper(),year,month,max(stocks)+1)
+            return "%s%d%02d%04d" % (businessCategory.upper(), year, month, max(stocks) + 1)
 
-        _dict["no"]=create_no()
+        _dict["no"] = create_no()
         db.session.add(Stock(_dict))
         db.session.flush()
         return True
@@ -547,16 +545,16 @@ class Stock(db.Model):
     def _to_dict(self, show_opt=False):
         _dict = self.to_dict()
         category = self.category
-        spec =self.spec
-        _dict["status"]=""
+        spec = self.spec
+        _dict["status"] = ""
 
-        if spec:_dict["spec"] = spec.to_dict()
-        if category:_dict["category"] = category.to_dict()
+        if spec: _dict["spec"] = spec.to_dict()
+        if category: _dict["category"] = category.to_dict()
 
-        opts=self.opts
+        opts = self.opts
         for opt in opts:
-            if opt.status.strip() in ["",SCRAP.TYPE]:
-                _dict["status"]=opt.type
+            if opt.status.strip() in ["", SCRAP.TYPE]:
+                _dict["status"] = opt.type
 
         if show_opt:
             _dict["opts"] = [opt.to_dict() for opt in opts]
@@ -565,19 +563,18 @@ class Stock(db.Model):
 
     @staticmethod
     def get(id):
-        return Stock._to_dict(Stock.query.filter(Stock.id == id).one(),True)
+        return Stock._to_dict(Stock.query.filter(Stock.id == id).one(), True)
 
     @staticmethod
     def select(page, pre_page, nan_opt):
         query = Stock.query.order_by(Stock.stock_in_time.desc())
         if nan_opt:
-            opts=StockOpt.query.filter(StockOpt.status.in_(["",SCRAP.PASS,SCRAP.TYPE])).all()
+            opts = StockOpt.query.filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.TYPE])).all()
             in_opts = [opt.stock_id for opt in opts]
             query = query.filter(~Stock.id.in_(in_opts))
         page = query.paginate(page, pre_page)
         return page.to_page(Stock._to_dict)
 
 
-
 if __name__ == "__main__":
-    print len(Stock.search({"category_id":"39"}))
+    print len(Stock.search({"category_id": "39"}))

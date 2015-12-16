@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # coding: utf-8
-from bmp import app, log
 import smtplib
 from email.mime.text import MIMEText
 import threading
 import traceback
 
-#todo 数据库中增加待发邮件表,此处只做待发邮件的添加,后续由发件协程处理
+from bmp import app, log
+
+
+# todo 数据库中增加待发邮件表,此处只做待发邮件的添加,后续由发件协程处理
 def send(sub, html, receiver, copyto=[]):
     def __send(sub, html, receiver, copyto):
         msg = MIMEText(html, _subtype="html", _charset="utf-8")

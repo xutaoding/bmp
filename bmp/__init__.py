@@ -1,7 +1,7 @@
 # coding: utf-8
-from myapp import Myapp
-
 import sys
+
+from myapp import Myapp
 
 reload(sys)
 sys.setdefaultencoding('utf8')

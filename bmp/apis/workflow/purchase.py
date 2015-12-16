@@ -3,12 +3,10 @@ from bmp.apis.base import BaseApi
 from bmp.models.purchase import Purchase, PurchaseApproval
 from bmp.models.asset import Supplier, Contract
 from bmp.models.user import Group
-from flask import session
-from bmp.const import USER_SESSION, PURCHASE
+from bmp.const import PURCHASE
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 from bmp.tasks.purchase import mail_to
-from flask.ext import excel
 
 
 class PurchaseApi(BaseApi):
@@ -16,7 +14,7 @@ class PurchaseApi(BaseApi):
 
     def approval(self, pid):
         Purchase.approval(pid)
-        mail_to(Purchase.query.filter(Purchase.id==pid).one())
+        mail_to(Purchase.query.filter(Purchase.id == pid).one())
         return self.succ()
 
     def saved(self, page=0, pre_page=None, pid=0):
@@ -34,11 +32,11 @@ class PurchaseApi(BaseApi):
         unfinished = Purchase.unfinished(g_dict)
         return self.succ(unfinished)
 
-    def finished(self,page=0,pre_page=None):
-        return self.succ(Purchase.finished(page,pre_page))
+    def finished(self, page=0, pre_page=None):
+        return self.succ(Purchase.finished(page, pre_page))
 
-    def passed(self,page=0,pre_page=None):
-        return self.succ(Purchase.passed(page,pre_page))
+    def passed(self, page=0, pre_page=None):
+        return self.succ(Purchase.passed(page, pre_page))
 
     def __submit(self):
         submit = self.request()
@@ -61,12 +59,12 @@ class PurchaseApi(BaseApi):
     def put(self, pid):
         submit = self.request()
         PurchaseApproval.edit(pid, submit)
-        mail_to(Purchase.query.filter(Purchase.id==pid).one())
+        mail_to(Purchase.query.filter(Purchase.id == pid).one())
         return self.succ()
 
     def post(self):
         submit = self.__submit()
-        purchase=Purchase.add(submit)
+        purchase = Purchase.add(submit)
         return self.succ()
 
     def delete(self, pid):
@@ -77,7 +75,9 @@ class PurchaseApi(BaseApi):
         submit = self.request()
         return self.succ(Purchase.search(submit, page, pre_page))
 
+
 if __name__ == "__main__":
     from bmp.utils.post import test
+
     test("get",
-         "http://localhost:5000/apis/v1.0/purchase",{},exe=True)
+         "http://localhost:5000/apis/v1.0/purchase", {}, exe=True)

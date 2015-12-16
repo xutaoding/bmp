@@ -1,5 +1,6 @@
 # coding: utf-8
 from flask import session
+
 from bmp.apis.base import BaseApi
 from bmp.utils import user_ldap
 from bmp.const import USER_SESSION

@@ -1,11 +1,13 @@
 # coding: utf-8
-from bmp.models.user import Group, User
-from flask import render_template
-import bmp.utils.mail as mail
-from flask import request
 import re
-from bmp.const import RELEASE, DEFAULT_GROUP
 import traceback
+
+from flask import render_template
+from flask import request
+
+from bmp.models.user import Group, User
+import bmp.utils.mail as mail
+from bmp.const import RELEASE, DEFAULT_GROUP
 from bmp import log
 
 
@@ -46,7 +48,7 @@ def __mail_to(r, submit):
 
     regx = re.compile(r"^http://([a-z.]+)/")
 
-    url ="http://%s/templates/release/release.html"%regx.findall(request.headers["Referer"])[0]
+    url = "http://%s/templates/release/release.html" % regx.findall(request.headers["Referer"])[0]
 
     html = render_template(
         "mail.tpl.html",

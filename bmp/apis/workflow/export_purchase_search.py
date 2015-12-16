@@ -1,9 +1,10 @@
 # coding=utf-8
+from flask import request
+from flask.ext import excel
+
 from bmp.apis.base import BaseApi
 from bmp.models.purchase import Purchase
-from flask import request
-import pyexcel.ext.xlsx
-from flask.ext import excel
+
 
 class Export_purchase_searchApi(BaseApi):
     route = ["/export_purchase_search"]

@@ -1,5 +1,4 @@
 # coding=utf-8
-from datetime import datetime
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release, ReleaseApproval
 from bmp.tasks.release import mail_to
@@ -47,6 +46,7 @@ class ReleaseApi(BaseApi):
         release = Release.add(submit)
         mail_to(release)
         return self.succ()
+
 
 if __name__ == "__main__":
     pass
