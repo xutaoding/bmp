@@ -9,9 +9,7 @@ from bmp.const import USER_SESSION
 class ProjectApi(BaseApi):
     route = ["/project/<int:page>/<int:pre_page>", "/project/<int:pid>", "/project"]
 
-    def auth(self):
-        session[USER_SESSION] = {"uid": "chenglong.yan"}
-        return True
+
 
     def get(self, page=0, pre_page=None, pid=0):
         if pid:

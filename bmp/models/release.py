@@ -2,11 +2,13 @@
 from datetime import datetime
 
 from flask import session
+from sqlalchemy import or_
 
 from bmp import db
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
 from bmp.utils.exception import ExceptionEx
+from bmp.const import RELEASE
 
 
 class ReleaseTable(db.Model):
@@ -97,17 +99,17 @@ class ReleaseApproval(db.Model):
             ReleaseApproval.release_id == id,
             ReleaseApproval.type == submit["type"])
 
-        if not approval.count():
-            _approval = ReleaseApproval(submit)
-            _approval.release_id = id
-            db.session.add(_approval)
-            db.session.flush()
-            return True
+        if approval.count():
+            raise ExceptionEx("%s 已审批" % submit["type"])
+        _approval = ReleaseApproval(submit)
+        _approval.release_id = id
 
-        _approval = approval.one()
-        _approval.status = submit["status"]
-        _approval.reson = submit["reson"]
-        _approval.options = submit["options"]
+        release=Release.query.filter(Release.id == id).one()
+
+        if _approval.status==RELEASE.FAIL or len(release.approvals)==2:
+            release.is_finished=True
+
+        db.session.add(_approval)
         db.session.flush()
         return True
 
@@ -126,6 +128,7 @@ class Release(db.Model):
     approvals = db.relationship("ReleaseApproval")
     service = db.relationship("ReleaseService", uselist=False)
     release_type = db.Column(db.String(64), default="")
+    is_finished = db.Column(db.Boolean, default=False)
 
     def __init__(self, _dict):
         self.project = _dict["project"]
@@ -137,31 +140,50 @@ class Release(db.Model):
         self.release_type = _dict["release_type"]
 
     @staticmethod
-    def __to_dict(release):
+    def _to_dict(release):
         _release = release.to_dict()
         _release["approvals"] = [a.to_dict() for a in release.approvals]
         _release["service"] = ReleaseService._to_dict(release.service)
         return _release
 
     @staticmethod
-    def select(id=0, uid=0):
+    def select(page, pre_page):
+        page = Release.query.order_by(Release.apply_time.desc()).paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
 
-        query = Release.query.order_by(Release.apply_time.desc())
+    @staticmethod
+    def unfinished(page, pre_page):
+        page = Release.query \
+            .filter(Release.is_finished==False)\
+            .order_by(Release.apply_time.desc())\
+            .paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
 
-        if not id:
-            if not uid:
-                return [Release.__to_dict(release) for release in query.all()]
-            return [Release.__to_dict(release) for release in query.filter(Release.apply_uid == uid).all()]
-        return [Release.__to_dict(release) for release in query.filter(Release.id == id).all()]
+    @staticmethod
+    def self(page,pre_page):
+        page = Release.query \
+            .filter(Release.is_finished==False)\
+            .filter(Release.apply_uid==session[USER_SESSION]["uid"])\
+            .order_by(Release.apply_time.desc())\
+            .paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
+
+    @staticmethod
+    def finished(page, pre_page):
+        page = Release.query \
+            .filter(Release.is_finished==True)\
+            .order_by(Release.apply_time.desc())\
+            .paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
 
     @staticmethod
     def between(begin, end):
-        return [Release.__to_dict(release) for release in
+        return [Release._to_dict(release) for release in
                 Release.query.filter(Release.apply_time.between(begin, end)).all()]
 
     @staticmethod
     def get(rid):
-        return Release.query.filter(Release.id == rid).one()
+        return Release._to_dict(Release.query.filter(Release.id == rid).one())
 
     @staticmethod
     @db.transaction

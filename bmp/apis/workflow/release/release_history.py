@@ -28,24 +28,11 @@ from bmp.tasks.release import mail_to
 '''
 
 
-class ReleaseApi(BaseApi):
-    route = ["/release", "/release/<int:id>"]
+class Release_historyApi(BaseApi):
+    route = ["/release/history/<int:page>/<int:pre_page>"]
 
-    def get(self, id=0):
-        return self.succ(Release.select(id))
-
-    def put(self, id):
-        submit = self.request()
-        if ReleaseApproval.edit(id, submit):
-            mail_to(Release.get(id), submit)
-            return self.succ()
-        return self.fail()
-
-    def post(self):
-        submit = self.request()
-        release = Release.add(submit)
-        mail_to(release)
-        return self.succ()
+    def get(self,page=0, pre_page=None):
+        return self.succ(Release.finished(page,pre_page))
 
 
 if __name__ == "__main__":

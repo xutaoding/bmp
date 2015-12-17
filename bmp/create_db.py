@@ -40,4 +40,16 @@ def create_all():
 
 
 if __name__ == "__main__":
-    db.create_all()
+    #db.create_all()
+    for r in Release.query.all():
+        approvals=r.approvals
+        r.is_finished=False
+        if len(approvals)==3:
+            r.is_finished=True
+            continue
+        for a in approvals:
+            if a.status==RELEASE.FAIL:
+                r.is_finished=True
+                break
+
+    db.session.commit()

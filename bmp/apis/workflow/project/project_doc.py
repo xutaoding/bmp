@@ -9,9 +9,6 @@ from bmp.const import USER_SESSION
 class Project_docApi(BaseApi):
     route = ["/project/doc/<int:pid>"]
 
-    def auth(self):
-        session[USER_SESSION] = {"uid": "chenglong.yan"}
-        return True
 
     def put(self, pid):
         submit = self.request()

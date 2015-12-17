@@ -9,9 +9,6 @@ from bmp.const import USER_SESSION
 class Project_scheduleApi(BaseApi):
     route = ["/project/schedule/<int:pid>"]
 
-    def auth(self):
-        session[USER_SESSION] = {"uid": "chenglong.yan"}
-        return True
 
     def post(self, pid):
         submit = self.request()

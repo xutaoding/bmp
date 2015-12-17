@@ -22,7 +22,11 @@ type:分类信息
 
 发布相关------------------------------------------------
 
-获取全部发布申请:get /release
+获取全部当前发布申请:get "/release/<int:page>/<int:pre_page>"
+获取全部历史发布申请:get "/release/history/<int:page>/<int:pre_page>"
+获取全部当前用户的申请: get "/release/self/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
 
 获取发布申请:get /release/<int:id>
 id:申请id
@@ -399,9 +403,17 @@ pid:项目id
  "desc":""
 }
 
+获取项目公告:get "/project/notice/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
 
+发布项目公告:post "/project/notice"
 
-
+参数:
+{
+ "type":"随便聊聊",#公告类型 随便聊聊,延误提醒,全员公告
+ "txt":"testtesttesttesttesttest"#内容
+}
 
 
 文件上传/下载------------------------------------------------
