@@ -4,7 +4,7 @@ from flask.ext import excel
 
 from bmp.apis.base import BaseApi
 from bmp.models.purchase import Purchase
-
+import pyexcel.ext.xlsx
 
 class Export_purchase_searchApi(BaseApi):
     route = ["/export_purchase_search"]

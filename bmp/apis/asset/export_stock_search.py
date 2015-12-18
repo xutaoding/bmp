@@ -1,7 +1,7 @@
 # coding=utf-8
 from flask import request
 from flask.ext import excel
-
+import pyexcel.ext.xlsx
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
 
