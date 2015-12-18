@@ -81,7 +81,7 @@ class Database(SQLAlchemy):
 
     def transaction(self, fun):
         def __fun(*args, **kwargs):
-            self.session.begin(subtransactions=True)
+            #self.session.begin(subtransactions=True)
             try:
                 result = fun(*args, **kwargs)
                 self.session.commit()

@@ -577,4 +577,9 @@ class Stock(db.Model):
 
 
 if __name__ == "__main__":
-    print len(Stock.search({"category_id": "39"}))
+    from bmp import db
+    db.session.begin(subtransactions=True)
+    _dict={"name":"test3","parent_id":"5"}
+    cat=Category(_dict)
+    db.session.add(cat)
+    db.session.commit()

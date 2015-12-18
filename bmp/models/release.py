@@ -230,4 +230,5 @@ class Release(db.Model):
 
 
 if __name__ == "__main__":
-    pass
+    query=Release.query.filter(Release.id==5)
+    query.all()
