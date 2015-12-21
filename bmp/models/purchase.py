@@ -211,8 +211,6 @@ class Purchase(db.Model):
 
     @staticmethod
     def finished(page=1, pre_page=20):
-        from bmp.models.asset import Contract
-        from bmp.models.user import User
 
         uid = session[USER_SESSION]["uid"]
         page = Purchase.query \

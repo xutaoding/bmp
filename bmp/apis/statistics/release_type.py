@@ -18,11 +18,11 @@ class Release_typeApi(BaseApi):
             .set_index("release_time")
 
         for name, g in release.groupby("release_type"):
-            result[name] = []
+            result[name] = {}
             ids = g.resample("m", how="count").id
             for ix in ids.index:
                 date = time.format(ix.to_datetime(), "%Y-%m-%d")
-                result[name].append({date: ids[ix]})
+                result[name][date]=ids[ix]
 
         return self.succ(result)
 

@@ -163,6 +163,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     parent_id = db.Column(db.Integer)
+    is_del = db.Column(db.Boolean,default=False)
 
     def __init__(self, _dict):
         self.name = _dict["name"]
@@ -171,11 +172,24 @@ class Category(db.Model):
     @staticmethod
     @db.transaction
     def add(_dict):
-        if Category.query \
-                .filter(Category.parent_id == _dict["parent_id"]) \
-                .filter(Category.name == _dict["name"]).count():
+        query=Category.query\
+            .filter(Category.parent_id == _dict["parent_id"])\
+            .filter(Category.name == _dict["name"])
+
+        def is_exist(is_del):
+            if query.filter(Category.is_del==is_del).count():
+                return True
             return False
-        db.session.add(Category(_dict))
+
+        if is_exist(is_del=False):
+            raise ExceptionEx("分类%s已经存在"%_dict["name"])
+
+        if is_exist(is_del=True):
+            category=query.one()
+            category.is_del=False
+        else:
+            db.session.add(Category(_dict))
+
         db.session.flush()
         return True
 
@@ -199,7 +213,8 @@ class Category(db.Model):
         for child in category.all():
             Category.__delete(child.to_dict())
 
-        db.session.delete(Category.query.filter(Category.id == id).one())
+        category=Category.query.filter(Category.id == id).one()
+        category.is_del=True
 
     @staticmethod
     @db.transaction
@@ -210,7 +225,9 @@ class Category(db.Model):
     @db.transaction
     def __select_sub(parent_id):
         sub = []
-        for c in Category.query.filter(Category.parent_id == parent_id).all():
+        for c in Category.query\
+                .filter(Category.is_del==False)\
+                .filter(Category.parent_id == parent_id).all():
             c.child = Category.__select_sub(c.id)
             sub.append(c.to_dict(["child"]))
         return sub

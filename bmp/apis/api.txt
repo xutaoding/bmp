@@ -320,7 +320,7 @@ pre_page:每页长度
     "stock_in_time_begin":"2000-01-01 00:00",#入库时间范围
     "stock_in_time_end":"2000-01-01 00:00",#入库时间范围
     "category_id":"33",#物品类别
-    "price_start":"33.33",#价格范围
+    "price_begin":"33.33",#价格范围
     "price_end":"34.33",#价格范围
 }
 
@@ -337,7 +337,7 @@ pre_page:每页长度
     "uid":"申请人",
     "businessCategory":"申请部门",
     "category_id":"33",#物品类别
-    "price_start":"33.33",#价格范围
+    "price_begin":"33.33",#价格范围
     "price_end":"34.33",#价格范围
     "status":"状态"
 }
