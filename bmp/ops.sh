@@ -1,10 +1,2 @@
 #!/usr/bin/env bash
-rm -rf templates
-rm -rf static 
-
-cd ../../ops
-git pull
-cd ../bmp/bmp
-
-ln -s ../../ops/static/ templates
-ln -s ../../ops/static/static/ static
+mysqldiff --server1=ops:Ops@192.168.250.10 --server2=ops:Ops@192.168.250.10 bmp_test:bmp --force --skip-table-options --difftype=sql --compact --changes-for=server2 > bmp_test_to_bmp.sql

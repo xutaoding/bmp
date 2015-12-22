@@ -34,10 +34,15 @@ def __mail_to(p):
         to.extend([u.mail for u in Group.get_users(PURCHASE.FIN)])
         to.append(user["mail"])
 
-    sub = u"采购申请:%s" % ",".join([g.category.name for g in p.goods])
+    sub = u"采购编号:%s 采购申请:%s" % (p.id,",".join([g.category.name for g in p.goods]))
 
     regx = re.compile(r"^http://([a-z.]+)/")
-    url = "http://%s/templates/purchase/approval.html" % regx.findall(request.headers["Referer"])[0]
+    host=regx.findall(request.headers["Referer"])[0]
+
+    if "dev" in host:
+        sub=u"【测试】 %s"%sub
+
+    url = "http://%s/templates/purchase/approval.html" % host
 
     html = render_template(
         "mail.purchase.tpl.html",
@@ -45,7 +50,7 @@ def __mail_to(p):
         purchase=p,
         goods=p.goods,
         approvals=approvals,
-        group_names=PURCHASE.GROUP_NAMES,
+        group_names=Group.get_descs(),
         url=url)
 
     mail.send(sub, html, list(set(to)))

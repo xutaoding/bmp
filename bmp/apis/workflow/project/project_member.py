@@ -9,6 +9,8 @@ from bmp.const import USER_SESSION
 class Project_memberApi(BaseApi):
     route = ["/project/member/<int:sid>"]
 
+    def auth(self):
+        return True
 
     def put(self, sid):
         submit = self.request()

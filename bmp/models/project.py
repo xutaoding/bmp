@@ -36,7 +36,7 @@ class ProjectScheduleMember(db.Model):
     schedule_id = db.Column(db.Integer, db.ForeignKey("project_schedule.id"))
 
     def __init__(self, _dict):
-        self.uid = _dict["uid"]
+        self.uid = _dict[u"uid"]
 
 
 class ProjectSchedule(db.Model):
@@ -53,7 +53,7 @@ class ProjectSchedule(db.Model):
     def __init__(self, _dict):
         for k, v in _dict.items():
             if k == "members":
-                self.members = Database.to_cls(ProjectScheduleMember, _dict["members"])
+                self.members = [Database.to_cls(ProjectScheduleMember,m) for m in _dict["members"]]
             elif "time" in k:
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
@@ -131,6 +131,7 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)
     desc = db.Column(db.String(256))
+    tag = db.Column(db.String(256))
     summarize = db.Column(db.Text)
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
@@ -138,6 +139,7 @@ class Project(db.Model):
     develop_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     test_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     release_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+    create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     man_day = db.Column(db.Integer)
     resource = db.Column(db.String(128))
 
@@ -151,6 +153,8 @@ class Project(db.Model):
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
                 setattr(self, k, v)
+        self.create_uid=session[USER_SESSION]["uid"]
+
 
     @staticmethod
     @db.transaction
@@ -184,10 +188,20 @@ class Project(db.Model):
     @staticmethod
     def _to_dict(self):
         _dict = self.to_dict()
-
         _dict["schedules"] = [ProjectSchedule._to_dict(s) for s in self.schedules]
         _dict["historys"] = [h.to_dict() for h in self.historys]
         _dict["docs"] = [d.to_dict() for d in self.docs]
+
+        _dict["status"]=PROJECT.STATUS_NEW
+        for sche in _dict["schedules"]:
+            if sche["type"]=="release":
+                if _dict["end_time"]==sche["end_time"]:
+                    _dict["status"]=PROJECT.STATUS_ON_TIME
+                elif _dict["end_time"]>sche["end_time"]:
+                    _dict["status"]=PROJECT.STATUS_AHEAD
+                else:
+                    _dict["status"]=PROJECT.STATUS_DELAY
+
         return _dict
 
     @staticmethod

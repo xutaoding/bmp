@@ -80,6 +80,14 @@ class Group(db.Model):
             return [Group._to_dict(g) for g in Group.query.filter(Group.name.like(name)).all()]
         return Group.query.filter(Group.name.like(name)).all()
 
+
+    @staticmethod
+    def get_descs():
+        descs={}
+        for g in Group.query.all():
+            descs[g.name]=g.desc
+        return descs
+
     @staticmethod
     def get_users(name):
         g = Group.get(name)

@@ -91,6 +91,11 @@ class STOCK:
 class PROJECT:
     EDIT_PROJ = "编辑项目"
     EDIT_DOC = "编辑文档"
+    STATUS_NEW ="新建"
+    STATUS_AHEAD = "提前完成"
+    STATUS_DELAY = "延误"
+    STATUS_ON_TIME = "正常推进"
+
 
     @staticmethod
     def EDIT_MEMBER(type):

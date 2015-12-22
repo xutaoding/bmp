@@ -269,6 +269,7 @@ class StockOpt(db.Model):
     reson = db.Column(db.String(128))
     remark = db.Column(db.String(128))
     status = db.Column(db.String(128))
+    update_time = db.Column(db.DateTime)
     stock_id = db.Column(db.Integer, db.ForeignKey("stock.id"))
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default="", nullable=True)
     approval_time = db.Column(db.DateTime, nullable=True)
@@ -280,6 +281,9 @@ class StockOpt(db.Model):
         elif _dict["type"] == SCRAP.TYPE:
             _dict["approval_uid"] = session[USER_SESSION]["uid"]
             _dict["approval_time"] = datetime.now().strftime("%Y-%m-%d")
+            _dict["update_time"]=datetime.now()
+        else:
+            _dict["update_time"]=datetime.now()
 
         if not _dict.__contains__("stock_id"):
             raise ExceptionEx("库存不能为空")

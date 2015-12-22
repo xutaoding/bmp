@@ -48,7 +48,12 @@ def __mail_to(r, submit):
 
     regx = re.compile(r"^http://([a-z.]+)/")
 
-    url = "http://%s/templates/release/release.html" % regx.findall(request.headers["Referer"])[0]
+    host=regx.findall(request.headers["Referer"])[0]
+
+    if "dev" in host:
+        sub=u"【测试】 %s"%sub
+
+    url = "http://%s/templates/release/release.html" % host
 
     html = render_template(
         "mail.tpl.html",
