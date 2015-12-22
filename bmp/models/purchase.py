@@ -87,6 +87,7 @@ class PurchaseApproval(db.Model):
     reson = db.Column(db.String(128))
     options = db.Column(db.String(128))
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
+    approval_time = db.Column(db.DateTime)
 
     def __init__(self, _dict):
         self.type = _dict["type"]
@@ -94,6 +95,7 @@ class PurchaseApproval(db.Model):
         self.reson = _dict["reson"]
         self.options = _dict["options"]
         self.uid = _dict["uid"]
+        self.approval_time = datetime.now()
 
     @staticmethod
     def __next_approval_type(type):
@@ -211,11 +213,16 @@ class Purchase(db.Model):
 
     @staticmethod
     def finished(page=1, pre_page=20):
+        from bmp.models.user import User
 
         uid = session[USER_SESSION]["uid"]
+        group = set(User.get(uid)["group"]).intersection(PURCHASE.FLOW)
+
         page = Purchase.query \
             .join(PurchaseApproval) \
-            .filter(or_(Purchase.apply_uid == uid, PurchaseApproval.uid == uid)) \
+            .filter(or_(Purchase.apply_uid == uid,
+                        PurchaseApproval.uid == uid,
+                        PurchaseApproval.type.in_(group))) \
             .filter(Purchase.is_draft == False) \
             .filter(Purchase.is_finished == True) \
             .order_by(Purchase.apply_time.desc()).paginate(page, pre_page)
@@ -224,12 +231,14 @@ class Purchase(db.Model):
 
     @staticmethod
     def unfinished(user_groups):
-        from bmp.models.user import Group
+        from bmp.models.user import Group,User
+
         purchases = []
         uid = session[USER_SESSION]["uid"]
-        groups = {}
+        group = set(User.get(uid)["group"]).intersection(PURCHASE.FLOW)
+        group_map = {}
         for g in Group.select(to_dict=False):
-            groups[g.name.upper()] = g.desc
+            group_map[g.name.upper()] = g.desc
 
         for purchase in Purchase.query \
                 .filter(Purchase.is_draft == False) \
@@ -242,15 +251,14 @@ class Purchase(db.Model):
             purchase.approval_enable = False
             is_append = False
 
-            if groups.__contains__(cur_approval_type.upper()):
-                purchase.cur_approval_type_desc = groups[cur_approval_type.upper()]
+            if group_map.__contains__(cur_approval_type.upper()):
+                purchase.cur_approval_type_desc = group_map[cur_approval_type.upper()]
 
-            if uid == purchase.apply_uid:
+            if uid in [purchase.apply_uid]+[a.uid for a in approvals] \
+                    or group.intersection([a.type for a in approvals]):
                 purchases.append(purchase)
                 is_append = True
-            elif uid in [a.uid for a in approvals]:
-                purchases.append(purchase)
-                is_append = True
+
 
             if cur_approval_type == PURCHASE.FLOW_ONE:
                 if Purchase.__is_superior(uid, apply_uid):

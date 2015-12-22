@@ -6,3 +6,4 @@ ops/
 bmp.log
 *.cfg
 bmp/upload/
+*.sql
