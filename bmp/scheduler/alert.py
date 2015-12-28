@@ -4,8 +4,6 @@ import re
 import traceback
 import sys
 
-sys.path.append(["D:\work\scope\bmp"])
-
 import bmp.utils.mail as mail
 
 from flask import render_template
