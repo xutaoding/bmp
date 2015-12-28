@@ -31,9 +31,8 @@ def __run():
 
 
 def run():
-    if not sched.get_job("tasks.alert"):
-            sched.add_job(run,"interval",id="tasks.alert", days=1)
     try:
+        sched.add_job(run,"interval",id="tasks.alert", days=1,replace_existing=True)
         if not sched.running:
             sched.start()
     except:

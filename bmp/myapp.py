@@ -7,14 +7,13 @@ import os
 from flask import Flask
 from werkzeug.routing import BaseConverter
 from werkzeug.contrib.cache import SimpleCache
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+
+from apscheduler.executors.pool import ProcessPoolExecutor
 
 from utils import path
 from database import Database
-
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.executors.pool import ThreadPoolExecutor
-from flask.helpers import get_root_path
 
 
 class _RegexConverter(BaseConverter):
@@ -25,6 +24,7 @@ class _RegexConverter(BaseConverter):
 
 class Myapp(Flask):
     __app = None
+
     @staticmethod
     def get_instance(name):
         if Myapp.__app == None or not Myapp.__app.config["SINGLETON"]:
@@ -34,10 +34,10 @@ class Myapp(Flask):
     def __init_log(self):
         log_fmt = logging.Formatter("%(asctime)s %(message)s")
         fileHandler = logging.FileHandler("%s/bmp.log" % self.root_path)
-        fileHandler.setLevel(logging.ERROR)
+        fileHandler.setLevel(logging.DEBUG)
         fileHandler.setFormatter(log_fmt)
         streamHandler = logging.StreamHandler()
-        streamHandler.setLevel(logging.ERROR)
+        streamHandler.setLevel(logging.DEBUG)
         streamHandler.setFormatter(log_fmt)
         self.logger.addHandler(streamHandler)
         self.logger.addHandler(fileHandler)
@@ -54,11 +54,12 @@ class Myapp(Flask):
     def __init_sched(self):
         self.sched = BackgroundScheduler(
             jobstores={
-                "default": SQLAlchemyJobStore(url="sqlite:///%s/jobs.sqlite"%self.root_path)
+                "default": SQLAlchemyJobStore(url=self.config["SQLALCHEMY_DATABASE_URI"])
             },
-            executors = {
-            "default": ThreadPoolExecutor(1),
-            }
+            executors={
+                "default": ProcessPoolExecutor(1)
+            },
+            job_defaults={"coalesce": False, "max_instances": 1}
         )
 
 
@@ -66,16 +67,14 @@ class Myapp(Flask):
         Flask.__init__(self, name)
         self.__add_apis = False
         self.__add_views = False
-        self.__name=name
+        self.__name = name
 
         self.url_map.converters["regex"] = _RegexConverter
         self.__init_config()
         self.__init_log()
         self.__init_sched()
         self.db = Database(self)
-        self.cache=SimpleCache()
-
-
+        self.cache = SimpleCache()
 
     def __add_api_rule(self, module):
         self.__add_rule("bmp.apis.%s" % module, "Api",

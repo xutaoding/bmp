@@ -46,4 +46,4 @@ def mail_to(p):
         group_names=Group.get_descs(),
         url=url)
 
-    mail.send(sub, html, list(set(to)))
+    mail.send(sub, html, list(set(to)),priority=1)

@@ -1,12 +1,13 @@
 # coding=utf-8
 from datetime import datetime
 import json
+
 from flask import session
+
 from bmp import db
 from bmp.const import USER_SESSION, PROJECT
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-from sqlalchemy import exists
 
 
 class ProjectHistory(db.Model):
@@ -58,7 +59,7 @@ class ProjectSchedule(db.Model):
     def __init__(self, _dict):
         for k, v in _dict.items():
             if k == "members":
-                self.members = [Database.to_cls(ProjectScheduleMember,m) for m in _dict["members"]]
+                self.members = [Database.to_cls(ProjectScheduleMember, m) for m in _dict["members"]]
             elif "time" in k:
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
@@ -68,21 +69,21 @@ class ProjectSchedule(db.Model):
     def _to_dict(self):
         _dict = self.to_dict()
         _dict["members"] = [m.to_dict() for m in self.members]
-        _dict["status"] = Project._schedule_status(self.end_time_create,self.end_time)
+        _dict["status"] = Project._schedule_status(self.end_time_create, self.end_time)
         return _dict
 
     @staticmethod
     def add(_dict):
 
-        if ProjectSchedule.query\
-                .filter(ProjectSchedule.type==_dict["type"])\
-                .filter(ProjectSchedule.project_id==_dict["project_id"]).count():
+        if ProjectSchedule.query \
+                .filter(ProjectSchedule.type == _dict["type"]) \
+                .filter(ProjectSchedule.project_id == _dict["project_id"]).count():
             raise ExceptionEx("该阶段已添加")
 
-        _dict["begin_time_create"]=_dict["begin_time"]
-        _dict["end_time_create"]=_dict["end_time"]
+        _dict["begin_time_create"] = _dict["begin_time"]
+        _dict["end_time_create"] = _dict["end_time"]
 
-        schedule=ProjectSchedule(_dict)
+        schedule = ProjectSchedule(_dict)
         db.session.add(schedule)
         db.session.commit()
         return True
@@ -99,7 +100,7 @@ class ProjectSchedule(db.Model):
     def edit_members(_dict):
         ps = ProjectSchedule.query.filter(ProjectSchedule.id == _dict["schedule_id"]).one()
         ps.members = [Database.to_cls(ProjectScheduleMember, m) for m in _dict["members"]]
-        ProjectHistory.add(ps.project_id, PROJECT.EDIT_MEMBER(ps.type),_dict)
+        ProjectHistory.add(ps.project_id, PROJECT.EDIT_MEMBER(ps.type), _dict)
         db.session.flush()
 
 
@@ -111,7 +112,7 @@ class ProjectDoc(db.Model):
     def __init__(self, _dict):
         self.url = _dict["url"]
         if _dict.__contains__("project_id"):
-            self.project_id=_dict["project_id"]
+            self.project_id = _dict["project_id"]
 
     @staticmethod
     def add(submit):
@@ -120,7 +121,7 @@ class ProjectDoc(db.Model):
 
     @staticmethod
     def delete(pid):
-        doc=ProjectDoc.query.filter(ProjectDoc.id==pid).one()
+        doc = ProjectDoc.query.filter(ProjectDoc.id == pid).one()
         db.session.delete(doc)
         db.session.commit()
 
@@ -136,9 +137,8 @@ class ProjectNotice(db.Model):
         for k, v in _dict.items():
             setattr(self, k, v)
 
-        self.uid=session[USER_SESSION]["uid"]
-        self.time=datetime.now()
-
+        self.uid = session[USER_SESSION]["uid"]
+        self.time = datetime.now()
 
     @staticmethod
     def add(_dict):
@@ -182,8 +182,7 @@ class Project(db.Model):
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
                 setattr(self, k, v)
-        self.create_uid=session[USER_SESSION]["uid"]
-
+        self.create_uid = session[USER_SESSION]["uid"]
 
     @staticmethod
     @db.transaction
@@ -214,20 +213,18 @@ class Project(db.Model):
         db.session.commit()
         return True
 
-
     @staticmethod
-    def _schedule_status(src_time,dst_time):
-        status=PROJECT.STATUS_NEW
+    def _schedule_status(src_time, dst_time):
+        status = PROJECT.STATUS_NEW
         if not (src_time and dst_time):
             return status
-        if src_time==dst_time:
-            status=PROJECT.STATUS_ON_TIME
-        elif src_time>dst_time:
-            status=PROJECT.STATUS_AHEAD
+        if src_time == dst_time:
+            status = PROJECT.STATUS_ON_TIME
+        elif src_time > dst_time:
+            status = PROJECT.STATUS_AHEAD
         else:
-            status=PROJECT.STATUS_DELAY
+            status = PROJECT.STATUS_DELAY
         return status
-
 
     @staticmethod
     def _to_dict(self):
@@ -236,10 +233,10 @@ class Project(db.Model):
         _dict["historys"] = [h.to_dict() for h in self.historys]
         _dict["docs"] = [d.to_dict() for d in self.docs]
 
-        _dict["status"]=PROJECT.STATUS_NEW
+        _dict["status"] = PROJECT.STATUS_NEW
         for sche in _dict["schedules"]:
-            if sche["type"]=="release":
-                _dict["status"]=Project._schedule_status(_dict["end_time"],sche["end_time"])
+            if sche["type"] == "release":
+                _dict["status"] = Project._schedule_status(_dict["end_time"], sche["end_time"])
         return _dict
 
     @staticmethod
@@ -250,29 +247,27 @@ class Project(db.Model):
     def select(page=0, pre_page=None):
         return Project.query.paginate(page, pre_page, False).to_page(Project._to_dict)
 
-
     @staticmethod
-    def search(submit,page,pre_page):
+    def search(submit, page, pre_page):
         def check(s):
             if submit.__contains__(s):
                 return submit[s]
             return False
 
-        query=Project.query
+        query = Project.query
 
         if check("name"):
-            query=query.filter(Project.name==check("name"))
+            query = query.filter(Project.name == check("name"))
 
-        if check("status") and check("status")!=PROJECT.STATUS_NEW:
-            query=query.join(ProjectSchedule).filter(ProjectSchedule.type=="release")
-            if check("status")==PROJECT.STATUS_ON_TIME:
-                query=query.filter(Project.end_time==ProjectSchedule.end_time)
-            elif check("status")==PROJECT.STATUS_AHEAD:
-                query=query.filter(Project.end_time>ProjectSchedule.end_time)
+        if check("status") and check("status") != PROJECT.STATUS_NEW:
+            query = query.join(ProjectSchedule).filter(ProjectSchedule.type == "release")
+            if check("status") == PROJECT.STATUS_ON_TIME:
+                query = query.filter(Project.end_time == ProjectSchedule.end_time)
+            elif check("status") == PROJECT.STATUS_AHEAD:
+                query = query.filter(Project.end_time > ProjectSchedule.end_time)
             else:
-                query=query.filter(Project.end_time<ProjectSchedule.end_time)
+                query = query.filter(Project.end_time < ProjectSchedule.end_time)
         else:
-            query=query.filter(~Project.id.in_([ps.id for ps in ProjectSchedule.query.all()]))
+            query = query.filter(~Project.id.in_([ps.id for ps in ProjectSchedule.query.all()]))
 
-
-        return query.paginate(page,pre_page,False).to_page(Project._to_dict)
+        return query.paginate(page, pre_page, False).to_page(Project._to_dict)
