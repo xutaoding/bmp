@@ -10,17 +10,10 @@ import bmp.utils.mail as mail
 from bmp import log
 from bmp.utils import user_ldap
 from bmp.const import PURCHASE
+from bmp import sched
 
 
 def mail_to(p):
-    try:
-        __mail_to(p)
-    except Exception, e:
-        traceback.print_exc()
-        log.exception(e)
-
-
-def __mail_to(p):
     approvals = p.approvals
     to = []
     if not p.is_finished:

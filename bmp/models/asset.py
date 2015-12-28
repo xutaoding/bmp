@@ -9,6 +9,7 @@ from bmp.const import USER_SESSION, SCRAP, STOCK
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
+from datetime import timedelta
 
 stock_category = db.Table("stock_category",
                           db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
@@ -109,9 +110,10 @@ class Contract(db.Model):
 
     @staticmethod
     def add(_dict):
-        db.session.add(Contract(_dict))
+        contract=Contract(_dict)
+        db.session.add(contract)
         db.session.commit()
-        return True
+        return contract
 
     @staticmethod
     def delete(id):
@@ -222,7 +224,6 @@ class Category(db.Model):
         Category.__delete(id)
 
     @staticmethod
-    @db.transaction
     def __select_sub(parent_id):
         sub = []
         for c in Category.query\
@@ -233,12 +234,10 @@ class Category(db.Model):
         return sub
 
     @staticmethod
-    @db.transaction
     def select(parent_id):
         return Category.__select_sub(parent_id)
 
     @staticmethod
-    @db.transaction
     def get_parent_ids(_id):
         ids = []
         category = Category.query.filter(Category.id == _id).one()
@@ -248,7 +247,6 @@ class Category(db.Model):
         return ids
 
     @staticmethod
-    @db.transaction
     def get_child_ids(_id):
         categorys = Category.query.filter(Category.parent_id == _id).all()
         if not categorys:
@@ -281,9 +279,9 @@ class StockOpt(db.Model):
         elif _dict["type"] == SCRAP.TYPE:
             _dict["approval_uid"] = session[USER_SESSION]["uid"]
             _dict["approval_time"] = datetime.now().strftime("%Y-%m-%d")
-            _dict["update_time"]=datetime.now()
+            _dict["update_time"]=datetime.now().strftime("%Y-%m-%d")
         else:
-            _dict["update_time"]=datetime.now()
+            _dict["update_time"]=datetime.now().strftime("%Y-%m-%d")
 
         if not _dict.__contains__("stock_id"):
             raise ExceptionEx("库存不能为空")
@@ -534,15 +532,22 @@ class Stock(db.Model):
             businessCategory = session[USER_SESSION]["businessCategory"]
             today = datetime.strptime(_dict["stock_in_time"], "%Y-%m-%d")
             year, month = today.year, today.month
+            beg=datetime(year, month,1)
+            if month==12:
+                end=datetime(year, month,31)
+            else:
+                end=datetime(year,month+1,1)-timedelta(days=1)
+
             stocks = [int(s.no[-4:]) for s in Stock.query.filter(
-                Stock.stock_in_time.between(datetime(year, 1, 1), datetime(year, 12, 31))).all()]
+                Stock.stock_in_time.between(beg,end)).all()]
             stocks.append(0)
             return "%s%d%02d%04d" % (businessCategory.upper(), year, month, max(stocks) + 1)
 
         _dict["no"] = create_no()
-        db.session.add(Stock(_dict))
+        stock=Stock(_dict)
+        db.session.add(stock)
         db.session.flush()
-        return True
+        return stock
 
     @staticmethod
     @db.transaction
@@ -598,9 +603,4 @@ class Stock(db.Model):
 
 
 if __name__ == "__main__":
-    from bmp import db
-    db.session.begin(subtransactions=True)
-    _dict={"name":"test3","parent_id":"5"}
-    cat=Category(_dict)
-    db.session.add(cat)
-    db.session.commit()
+    pass

@@ -5,13 +5,11 @@
 <string:*>:字符串参数
 <int:*>:整型参数
 
-
 登录:get  /login/<string:uid>/<string:pwd>
 uid:用户名
 pwd:密码
 
 登出:get /logout
-
 
 字典:get /refs
 字典分类:get /refs/<string:type>
@@ -267,8 +265,8 @@ page:页数 从1开始
 pre_page:每页长度
 nan_opt:true
 
-添加库存:post "/apis/v1.0/asset/stock"
-修改库存:put "/apis/v1.0/asset/stock/<int:id>"
+添加库存:post "/asset/stock"
+修改库存:put "/asset/stock/<int:id>"
 id:库存id
 参考:
 {
@@ -283,15 +281,15 @@ id:库存id
     "warranty_time":"2000-01-01 00:00",#过保日期
 }
 
-删除库存:delete "/apis/v1.0/asset/stock/<int:id>"
+删除库存:delete "/asset/stock/<int:id>"
 id:库存编号
 
 
 获取全部 (领用、借用、维修、报废等): get "/asset/stockopt/<string:type>/<int:page>/<int:pre_page>"
 获取指定 (领用、借用、维修、报废等): get "/asset/stockopt/<string:type>/<int:id>"
 
-库存添加（领用、借用、维修、报废等):post "/apis/v1.0/asset/stockopt"
-修改库存（领用、借用、维修、报废等):put "/apis/v1.0/asset/stockopt/<int:id>"
+库存添加（领用、借用、维修、报废等):post "/asset/stockopt"
+修改库存（领用、借用、维修、报废等):put "/asset/stockopt/<int:id>"
 id:（领用、借用、维修、报废等)id
 参考:
 {
@@ -305,11 +303,11 @@ id:（领用、借用、维修、报废等)id
     "approval_remark":"审批备注"
 }
 
-删除库存（领用、借用、维修、报废等):delete "/apis/v1.0/asset/stockopt/<int:id>"
+删除库存（领用、借用、维修、报废等):delete "/asset/stockopt/<int:id>"
 id:（领用、借用、维修、报废等)编号
 
 
-库存查询:search "/apis/v1.0/asset/stock/<int:page>/<int:pre_page>"
+库存查询:search "/asset/stock/<int:page>/<int:pre_page>"
 page:页数 从1开始
 pre_page:每页长度
 导出库存:get "/export_stock_search"
@@ -324,7 +322,7 @@ pre_page:每页长度
     "price_end":"34.33",#价格范围
 }
 
-库存操作查询:search "/apis/v1.0/asset/stockopt/<int:page>/<int:pre_page>"
+库存操作查询:search "/asset/stockopt/<int:page>/<int:pre_page>"
 page:页数 从1开始
 pre_page:每页长度
 导出库存操作:get "/export_stockopt_search"
@@ -343,20 +341,33 @@ pre_page:每页长度
 }
 
 
-获取报废审批:get "/apis/v1.0/asset/scrap/<int:page>/<int:pre_page>"
+获取报废审批:get "/asset/scrap/<int:page>/<int:pre_page>"
 page:页数 从1开始
 pre_page:每页长度
 
 项目相关------------------------------------------------
 
-获取全部项目: get "/apis/v1.0/project/<int:page>/<int:pre_page>"
-获取指定项目: get "/apis/v1.0/project/<int:pid>"
+项目查询: search "/project/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+参数
+{
+    "name":"项目名称",
+    "status":"项目状态"
+}
+
+获取全部项目: get "/project/<int:page>/<int:pre_page>"
+page:页数 从1开始
+pre_page:每页长度
+
+获取指定项目: get "/project/<int:pid>"
 pid:项目id
 
-删除项目:delete "/apis/v1.0/project/<int:pid>"
+删除项目:delete "/project/<int:pid>"
 pid:项目id
 
-新建项目: post "/apis/v1.0/project"
+新建项目: post "/project"
+更新项目: put "/project/<int:pid>"
 参数:pid:项目id
 {
     "name":"项目名称",
@@ -373,12 +384,25 @@ pid:项目id
 }
 
 更新相关资料:put "/project/doc/<int:pid>"
+pid:项目编号
+参数:
 {
  "docs":[#相关资料
          {"url":"资料url1"},
          {"url":"资料url2"}
         ]
 }
+
+添加相关资料:post "/porject/doc/<int:pid>"
+pid:项目编号
+参数:
+{
+    "url":"资料url1"
+}
+
+删除相关资料:delete "/project/doc/<int:pid>"
+pid:相关资料编号
+
 
 更新相关人员: put "/project/member/<int:sid>"
 sid:阶段信息(需求、研发、测试、发布)id
@@ -429,5 +453,5 @@ pre_page:每页长度
     begin_time:yyyy-mm-dd
     end_time:yyyy-mm-dd
 例:
-    /apis/v1.0/stats/release/status/2015-01-01/2015-12-12
-    /apis/v1.0/stats/release/app/2015-01-01/2015-12-12
+    /stats/release/status/2015-01-01/2015-12-12
+    /stats/release/app/2015-01-01/2015-12-12

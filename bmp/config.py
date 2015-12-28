@@ -22,6 +22,7 @@ class Config(object):
     MAIL_USERNAME = "ops@chinascopefinancial.com"
     MAIL_PASSWORD = "GmgW3UXF"
     MAIL_DEFAULT_SENDER = "ops@chinascopefinancial.com"
+    MAIL_ALERT = "it@chinascopefinancial.com"
 
     LOG_PATH = "bmp.log"
     LOG_MAX = ""
@@ -31,27 +32,25 @@ class Config(object):
     HOST = ""
     PORT = 5000
     MAX_CONTENT_LENGTH = 1 * 1024 * 1024 * 1024
-
+    DOMAIN= "http://ops.chinascope.net/"
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "localhost"
-    SINGLETON = False
+    MAIL_ALERT = "it@chinascopefinancial.com"
 
 
 class Dev(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "192.168.0.143"
-    SINGLETON = False
 
 
 class Testserver(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "127.0.0.1"
-    SINGLETON = False
-
+    MAIL_ALERT = "chenglong.yan@chinascopefinancial.com"
+    DOMAIN="http://dev.ops.chinascope.net/"
 
 class Yutest(Config):
     HOST = "192.168.0.57"
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/test"
-    SINGLETON = False

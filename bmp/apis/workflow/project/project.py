@@ -21,12 +21,17 @@ class ProjectApi(BaseApi):
 
     def put(self, pid):
         submit = self.request()
-        Project.edit(pid, submit)
+        submit["id"]=pid
+        Project.edit(submit)
         return self.succ()
 
     def delete(self, pid):
         Project.delete(pid)
         return self.succ()
+
+    def search(self, page=None, pre_page=None):
+        submit = self.request()
+        return self.succ(Project.search(submit,page,pre_page))
 
 
 if __name__ == "__main__":

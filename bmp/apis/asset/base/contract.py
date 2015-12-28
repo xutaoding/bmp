@@ -14,7 +14,7 @@ class ContractApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Contract.add(submit)
+        contract=Contract.add(submit)
         return self.succ()
 
     def delete(self, id):

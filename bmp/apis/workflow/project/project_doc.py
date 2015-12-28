@@ -2,7 +2,7 @@
 from flask import session
 
 from bmp.apis.base import BaseApi
-from bmp.models.project import Project
+from bmp.models.project import Project,ProjectDoc
 from bmp.const import USER_SESSION
 
 
@@ -16,6 +16,16 @@ class Project_docApi(BaseApi):
         Project.edit_doc(submit)
         return self.succ()
 
+    def post(self,pid):
+        submit = self.request()
+        submit["project_id"] = pid
+        ProjectDoc.add(submit)
+        return self.succ()
+
+    def delete(self,pid):
+        ProjectDoc.delete(pid)
+        return self.succ()
+
 
 if __name__ == "__main__":
     from bmp.utils.post import test
@@ -23,8 +33,8 @@ if __name__ == "__main__":
     test("put",
          "http://127.0.0.1:5000/apis/v1.0/project/doc/1",
          {
-             "docs": [  # 相关资料
+             "docs":[  # 相关资料
                         {"url": "资料url1"},
                         {"url": "资料url2"}
-                        ]
+                    ]
          }, True)

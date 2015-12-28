@@ -11,6 +11,11 @@ from werkzeug.contrib.cache import SimpleCache
 from utils import path
 from database import Database
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.executors.pool import ThreadPoolExecutor
+from flask.helpers import get_root_path
+
 
 class _RegexConverter(BaseConverter):
     def __init__(self, map, *args):
@@ -20,7 +25,6 @@ class _RegexConverter(BaseConverter):
 
 class Myapp(Flask):
     __app = None
-
     @staticmethod
     def get_instance(name):
         if Myapp.__app == None or not Myapp.__app.config["SINGLETON"]:
@@ -47,16 +51,31 @@ class Myapp(Flask):
         cfg = cfg[0]
         self.config.from_object("bmp.config.%s" % cfg.capitalize())
 
+    def __init_sched(self):
+        self.sched = BackgroundScheduler(
+            jobstores={
+                "default": SQLAlchemyJobStore(url="sqlite:///%s/jobs.sqlite"%self.root_path)
+            },
+            executors = {
+            "default": ThreadPoolExecutor(1),
+            }
+        )
+
+
     def __init__(self, name):
         Flask.__init__(self, name)
         self.__add_apis = False
         self.__add_views = False
+        self.__name=name
 
         self.url_map.converters["regex"] = _RegexConverter
         self.__init_config()
         self.__init_log()
+        self.__init_sched()
         self.db = Database(self)
-        self.cache = SimpleCache()
+        self.cache=SimpleCache()
+
+
 
     def __add_api_rule(self, module):
         self.__add_rule("bmp.apis.%s" % module, "Api",

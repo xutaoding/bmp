@@ -15,5 +15,11 @@ from bmp import app as application
 application.add_view_rule("index")
 application.add_api_rule()
 
+import bmp.scheduler.alert as alert
+alert.run()
+
 if __name__ == "__main__":
-    application.run(host=application.config["HOST"], port=application.config["PORT"], debug=True, threaded=False)
+    application.run(
+        host=application.config["HOST"],
+        port=application.config["PORT"],
+        debug=True)

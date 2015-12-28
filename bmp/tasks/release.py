@@ -11,15 +11,7 @@ from bmp.const import RELEASE, DEFAULT_GROUP
 from bmp import log
 
 
-def mail_to(r, submit=None):
-    try:
-        __mail_to(r, submit)
-    except Exception, e:
-        traceback.print_exc()
-        log.exception(e)
-
-
-def __mail_to(r, submit):
+def mail_to(r, submit):
     approvals = r.approvals
     to, cc = [], []
     to_group = [DEFAULT_GROUP.QA]

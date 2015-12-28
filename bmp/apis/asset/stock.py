@@ -15,7 +15,7 @@ class StockApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Stock.add(submit)
+        stock=Stock.add(submit)
         return self.succ()
 
     def delete(self, sid):

@@ -5,11 +5,12 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 import bmp.utils.time as time
 from bmp.utils.exception import ExceptionEx
-
+import platform
 
 class Database(SQLAlchemy):
     def __init__(self, app):
         SQLAlchemy.__init__(self, app)
+        self.app=app
         self.Model.to_dict = Database.__to_dict
         self.Query.paginate = Database.__paginate
         self.Query.to_page = Database.__to_page
@@ -79,16 +80,30 @@ class Database(SQLAlchemy):
 
         return self
 
+
+
     def transaction(self, fun):
         def __fun(*args, **kwargs):
-            #self.session.begin(subtransactions=True)
-            try:
-                result = fun(*args, **kwargs)
-                self.session.commit()
-                return result
-            except ExceptionEx, ex:
-                raise ex
-            except Exception, e:
-                raise e
+            def call_func():
+                try:
+                    result = fun(*args, **kwargs)
+                    self.session.commit()
+                    return result
+                except ExceptionEx,ex:
+                    raise ex
+                except Exception,e:
+                    raise e
+
+            if "Windows"!=platform.system():
+                import fcntl
+                self.lock=open(self.app.root_path+"/transaction.lock")
+                try:
+                    fcntl.flock(self.lock, fcntl.LOCK_EX)
+                    return call_func()
+                finally:
+                    fcntl.flock(self.lock,fcntl.LOCK_UN)
+
+            else:
+                return call_func()
 
         return __fun
