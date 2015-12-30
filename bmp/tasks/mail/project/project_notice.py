@@ -25,9 +25,5 @@ def mail_to(p):
         sub=sub,
         url=url)
 
-
-
-
-
     mail.send(sub, html,
-              receiver=[User.get(u)["mail"] for u in [p.demand_uid, p.develop_uid, p.test_uid, p.release_uid]])
+              receiver=[u.mail for u in User.get_business_category("it")])
