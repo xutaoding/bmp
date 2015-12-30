@@ -373,16 +373,4 @@ class Purchase(db.Model):
 
 
 if __name__ == "__main__":
-    from bmp.models.asset import Contract
-    from bmp.models.user import User
-    from bmp import db
-
-    submit = {}
-    submit["apply_time_begin"] = None
-    submit["apply_time_end"] = None
-    submit["apply_businessCategory"] = None
-    submit["apply_uid"] = ""
-    submit["goods"] = ""
-    submit["price_begin"] = 1
-    submit["price_end"] = 100
-    print Purchase.search(submit, 1, 6)
+    pass

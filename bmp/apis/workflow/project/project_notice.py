@@ -22,11 +22,4 @@ class Project_noticeApi(BaseApi):
         return self.succ()
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test("post",
-         "http://127.0.0.1:5000/apis/v1.0/project/notice",
-         {
-             "type":"随便聊聊",
-             "txt":"testtesttesttesttesttest"
-         }, True)
+    pass

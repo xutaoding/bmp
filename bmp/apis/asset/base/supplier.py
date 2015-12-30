@@ -27,42 +27,4 @@ class SupplierApi(BaseApi):
 
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test(
-        "post",
-        "http://192.168.0.57:5000/apis/v1.0/supplier",
-        {
-            "name": "联想",
-            "connector": "dgsg",
-            "tel": "43564765",
-            "addr": "上海市",
-            "interfaceor": "上海数库"
-        }, True
-    )
-
-    test(
-        "delete",
-        "http://192.168.0.57:5000/apis/v1.0/supplier/2",
-        {
-            "name": "lian",
-            "connector": "dgsg",
-            "tel": "43564765",
-            "addr": "上海市",
-            "path": ""
-        },
-        True
-    )
-
-    test(
-        "put",
-        "http://192.168.0.57:5000/apis/v1.0/supplier/1",
-        {
-            "id": 1,
-            "name": "联想",
-            "connector": "dgsg",
-            "tel": "43564765",
-            "addr": "上海市",
-            "interfaceor": "北京数库"
-        }, True
-    )
+    pass

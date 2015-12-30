@@ -17,13 +17,4 @@ class Project_memberApi(BaseApi):
 
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test("put",
-         "http://127.0.0.1:5000/apis/v1.0/project/member/15",
-         {
-             "members": [
-                 {"uid": "chenglong.yan"},
-                 {"uid": "mingming.zhang"}
-             ]
-         }, True)
+    pass

@@ -27,7 +27,4 @@ class Release_appApi(BaseApi):
 
 
 if __name__ == "__main__":
-    import pandas as pd
-
-    for r in Release.between("1990-01-01", "2016-01-01"):
-        print(pd.read_json())
+    pass

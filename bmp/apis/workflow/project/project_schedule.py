@@ -24,15 +24,4 @@ class Project_scheduleApi(BaseApi):
 
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test("post",
-         "http://127.0.0.1:5000/apis/v1.0/project/schedule/1",
-         {
-             "type": "demand",  # 需求阶段
-             "begin_time": "1990-01-01",  # 需求周期
-             "end_time": "1990-01-02",  # 需求周期
-             "status": "1",  # refs的id,项目状态
-             "reson": "",
-             "desc": ""
-         }, True)
+    pass

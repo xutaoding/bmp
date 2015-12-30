@@ -51,4 +51,4 @@ class ReleaseApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    print Release.get(1)

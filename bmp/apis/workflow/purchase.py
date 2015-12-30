@@ -77,7 +77,4 @@ class PurchaseApi(BaseApi):
 
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test("get",
-         "http://localhost:5000/apis/v1.0/purchase", {}, exe=True)
+    pass

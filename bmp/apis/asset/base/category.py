@@ -27,16 +27,4 @@ class CategoryApi(BaseApi):
 
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test(
-        "delete",
-        "http://192.168.0.57:5000/apis/v1.0/asset/base/category/3",
-        {
-            "id": "3",
-            "name": "路由器",
-            "parent_id": "2"
-        },
-        True
-
-    )
+    pass
