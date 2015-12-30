@@ -62,6 +62,8 @@ class Myapp(Flask):
             job_defaults={"coalesce": False, "max_instances": 1}
         )
 
+        if not self.sched.running:
+            self.sched.start()
 
     def __init__(self, name):
         Flask.__init__(self, name)

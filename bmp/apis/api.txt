@@ -437,6 +437,7 @@ pre_page:每页长度
 {
  "type":"随便聊聊",#公告类型 随便聊聊,延误提醒,全员公告
  "txt":"testtesttesttesttesttest"#内容
+ "send_mail":1 #0:false ,1:true
 }
 
 

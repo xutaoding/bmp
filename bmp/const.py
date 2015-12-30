@@ -89,8 +89,8 @@ class STOCK:
 
 
 class PROJECT:
-    EDIT_PROJ = "编辑项目"
-    EDIT_DOC = "编辑文档"
+    EDIT_PROJ = "edit_proj"
+    EDIT_DOC = "edit_doc"
     STATUS_NEW ="新建"
     STATUS_AHEAD = "提前完成"
     STATUS_DELAY = "延误"
@@ -99,11 +99,11 @@ class PROJECT:
 
     @staticmethod
     def EDIT_MEMBER(type):
-        return "编辑%s成员" % type
+        return "%s_member" % type
 
     @staticmethod
     def EDIT_SCHEDULE(type):
-        return "编辑%s阶段" % type
+        return "edit_sched_%s" % type
 
 
 if __name__ == "__main__":

@@ -1,10 +1,8 @@
 # coding=utf-8
 from datetime import datetime
-from datetime import datetime
 
 from bmp.apis.base import BaseApi
-from bmp.models.release import Release, ReleaseApproval
-from bmp.tasks.release import mail_to
+from bmp.models.release import Release
 from bmp.const import RELEASE
 
 

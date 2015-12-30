@@ -37,7 +37,7 @@ class Config(object):
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "localhost"
-    MAIL_ALERT = "it@chinascopefinancial.com"
+    MAIL_ALERT = "chenglong.yan@chinascopefinancial.com"
 
 
 class Dev(Config):

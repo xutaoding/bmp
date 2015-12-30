@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # coding: utf-8
 import smtplib
 from email.mime.text import MIMEText
@@ -61,7 +60,7 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
                   args=(sub, html, receiver, copyto, uuid, priority, minutes),replace_existing=True)
     try:
         if not sched.running:
-            pass#sched.start()
+            sched.start()
     except:
         traceback.print_exc()
 

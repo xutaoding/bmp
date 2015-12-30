@@ -6,7 +6,7 @@ from bmp.models.user import Group
 from bmp.const import PURCHASE
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-from bmp.tasks.purchase import mail_to
+from bmp.tasks.mail.purchase import mail_to
 
 
 class PurchaseApi(BaseApi):

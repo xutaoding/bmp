@@ -69,7 +69,7 @@ class ProjectSchedule(db.Model):
     def _to_dict(self):
         _dict = self.to_dict()
         _dict["members"] = [m.to_dict() for m in self.members]
-        _dict["status"] = Project._schedule_status(self.end_time_create, self.end_time)
+        _dict["_status"] = Project._schedule_status(self.end_time_create, self.end_time)
         return _dict
 
     @staticmethod
@@ -142,9 +142,10 @@ class ProjectNotice(db.Model):
 
     @staticmethod
     def add(_dict):
-        db.session.add(ProjectNotice(_dict))
+        notice=ProjectNotice(_dict)
+        db.session.add(notice)
         db.session.commit()
-        return True
+        return notice
 
     @staticmethod
     def _to_dict(self):
@@ -201,10 +202,16 @@ class Project(db.Model):
         db.session.flush()
 
     @staticmethod
+    @db.transaction
     def add(_dict):
-        db.session.add(Project(_dict))
-        db.session.commit()
-        return True
+
+        if Project.query.filter(Project.name==_dict["name"]).count():
+            raise ExceptionEx("项目名 %s 已存在"%_dict["name"])
+
+        proj=Project(_dict)
+        db.session.add(proj)
+        db.session.flush()
+        return proj
 
     @staticmethod
     def delete(pid):
@@ -220,7 +227,7 @@ class Project(db.Model):
             return status
         if src_time == dst_time:
             status = PROJECT.STATUS_ON_TIME
-        elif src_time > dst_time:
+        elif src_time < dst_time:
             status = PROJECT.STATUS_AHEAD
         else:
             status = PROJECT.STATUS_DELAY

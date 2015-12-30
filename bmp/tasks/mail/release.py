@@ -1,6 +1,5 @@
 # coding: utf-8
 import re
-import traceback
 
 from flask import render_template
 from flask import request
@@ -8,7 +7,6 @@ from flask import request
 from bmp.models.user import Group, User
 import bmp.utils.mail as mail
 from bmp.const import RELEASE, DEFAULT_GROUP
-from bmp import log
 
 
 def mail_to(r, submit):

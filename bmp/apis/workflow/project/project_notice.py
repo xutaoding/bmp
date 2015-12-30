@@ -3,8 +3,7 @@ from flask import session
 
 from bmp.apis.base import BaseApi
 from bmp.models.project import ProjectNotice
-from bmp.const import USER_SESSION
-
+from bmp.tasks.mail.project.project_notice import mail_to
 
 class Project_noticeApi(BaseApi):
     route = ["/project/notice/<int:page>/<int:pre_page>","/project/notice"]
@@ -15,7 +14,11 @@ class Project_noticeApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        ProjectNotice.add(submit)
+        notice=ProjectNotice.add(submit)
+
+        if submit.__contains__("send_mail")\
+                and submit["send_mail"]:
+            mail_to(notice)
         return self.succ()
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # coding=utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release, ReleaseApproval
-from bmp.tasks.release import mail_to
+from bmp.tasks.mail.release import mail_to
 
 '''
     模块：发布申请

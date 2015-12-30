@@ -1,9 +1,8 @@
 # coding: utf-8
-from flask import session
 
 from bmp.apis.base import BaseApi
 from bmp.models.project import Project
-from bmp.const import USER_SESSION
+from bmp.tasks.mail.project.project_create import mail_to
 
 
 class ProjectApi(BaseApi):
@@ -16,7 +15,8 @@ class ProjectApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Project.add(submit)
+        proj=Project.add(submit)
+        mail_to(proj)
         return self.succ()
 
     def put(self, pid):

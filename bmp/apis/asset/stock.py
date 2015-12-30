@@ -1,7 +1,7 @@
 # coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
-
+from bmp.tasks.mail.asset.stock import mail_to
 
 class StockApi(BaseApi):
     route = ["/asset/stock",
@@ -16,6 +16,7 @@ class StockApi(BaseApi):
     def post(self):
         submit = self.request()
         stock=Stock.add(submit)
+        mail_to(stock)
         return self.succ()
 
     def delete(self, sid):
