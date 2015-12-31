@@ -9,8 +9,7 @@ class ProjectApi(BaseApi):
     route = ["/project/<int:page>/<int:pre_page>", "/project/<int:pid>", "/project"]
 
     def get(self, page=0, pre_page=None, pid=0):
-        if pid:
-            return self.succ(Project.get(pid))
+        if pid:return self.succ(Project.get(pid))
         return self.succ(Project.select(page, pre_page))
 
     def post(self):

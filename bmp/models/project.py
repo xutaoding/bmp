@@ -170,6 +170,7 @@ class Project(db.Model):
     name = db.Column(db.String(128), unique=True)
     desc = db.Column(db.String(256))
     tag = db.Column(db.String(256))
+    type = db.Column(db.String(256))
     summarize = db.Column(db.Text)
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
