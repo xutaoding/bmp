@@ -210,7 +210,7 @@ class User(db.Model):
 
     @staticmethod
     def get_business_category(bc):
-        User.query.filter(User.is_dimiss==False).filter(User.businessCategory==bc).all()
+        return User.query.filter(User.is_dimiss==False).filter(User.businessCategory==bc).all()
 
 
 

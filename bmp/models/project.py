@@ -51,6 +51,9 @@ class ProjectSchedule(db.Model):
     end_time_create = db.Column(db.DateTime)
 
     status = db.Column(db.String(128))
+
+    update_status_time = db.Column(db.DateTime)
+
     reson = db.Column(db.String(128))
     desc = db.Column(db.String(256))
     members = db.relationship("ProjectScheduleMember", backref=db.backref("schedule"))
@@ -64,6 +67,7 @@ class ProjectSchedule(db.Model):
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
                 setattr(self, k, v)
+        self.update_status_time=datetime.now().strftime("%Y-%m-%d")
 
     @staticmethod
     def _to_dict(self):
@@ -84,6 +88,8 @@ class ProjectSchedule(db.Model):
         _dict["end_time_create"] = _dict["end_time"]
 
         schedule = ProjectSchedule(_dict)
+
+
         db.session.add(schedule)
         db.session.commit()
         return True
@@ -91,6 +97,8 @@ class ProjectSchedule(db.Model):
     @staticmethod
     def edit(_dict):
         ps = Database.to_cls(ProjectSchedule, _dict)
+
+
         ProjectHistory.add(ps.project_id, PROJECT.EDIT_SCHEDULE(ps.type), _dict)
         db.session.commit()
         return True
@@ -266,15 +274,15 @@ class Project(db.Model):
         if check("name"):
             query = query.filter(Project.name == check("name"))
 
-        if check("status") and check("status") != PROJECT.STATUS_NEW:
+        if check("status") and (check("status") != PROJECT.STATUS_NEW):
             query = query.join(ProjectSchedule).filter(ProjectSchedule.type == "release")
             if check("status") == PROJECT.STATUS_ON_TIME:
                 query = query.filter(Project.end_time == ProjectSchedule.end_time)
             elif check("status") == PROJECT.STATUS_AHEAD:
-                query = query.filter(Project.end_time > ProjectSchedule.end_time)
-            else:
                 query = query.filter(Project.end_time < ProjectSchedule.end_time)
+            else:
+                query = query.filter(Project.end_time > ProjectSchedule.end_time)
         else:
-            query = query.filter(~Project.id.in_([ps.id for ps in ProjectSchedule.query.all()]))
+            query = query.filter(~Project.id.in_([ps.project_id for ps in ProjectSchedule.query.all()]))
 
         return query.paginate(page, pre_page, False).to_page(Project._to_dict)
