@@ -1,6 +1,6 @@
 # coding: utf-8
 from bmp import db
-
+from bmp.utils.exception import ExceptionEx
 
 class Ref(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -25,7 +25,7 @@ class Ref(db.Model):
                 .filter(Ref.type == type) \
                 .filter(Ref.name == name) \
                 .filter(Ref.parent_id == parent_id).count():
-            return False
+            raise ExceptionEx("该分类已存在")
 
         db.session.add(Ref(name, type, parent_id))
         db.session.flush()

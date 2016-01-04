@@ -1,5 +1,6 @@
 # coding=utf-8
 from datetime import datetime
+from datetime import timedelta
 
 from flask import session
 from sqlalchemy import and_
@@ -9,7 +10,6 @@ from bmp.const import USER_SESSION, SCRAP, STOCK
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
-from datetime import timedelta
 
 stock_category = db.Table("stock_category",
                           db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
@@ -110,7 +110,7 @@ class Contract(db.Model):
 
     @staticmethod
     def add(_dict):
-        contract=Contract(_dict)
+        contract = Contract(_dict)
         db.session.add(contract)
         db.session.commit()
         return contract
@@ -165,7 +165,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     parent_id = db.Column(db.Integer)
-    is_del = db.Column(db.Boolean,default=False)
+    is_del = db.Column(db.Boolean, default=False)
 
     def __init__(self, _dict):
         self.name = _dict["name"]
@@ -174,21 +174,21 @@ class Category(db.Model):
     @staticmethod
     @db.transaction
     def add(_dict):
-        query=Category.query\
-            .filter(Category.parent_id == _dict["parent_id"])\
+        query = Category.query \
+            .filter(Category.parent_id == _dict["parent_id"]) \
             .filter(Category.name == _dict["name"])
 
         def is_exist(is_del):
-            if query.filter(Category.is_del==is_del).count():
+            if query.filter(Category.is_del == is_del).count():
                 return True
             return False
 
         if is_exist(is_del=False):
-            raise ExceptionEx("分类%s已经存在"%_dict["name"])
+            raise ExceptionEx("分类%s已经存在" % _dict["name"])
 
         if is_exist(is_del=True):
-            category=query.one()
-            category.is_del=False
+            category = query.one()
+            category.is_del = False
         else:
             db.session.add(Category(_dict))
 
@@ -215,8 +215,8 @@ class Category(db.Model):
         for child in category.all():
             Category.__delete(child.to_dict())
 
-        category=Category.query.filter(Category.id == id).one()
-        category.is_del=True
+        category = Category.query.filter(Category.id == id).one()
+        category.is_del = True
 
     @staticmethod
     @db.transaction
@@ -226,8 +226,8 @@ class Category(db.Model):
     @staticmethod
     def __select_sub(parent_id):
         sub = []
-        for c in Category.query\
-                .filter(Category.is_del==False)\
+        for c in Category.query \
+                .filter(Category.is_del == False) \
                 .filter(Category.parent_id == parent_id).all():
             c.child = Category.__select_sub(c.id)
             sub.append(c.to_dict(["child"]))
@@ -279,9 +279,9 @@ class StockOpt(db.Model):
         elif _dict["type"] == SCRAP.TYPE:
             _dict["approval_uid"] = session[USER_SESSION]["uid"]
             _dict["approval_time"] = datetime.now().strftime("%Y-%m-%d")
-            _dict["update_time"]=datetime.now().strftime("%Y-%m-%d")
+            _dict["update_time"] = datetime.now().strftime("%Y-%m-%d")
         else:
-            _dict["update_time"]=datetime.now().strftime("%Y-%m-%d")
+            _dict["update_time"] = datetime.now().strftime("%Y-%m-%d")
 
         if not _dict.__contains__("stock_id"):
             raise ExceptionEx("库存不能为空")
@@ -340,7 +340,7 @@ class StockOpt(db.Model):
     @staticmethod
     def search(submit, page=None, pre_page=None):
         from bmp.models.user import User
-        from bmp.models.purchase import Purchase, PurchaseGoods
+        from bmp.models.purchase import Purchase
         # 固定资产编号	入库时间	申请人	申请部门	物品类别	价格范围	物品状态
         def check(s):
             if submit.__contains__(s):
@@ -348,6 +348,7 @@ class StockOpt(db.Model):
             return False
 
         query = StockOpt.query \
+            .join(User, User.uid == StockOpt.uid) \
             .join(Stock, Stock.id == StockOpt.stock_id) \
             .join(stock_category) \
             .join(Category)
@@ -434,16 +435,23 @@ class Stock(db.Model):
             .join(Category)
 
         if check("status"):
-            status = check("status")
-            if status == STOCK.TYPE:
+            if check("status") == STOCK.TYPE:
                 stock_ids = [s.stock_id for s in StockOpt.query.filter(StockOpt.status.in_(["", SCRAP.TYPE])).all()]
-                query = query.filter(~Stock.id.in_(stock_ids))
+                query = query.join(User, Stock.stock_in_uid == User.uid).filter(~Stock.id.in_(stock_ids))
             else:
-                query = Stock.query \
+                query = query \
                     .join(StockOpt, Stock.id == StockOpt.stock_id) \
-                    .join(stock_category) \
-                    .join(Category)
-                query = query.filter(and_(StockOpt.status.in_(["", SCRAP.TYPE]), StockOpt.type == status))
+                    .join(User, StockOpt.uid == User.uid)\
+                    .filter(StockOpt.status.in_(["", SCRAP.TYPE]))\
+                    .filter(StockOpt.type == check("status"))
+        else:
+            query = query.join(User, Stock.stock_in_uid == User.uid)
+
+        if check("uid"):
+            query = query.filter(User.uid == submit["uid"])
+
+        if check("businessCategory"):
+            query = query.filter(User.businessCategory == submit["businessCategory"])
 
         if check("no"):
             query = query.filter(Stock.no == submit["no"])
@@ -532,19 +540,19 @@ class Stock(db.Model):
             businessCategory = session[USER_SESSION]["businessCategory"]
             today = datetime.strptime(_dict["stock_in_time"], "%Y-%m-%d")
             year, month = today.year, today.month
-            beg=datetime(year, month,1)
-            if month==12:
-                end=datetime(year, month,31)
+            beg = datetime(year, month, 1)
+            if month == 12:
+                end = datetime(year, month, 31)
             else:
-                end=datetime(year,month+1,1)-timedelta(days=1)
+                end = datetime(year, month + 1, 1) - timedelta(days=1)
 
             stocks = [int(s.no[-4:]) for s in Stock.query.filter(
-                Stock.stock_in_time.between(beg,end)).all()]
+                Stock.stock_in_time.between(beg, end)).all()]
             stocks.append(0)
             return "%s%d%02d%04d" % (businessCategory.upper(), year, month, max(stocks) + 1)
 
         _dict["no"] = create_no()
-        stock=Stock(_dict)
+        stock = Stock(_dict)
         db.session.add(stock)
         db.session.flush()
         return stock

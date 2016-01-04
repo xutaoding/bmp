@@ -15,6 +15,17 @@ pwd:密码
 字典分类:get /refs/<string:type>
 type:分类信息
 
+添加字典分类:post /refs
+
+{
+    "name":"分类名称",
+    "type":"所属类别",
+    "parent_id":0#预留
+}
+
+
+
+
 用户信息:get /my
 
 

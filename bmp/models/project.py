@@ -8,6 +8,7 @@ from bmp import db
 from bmp.const import USER_SESSION, PROJECT
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
+from sqlalchemy import or_
 
 
 class ProjectHistory(db.Model):
@@ -67,7 +68,7 @@ class ProjectSchedule(db.Model):
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
             else:
                 setattr(self, k, v)
-        self.update_status_time=datetime.now().strftime("%Y-%m-%d")
+        self.update_status_time = datetime.now().strftime("%Y-%m-%d")
 
     @staticmethod
     def _to_dict(self):
@@ -89,7 +90,6 @@ class ProjectSchedule(db.Model):
 
         schedule = ProjectSchedule(_dict)
 
-
         db.session.add(schedule)
         db.session.commit()
         return True
@@ -97,7 +97,6 @@ class ProjectSchedule(db.Model):
     @staticmethod
     def edit(_dict):
         ps = Database.to_cls(ProjectSchedule, _dict)
-
 
         ProjectHistory.add(ps.project_id, PROJECT.EDIT_SCHEDULE(ps.type), _dict)
         db.session.commit()
@@ -150,7 +149,7 @@ class ProjectNotice(db.Model):
 
     @staticmethod
     def add(_dict):
-        notice=ProjectNotice(_dict)
+        notice = ProjectNotice(_dict)
         db.session.add(notice)
         db.session.commit()
         return notice
@@ -170,7 +169,7 @@ class Project(db.Model):
     name = db.Column(db.String(128), unique=True)
     desc = db.Column(db.String(256))
     tag = db.Column(db.String(256))
-    type = db.Column(db.String(256))
+    type_id = db.Column(db.Integer,db.ForeignKey("ref.id"))
     summarize = db.Column(db.Text)
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
@@ -214,10 +213,10 @@ class Project(db.Model):
     @db.transaction
     def add(_dict):
 
-        if Project.query.filter(Project.name==_dict["name"]).count():
-            raise ExceptionEx("项目名 %s 已存在"%_dict["name"])
+        if Project.query.filter(Project.name == _dict["name"]).count():
+            raise ExceptionEx("项目名 %s 已存在" % _dict["name"])
 
-        proj=Project(_dict)
+        proj = Project(_dict)
         db.session.add(proj)
         db.session.flush()
         return proj
@@ -283,7 +282,13 @@ class Project(db.Model):
                 query = query.filter(Project.end_time < ProjectSchedule.end_time)
             else:
                 query = query.filter(Project.end_time > ProjectSchedule.end_time)
-        else:
-            query = query.filter(~Project.id.in_([ps.project_id for ps in ProjectSchedule.query.all()]))
+        elif check("status"):
+            proj_ids=[ps.project_id for ps in
+                      ProjectSchedule.query
+                          .filter(ProjectSchedule.type=="release")
+                          .filter(ProjectSchedule.project_id != None)
+                          .filter(ProjectSchedule.end_time!=None).all()]
+
+            query = query.filter(~Project.id.in_(proj_ids))
 
         return query.paginate(page, pre_page, False).to_page(Project._to_dict)

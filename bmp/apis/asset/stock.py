@@ -35,4 +35,17 @@ class StockApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    for stock in Stock.search(
+        {
+            "no":"",
+            "stock_in_time_begin":None,
+            "stock_in_time_end":None,
+            "uid":"",
+            "businessCategory":"",
+            "category_id":"",
+            "price_start":"",
+            "price_end":"",
+            "status":"领用"
+        }):
+
+        print(stock)
