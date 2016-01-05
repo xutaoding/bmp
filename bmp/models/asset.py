@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask import session
-from sqlalchemy import and_
 
 from bmp import db
 from bmp.const import USER_SESSION, SCRAP, STOCK
@@ -321,6 +320,8 @@ class StockOpt(db.Model):
     def select(type, page, pre_page):
         page = StockOpt.query \
             .filter(StockOpt.type == type) \
+            .order_by(StockOpt.time.desc()) \
+            .order_by(StockOpt.update_time.desc())\
             .paginate(page, pre_page)
         return page.to_page(StockOpt._to_dict)
 
@@ -348,10 +349,13 @@ class StockOpt(db.Model):
             return False
 
         query = StockOpt.query \
+            .order_by(StockOpt.time.desc()) \
+            .order_by(StockOpt.update_time.desc())\
             .join(User, User.uid == StockOpt.uid) \
             .join(Stock, Stock.id == StockOpt.stock_id) \
             .join(stock_category) \
-            .join(Category)
+            .join(Category)\
+            .filter(StockOpt.status.in_(["", SCRAP.TYPE]))
 
         if check("no"):
             query = query.filter(Stock.no == submit["no"])
@@ -431,6 +435,7 @@ class Stock(db.Model):
             return False
 
         query = Stock.query \
+            .order_by(Stock.stock_in_time.desc()) \
             .join(stock_category) \
             .join(Category)
 
@@ -441,8 +446,8 @@ class Stock(db.Model):
             else:
                 query = query \
                     .join(StockOpt, Stock.id == StockOpt.stock_id) \
-                    .join(User, StockOpt.uid == User.uid)\
-                    .filter(StockOpt.status.in_(["", SCRAP.TYPE]))\
+                    .join(User, StockOpt.uid == User.uid) \
+                    .filter(StockOpt.status.in_(["", SCRAP.TYPE])) \
                     .filter(StockOpt.type == check("status"))
         else:
             query = query.join(User, Stock.stock_in_uid == User.uid)
