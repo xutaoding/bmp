@@ -3,6 +3,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
 from bmp.tasks.mail.asset.stock import mail_to
 
+
 class StockApi(BaseApi):
     route = ["/asset/stock",
              "/asset/stock/<int:sid>",
@@ -15,7 +16,7 @@ class StockApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        stock=Stock.add(submit)
+        stock = Stock.add(submit)
         mail_to(stock)
         return self.succ()
 
@@ -36,16 +37,15 @@ class StockApi(BaseApi):
 
 if __name__ == "__main__":
     for stock in Stock.search(
-        {
-            "no":"",
-            "stock_in_time_begin":None,
-            "stock_in_time_end":None,
-            "uid":"",
-            "businessCategory":"",
-            "category_id":"",
-            "price_start":"",
-            "price_end":"",
-            "status":"领用"
-        }):
-
+            {
+                "no": "",
+                "stock_in_time_begin": None,
+                "stock_in_time_end": None,
+                "uid": "",
+                "businessCategory": "",
+                "category_id": "",
+                "price_start": "",
+                "price_end": "",
+                "status": "领用"
+            }):
         print(stock)
