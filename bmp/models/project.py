@@ -235,7 +235,7 @@ class Project(db.Model):
             return status
         if src_time == dst_time:
             status = PROJECT.STATUS_ON_TIME
-        elif src_time < dst_time:
+        elif src_time > dst_time:
             status = PROJECT.STATUS_AHEAD
         else:
             status = PROJECT.STATUS_DELAY
@@ -279,9 +279,9 @@ class Project(db.Model):
             if check("status") == PROJECT.STATUS_ON_TIME:
                 query = query.filter(Project.end_time == ProjectSchedule.end_time)
             elif check("status") == PROJECT.STATUS_AHEAD:
-                query = query.filter(Project.end_time < ProjectSchedule.end_time)
-            else:
                 query = query.filter(Project.end_time > ProjectSchedule.end_time)
+            else:
+                query = query.filter(Project.end_time < ProjectSchedule.end_time)
         elif check("status"):
             proj_ids=[ps.project_id for ps in
                       ProjectSchedule.query
