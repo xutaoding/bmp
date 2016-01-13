@@ -2,14 +2,13 @@
 from datetime import datetime
 
 from flask import session
-from sqlalchemy import or_
 
 from bmp import db
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
 from bmp.utils.exception import ExceptionEx
 from bmp.const import RELEASE
-
+from bmp.database import Database
 
 class ReleaseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -34,7 +33,7 @@ class ReleaseDatabase(db.Model):
 
     def __init__(self, _dict):
         self.name = _dict["name"]
-        self.tables = [ReleaseTable(t) for t in _dict["table"]]
+        self.tables = [Database.to_cls(ReleaseTable, t) for t in _dict["table"]]
 
 
 class ReleaseService(db.Model):
@@ -73,7 +72,7 @@ class ReleaseService(db.Model):
 
         _dict["database"] = [format_database(databases[i], tables[i]) for i in range(0, len(databases))]
 
-        self.databases = [ReleaseDatabase(t) for t in _dict["database"]]
+        self.databases = [Database.to_cls(ReleaseDatabase, t) for t in _dict["database"]]
 
 
 class ReleaseApproval(db.Model):
@@ -82,6 +81,7 @@ class ReleaseApproval(db.Model):
     uid = db.Column(db.String(128), db.ForeignKey("user.id"), nullable=False)
     status = db.Column(db.String(128), nullable=False)
     reson = db.Column(db.String(128))
+    desc = db.Column(db.String(128))
     options = db.Column(db.String(128))
     release_id = db.Column(db.Integer, db.ForeignKey("release.id"))
 
@@ -89,6 +89,7 @@ class ReleaseApproval(db.Model):
         self.type = _dict["type"]
         self.status = _dict["status"]
         self.reson = _dict["reson"]
+        self.desc = _dict["desc"]
         self.options = _dict["options"]
         self.uid = _dict["uid"]
 
@@ -104,10 +105,10 @@ class ReleaseApproval(db.Model):
         _approval = ReleaseApproval(submit)
         _approval.release_id = id
 
-        release=Release.query.filter(Release.id == id).one()
+        release = Release.query.filter(Release.id == id).one()
 
-        if _approval.status==RELEASE.FAIL or len(release.approvals)==2:
-            release.is_finished=True
+        if _approval.status == RELEASE.FAIL or len(release.approvals) == 2:
+            release.is_finished = True
 
         db.session.add(_approval)
         db.session.flush()
@@ -129,6 +130,7 @@ class Release(db.Model):
     service = db.relationship("ReleaseService", uselist=False)
     release_type = db.Column(db.String(64), default="")
     is_finished = db.Column(db.Boolean, default=False)
+    is_deployed = db.Column(db.Boolean,default=False)
 
     def __init__(self, _dict):
         self.project = _dict["project"]
@@ -154,25 +156,45 @@ class Release(db.Model):
     @staticmethod
     def unfinished(page, pre_page):
         page = Release.query \
-            .filter(Release.is_finished==False)\
-            .order_by(Release.apply_time.desc())\
+            .filter(Release.is_finished == False) \
+            .order_by(Release.apply_time.desc()) \
             .paginate(page, pre_page)
         return page.to_page(Release._to_dict)
 
     @staticmethod
-    def self(page,pre_page):
+    def self(page, pre_page):
         page = Release.query \
-            .filter(Release.is_finished==False)\
-            .filter(Release.apply_uid==session[USER_SESSION]["uid"])\
-            .order_by(Release.apply_time.desc())\
+            .filter(Release.is_finished == False) \
+            .filter(Release.apply_uid == session[USER_SESSION]["uid"]) \
+            .order_by(Release.apply_time.desc()) \
+            .paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
+
+    @staticmethod
+    def deployed(page,pre_page):
+        page = Release.query \
+            .filter(Release.is_deployed == True)\
+            .order_by(Release.apply_time.desc()) \
+            .paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
+
+    @staticmethod
+    def undeployed(page,pre_page):
+        page = Release.query \
+            .join(ReleaseApproval)\
+            .filter(Release.is_finished == False) \
+            .filter(ReleaseApproval.type==RELEASE.FLOW_TEST)\
+            .filter(ReleaseApproval.status==RELEASE.PASS)\
+            .filter(Release.is_deployed == False)\
+            .order_by(Release.apply_time.desc()) \
             .paginate(page, pre_page)
         return page.to_page(Release._to_dict)
 
     @staticmethod
     def finished(page, pre_page):
         page = Release.query \
-            .filter(Release.is_finished==True)\
-            .order_by(Release.apply_time.desc())\
+            .filter(Release.is_finished == True) \
+            .order_by(Release.apply_time.desc()) \
             .paginate(page, pre_page)
         return page.to_page(Release._to_dict)
 
@@ -208,6 +230,14 @@ class Release(db.Model):
 
     @staticmethod
     @db.transaction
+    def edit(submit):
+        release = Database.to_cls(Release, submit)
+        service = Database.to_cls(ReleaseService, submit["service"])
+        db.session.flush()
+        return True
+
+    @staticmethod
+    @db.transaction
     def approval(id, submit):
 
         approvals = ReleaseApproval.query.filter(
@@ -229,5 +259,21 @@ class Release(db.Model):
         return True
 
 
+    @staticmethod
+    def deploy(rid):
+        release=Release.query.filter(Release.id==rid).one()
+        release.is_deployed=True
+        db.session.commit()
+        return True
+
+
+
 if __name__ == "__main__":
-    pass
+    print Release.query \
+            .join(ReleaseApproval)\
+            .filter(Release.is_finished == False) \
+            .filter(ReleaseApproval.type==RELEASE.FLOW_TEST)\
+            .filter(ReleaseApproval.status==RELEASE.PASS)\
+            .filter(Release.is_deployed == False)\
+            .order_by(Release.apply_time.desc()) \
+            .paginate(1,10).to_page(Release._to_dict)

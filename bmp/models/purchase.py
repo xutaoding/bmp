@@ -206,9 +206,6 @@ class Purchase(db.Model):
     def __is_superior(uid, apply_uid):
         if uid == ldap.get_superior(apply_uid):
             return True
-        if uid == "mingming.zhang":
-            return True
-
         return False
 
     @staticmethod

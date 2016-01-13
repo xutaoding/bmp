@@ -7,3 +7,4 @@ from .release import *
 from .ref import *
 from .upload import *
 from .user import *
+from .leave import *

@@ -18,9 +18,9 @@ type:分类信息
 添加字典分类:post /refs
 
 {
-    "name":"分类名称",
-    "type":"所属类别",
-    "parent_id":0#预留
+    name:分类名称,
+    type:所属类别,
+    parent_id:0#预留
 }
 
 
@@ -31,9 +31,9 @@ type:分类信息
 
 发布相关------------------------------------------------
 
-获取全部当前发布申请:get "/release/<int:page>/<int:pre_page>"
-获取全部历史发布申请:get "/release/history/<int:page>/<int:pre_page>"
-获取全部当前用户的申请: get "/release/self/<int:page>/<int:pre_page>"
+获取全部当前发布申请:get /release/<int:page>/<int:pre_page>
+获取全部历史发布申请:get /release/history/<int:page>/<int:pre_page>
+获取全部当前用户的申请: get /release/self/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
@@ -41,426 +41,479 @@ pre_page:每页长度
 id:申请id
 
 提交申请:post /release
+编辑申请:put /release/edit/<int:rid>
+rid:申请id
+
 参考:
 {
-    "project":"项目名称",
-    "service":#服务结构
+    project:项目名称,
+    service:#服务结构
         {
-            "name":"服务",
-            "type":"类型",
-            "database":"数据库",
-            "table":"表名"
+            name:服务,
+            type:类型,
+            database:数据库,
+            table:表名
         },
-    "_from":"从",
-    "to":"办公室,上海IDC,亚马逊",
-    "release_time":"发布时间",
-    "copy_to_uid":"抄送人",
-    "content":"更改内容"
+    _from:从,
+    to:办公室,上海IDC,亚马逊,
+    release_time:发布时间,
+    copy_to_uid:抄送人,
+    content:更改内容
 }
 
 确认(退回)申请:put /release/<int:id>
 id:申请id
 参考:
 {
-    "type":"QA内部测试",
-    "uid":"审批人",
-    "status":"审批状态",
-    "reson":"退回理由",
-    "options":"BUG,文件未成功修改,发布问题"
+    type:QA内部测试,
+    uid:审批人,
+    status:审批状态,
+    reson:退回理由,
+    options:BUG,文件未成功修改,发布问题
+    desc:备注
 }
 
 
 
 权限相关------------------------------------------------
 
-获取全部管理组:get "/groups"
-获取管理组:get "/groups/<string:name>"
+获取全部管理组:get /groups
+获取管理组:get /groups/<string:name>
 name:组名
 
-添加管理组:post "/groups/<string:name>/<string:desc>"
+添加管理组:post /groups/<string:name>/<string:desc>
 name:组名
 desc:组别名
 
-更新管理组用户:put "/groups/<string:name>"
+更新管理组用户:put /groups/<string:name>
 name:组名
 
-参考:["用户1(uid)","用户2(uid)"]
+参考:[用户1(uid),用户2(uid)]
 
-修改组名或组别名:put "/groups/<string:name>/<string:new>/<string:desc>"
+修改组名或组别名:put /groups/<string:name>/<string:new>/<string:desc>
 name:原组名
 new:新组名
 desc:组别名
 
 
-删除管理组:delete "/groups/<string:name>"
+删除管理组:delete /groups/<string:name>
 name:组名
 
-获取用户列表:get "/users"
-获取用户:get "/users/<string:uid>"
+获取用户列表:get /users
+获取用户:get /users/<string:uid>
 uid:用户名
 
-编辑用户:put "/users/<string:uid>/<string:mail>/<int:is_admin>"
+编辑用户:put /users/<string:uid>/<string:mail>/<int:is_admin>
 uid:用户名
 mail:email
 is_admin:管理员:1:是,0:不是
 
-更新用户所属组:groups "/users/<string:uid>"
+更新用户所属组:groups /users/<string:uid>
 uid:用户名
 groups:用户组
 
 例:
 {
-    "groups":"UP,QA,OP"
+    groups:UP,QA,OP
 }
 
-删除用户:delete "/users/<string:uid>"
+删除用户:delete /users/<string:uid>
 uid:用户名
 
-更新ldap用户:update "/users"
+更新ldap用户:update /users
 
 
 采购相关------------------------------------------------
 
-获取采购申请:get "/purchase/<int:page>/<int:pre_page>"
+获取采购申请:get /purchase/<int:page>/<int:pre_page>
 
-获取已审批的采购申请:finished "/purchase/<int:page>/<int:pre_page>"
+获取已审批的采购申请:finished /purchase/<int:page>/<int:pre_page>
 
 page:页数 从1开始
 pre_page:每页长度
 
-获取采购详情:get "/purchase/<int:pid>"
+获取采购详情:get /purchase/<int:pid>
 pid:采购申请的id
 
-采购申请:post "/purchase"
+采购申请:post /purchase
 参考:
 {
-     "contract":{
-         "begin_time":"2015-01-01 01:01:01",
-         "end_time":"2015-01-02 01:01:01",
-         "path":"合同文件路径"
+     contract:{
+         begin_time:2015-01-01 01:01:01,
+         end_time:2015-01-02 01:01:01,
+         path:合同文件路径
      },
-     "imgs":[{
-             "b64":"图片编码内容",
-             "desc":"描述"
+     imgs:[{
+             b64:图片编码内容,
+             desc:描述
      }],
-     "goods":[{
-         "name":"商品名称",
-         "price":"11.11",
-         "spec":"规格",
-         "amount":"10"
+     goods:[{
+         name:商品名称,
+         price:11.11,
+         spec:规格,
+         amount:10
      }],
-     "supplier_id":1,#供应商id
-     "use":"用途"
+     supplier_id:1,#供应商id
+     use:用途
 }
 
 确认(退回)申请:put /purchase/<int:id>
 参考:
 {
-    "type":"审批类型",# "UP":直接上级,"FIN":财务,"BOSS":老板,"LAW":法务
-    "uid":"审批人",
-    "status":"审批状态",
-    "reson":"退回理由",
-    "options":""
+    type:审批类型,# UP:直接上级,FIN:财务,BOSS:老板,LAW:法务
+    uid:审批人,
+    status:审批状态,
+    reson:退回理由,
+    options:
 }
 
 
-采购提交审批:approval "/purchase/<int:pid>"
+采购提交审批:approval /purchase/<int:pid>
 pid:采购申请的id
 
-获取保存的采购申请:saved "/purchase/<int:page>/<int:pre_page>"
-获取已经通过审批的采购申请:passed "/purchase/<int:page>/<int:pre_page>"
+获取保存的采购申请:saved /purchase/<int:page>/<int:pre_page>
+获取已经通过审批的采购申请:passed /purchase/<int:page>/<int:pre_page>
 
 page:页数 从1开始
 pre_page:每页长度
 
 
-采购查询:search "/purchase/<int:page>/<int:pre_page>"
+采购查询:search /purchase/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
-导出采购:get "/export_purchase_search"
+导出采购:get /export_purchase_search
 {
-    "apply_time_begin":"申请时间",
-    "apply_time_end":"申请时间",
-    "apply_businessCategory":"部门",
-    "apply_uid":"申请人",
-    "goods":"商品名称",
-    "price":"商品价格"
+    apply_time_begin:申请时间,
+    apply_time_end:申请时间,
+    apply_businessCategory:部门,
+    apply_uid:申请人,
+    goods:商品名称,
+    price:商品价格
 }
 
-保存采购申请:save "/purchase"
+保存采购申请:save /purchase
 注:
 采购申请返回的结构直接上传
+
+请假相关------------------------------------------------
+
+请假申请:post /leave
+{
+    uid:申请人
+    reson:理由
+    type_id:申请类型 # /refs 接口获取 分类:请假类型
+    dept:部门
+    days:天数
+    tel:电话
+    begin_time:开始时间
+    end_time:结束时间
+    status:审批的状态
+    feedback:审批人的反馈信息
+}
+
+审批申请:put /leave/approval/<int:lid>
+lid:请假申请的id
+参数:
+{
+    status:审批状态 #已确认或退回
+}
+
+添加事件:post /leave/event
+参数:
+{
+    type_id:事件类型 # /refs 接口获取 分类:请假事件类型
+    begin_time:开始时间
+    end_time:结束时间
+}
+
+删除事件:delete /leave/event/<int:lid>
+lid:事件的id
+
+删除申请:delete /leave/<int:lid>
+lid:申请id
+
+获取当前用户申请:get /leave/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
+
+获取需要审批的申请:get /leave/approval/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
+
+获取事件: get /leave/event/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
 
 
 
 资产管理------------------------------------------------
 
-获取全部商品或分类:get "/asset/base/category"
+获取全部商品或分类:get /asset/base/category
 
-获取指定商品或分类:get "/asset/base/category/<int:id>"
+获取指定商品或分类:get /asset/base/category/<int:id>
 id:分类id
 
-更新商品或分类:put "/asset/base/category/<int:id>"
+更新商品或分类:put /asset/base/category/<int:id>
 商品或分类id
 
-添加商品:post "/asset/base/category"
+添加商品:post /asset/base/category
 {
-    "name": "路由器",
-    "parent_id": "父级分类的id,没有就填0"
+    name: 路由器,
+    parent_id: 父级分类的id,没有就填0
 }
 
-删除商品或分类:delete "/asset/base/category/<int:id>"
+删除商品或分类:delete /asset/base/category/<int:id>
 商品或分类的id
 
-获取全部合同:get "/contract"
+获取全部合同:get /contract
 
-获取指定合同:get "/contract/<int:id>"
+获取指定合同:get /contract/<int:id>
 id:合同id
 
-新建合同: post "/contract"
+新建合同: post /contract
 {
-    "begin_time": "2014-02-12 08:45",
-    "end_time": "2015-08-25 11:22",
-    "purchase_id": 5,
-    "supplier_name": "联想",
-    "path": "D:\PythonCode"
+    begin_time: 2014-02-12 08:45,
+    end_time: 2015-08-25 11:22,
+    purchase_id: 5,
+    supplier_name: 联想,
+    path: D:\PythonCode
 }
 
-更新合同:put "/contract/<int:id>"
+更新合同:put /contract/<int:id>
 {
-    "begin_time": "2014-02-12 08:45",
-    "end_time": "2015-08-25 11:22",
-    "purchase_id": 5,
-    "supplier_name": "联想",
-    "path": "D:\PythonCode"
+    begin_time: 2014-02-12 08:45,
+    end_time: 2015-08-25 11:22,
+    purchase_id: 5,
+    supplier_name: 联想,
+    path: D:\PythonCode
 }
 
-删除合同:delete "/contract/<int:id>"
+删除合同:delete /contract/<int:id>
 
-新建供应商:post "/supplier"
+新建供应商:post /supplier
 {
-    "name":"联想",
-    "connector":"联系人",
-    "tel":"43564765",
-    "addr":"上海市",
-    "interfaceor":"接口人"
+    name:联想,
+    connector:联系人,
+    tel:43564765,
+    addr:上海市,
+    interfaceor:接口人
 }
 
-获取全部供应商:get "/supplier"
+获取全部供应商:get /supplier
 
-获取指定供应商:get "/supplier/<int:id>"
+获取指定供应商:get /supplier/<int:id>
 
-更新供应商:put "/supplier/<int:id>"
+更新供应商:put /supplier/<int:id>
 {
-    "name":"联想",
-    "connector":"dgsg",
-    "tel":"43564765",
-    "addr":"上海市",
-    "interfaceor":"上海数库"
+    name:联想,
+    connector:dgsg,
+    tel:43564765,
+    addr:上海市,
+    interfaceor:上海数库
 }
 
-删除供应商:delete "/supplier/<int:id>"
+删除供应商:delete /supplier/<int:id>
 
 
 库存管理------------------------------------------------
 
-获取全部库存: get "/asset/stock/<int:page>/<int:pre_page>"
+获取全部库存: get /asset/stock/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
-获取指定库存: get "/asset/stock/<int:id>"
+获取指定库存: get /asset/stock/<int:id>
 
-获取不在（领用、借用、维修、报废等)状态的库存"/asset/stock/<int:page>/<int:pre_page>/<int:nan_opt>"
+获取不在（领用、借用、维修、报废等)状态的库存/asset/stock/<int:page>/<int:pre_page>/<int:nan_opt>
 page:页数 从1开始
 pre_page:每页长度
 nan_opt:true
 
-添加库存:post "/asset/stock"
-修改库存:put "/asset/stock/<int:id>"
+添加库存:post /asset/stock
+修改库存:put /asset/stock/<int:id>
 id:库存id
 参考:
 {
     #固定资产编号	采购编号	名称	规格	入库类型	入库人	入库时间	过保日
-    "no": "固定资产编号1",
-    "category_id": "名称1",
-    "spec": "规格1",
-    "purchase_id":"44",#采购id
-    "stock_in_type":"入库类型1",
-    "stock_in_uid":"mingming.zhang",#入库人
-    "stock_in_time":"2000-01-01 00:00",#入库时间
-    "warranty_time":"2000-01-01 00:00",#过保日期
+    no: 固定资产编号1,
+    category_id: 名称1,
+    spec: 规格1,
+    purchase_id:44,#采购id
+    stock_in_type:入库类型1,
+    stock_in_uid:mingming.zhang,#入库人
+    stock_in_time:2000-01-01 00:00,#入库时间
+    warranty_time:2000-01-01 00:00,#过保日期
 }
 
-删除库存:delete "/asset/stock/<int:id>"
+删除库存:delete /asset/stock/<int:id>
 id:库存编号
 
 
-获取全部 (领用、借用、维修、报废等): get "/asset/stockopt/<string:type>/<int:page>/<int:pre_page>"
-获取指定 (领用、借用、维修、报废等): get "/asset/stockopt/<string:type>/<int:id>"
+获取全部 (领用、借用、维修、报废等): get /asset/stockopt/<string:type>/<int:page>/<int:pre_page>
+获取指定 (领用、借用、维修、报废等): get /asset/stockopt/<string:type>/<int:id>
 
-库存添加（领用、借用、维修、报废等):post "/asset/stockopt"
-修改库存（领用、借用、维修、报废等):put "/asset/stockopt/<int:id>"
+库存添加（领用、借用、维修、报废等):post /asset/stockopt
+修改库存（领用、借用、维修、报废等):put /asset/stockopt/<int:id>
 id:（领用、借用、维修、报废等)id
 参考:
 {
-    "type":"入库类型",
-    "uid":"mingming.zhang",#领用人
-    "time":"2000-01-01 00:00",#对应type的时间
-    "reson":"理由，故障，报废原因",
-    "remark":"备注",
-    "status":"领用",
-    "stock_id":"2",#库存的id
-    "approval_remark":"审批备注"
+    type:入库类型,
+    uid:mingming.zhang,#领用人
+    time:2000-01-01 00:00,#对应type的时间
+    reson:理由，故障，报废原因,
+    remark:备注,
+    status:领用,
+    stock_id:2,#库存的id
+    approval_remark:审批备注
 }
 
-删除库存（领用、借用、维修、报废等):delete "/asset/stockopt/<int:id>"
+删除库存（领用、借用、维修、报废等):delete /asset/stockopt/<int:id>
 id:（领用、借用、维修、报废等)编号
 
 
-库存查询:search "/asset/stock/<int:page>/<int:pre_page>"
+库存查询:search /asset/stock/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
-导出库存:get "/export_stock_search"
+导出库存:get /export_stock_search
 
 参数:
 {
-    "no":"固定资产编号",
-    "stock_in_time_begin":"2000-01-01 00:00",#入库时间范围
-    "stock_in_time_end":"2000-01-01 00:00",#入库时间范围
-    "category_id":"33",#物品类别
-    "price_begin":"33.33",#价格范围
-    "price_end":"34.33",#价格范围
+    no:固定资产编号,
+    stock_in_time_begin:2000-01-01 00:00,#入库时间范围
+    stock_in_time_end:2000-01-01 00:00,#入库时间范围
+    category_id:33,#物品类别
+    price_begin:33.33,#价格范围
+    price_end:34.33,#价格范围
 }
 
-库存操作查询:search "/asset/stockopt/<int:page>/<int:pre_page>"
+库存操作查询:search /asset/stockopt/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
-导出库存操作:get "/export_stockopt_search"
+导出库存操作:get /export_stockopt_search
 
 参数:
 {
-    "no":"固定资产编号",
-    "stock_in_time_begin":"2000-01-01 00:00",#入库时间范围
-    "stock_in_time_end":"2000-01-01 00:00",#入库时间范围
-    "uid":"申请人",
-    "businessCategory":"申请部门",
-    "category_id":"33",#物品类别
-    "price_begin":"33.33",#价格范围
-    "price_end":"34.33",#价格范围
-    "status":"状态"
+    no:固定资产编号,
+    stock_in_time_begin:2000-01-01 00:00,#入库时间范围
+    stock_in_time_end:2000-01-01 00:00,#入库时间范围
+    uid:申请人,
+    businessCategory:申请部门,
+    category_id:33,#物品类别
+    price_begin:33.33,#价格范围
+    price_end:34.33,#价格范围
+    status:状态
 }
 
 
-获取报废审批:get "/asset/scrap/<int:page>/<int:pre_page>"
+获取报废审批:get /asset/scrap/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
 项目相关------------------------------------------------
 
-项目查询: search "/project/<int:page>/<int:pre_page>"
+项目查询: search /project/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 参数
 {
-    "name":"项目名称",
-    "status":"项目状态"
+    name:项目名称,
+    status:项目状态
 }
 
-获取全部项目: get "/project/<int:page>/<int:pre_page>"
+获取全部项目: get /project/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
-获取指定项目: get "/project/<int:pid>"
+获取指定项目: get /project/<int:pid>
 pid:项目id
 
-删除项目:delete "/project/<int:pid>"
+删除项目:delete /project/<int:pid>
 pid:项目id
 
-新建项目: post "/project"
-更新项目: put "/project/<int:pid>"
+新建项目: post /project
+更新项目: put /project/<int:pid>
 参数:pid:项目id
 {
-    "name":"项目名称",
-    "desc":"项目描述",
-    "summarize":"项目小结",
-    "begin_time":"1990-01-01",#开始时间
-    "end_time":"1990-01-02",#计划完成时间
-    "demand_uid":"chenglong.yan",#需求负责人
-    "develop_uid":"chenglong.yan",#研发负责人
-    "test_uid":"chenglong.yan",#测试负责人
-    "release_uid":"chenglong.yan",#发布负责人
-    "man_day":"10",#人/天
-    "resource":"资源预分配"
+    name:项目名称,
+    desc:项目描述,
+    summarize:项目小结,
+    begin_time:1990-01-01,#开始时间
+    end_time:1990-01-02,#计划完成时间
+    demand_uid:chenglong.yan,#需求负责人
+    develop_uid:chenglong.yan,#研发负责人
+    test_uid:chenglong.yan,#测试负责人
+    release_uid:chenglong.yan,#发布负责人
+    man_day:10,#人/天
+    resource:资源预分配
 }
 
-更新相关资料:put "/project/doc/<int:pid>"
+更新相关资料:put /project/doc/<int:pid>
 pid:项目编号
 参数:
 {
- "docs":[#相关资料
-         {"url":"资料url1"},
-         {"url":"资料url2"}
+ docs:[#相关资料
+         {url:资料url1},
+         {url:资料url2}
         ]
 }
 
-添加相关资料:post "/porject/doc/<int:pid>"
+添加相关资料:post /porject/doc/<int:pid>
 pid:项目编号
 参数:
 {
-    "url":"资料url1"
+    url:资料url1
 }
 
-删除相关资料:delete "/project/doc/<int:pid>"
+删除相关资料:delete /project/doc/<int:pid>
 pid:相关资料编号
 
 
-更新相关人员: put "/project/member/<int:sid>"
+更新相关人员: put /project/member/<int:sid>
 sid:阶段信息(需求、研发、测试、发布)id
 参数:
 {
- "members":[#相关人员
-            {"uid":"chenglong.yan"},
-            {"uid":"mingming.zhang"}
+ members:[#相关人员
+            {uid:chenglong.yan},
+            {uid:mingming.zhang}
         ]
 }
 
-更新阶段信息(需求、研发、测试、发布) put "/project/schedule/<int:pid>"
-新增阶段信息(需求、研发、测试、发布) post "/project/schedule/<int:pid>"
+更新阶段信息(需求、研发、测试、发布) put /project/schedule/<int:pid>
+新增阶段信息(需求、研发、测试、发布) post /project/schedule/<int:pid>
 pid:项目id
 参数:
 {
- "type":"demand",#项目阶段 需求:demand,研发:develop,测试:test,发布:release
- "begin_time":"1990-01-01",#需求周期
- "end_time":"1990-01-02",#需求周期
- "status":"1",#refs的id,项目状态
- "reson":"变更原因",
- "desc":""
+ type:demand,#项目阶段 需求:demand,研发:develop,测试:test,发布:release
+ begin_time:1990-01-01,#需求周期
+ end_time:1990-01-02,#需求周期
+ status:1,#refs的id,项目状态
+ reson:变更原因,
+ desc:
 }
 
-获取项目公告:get "/project/notice/<int:page>/<int:pre_page>"
+获取项目公告:get /project/notice/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
-发布项目公告:post "/project/notice"
+发布项目公告:post /project/notice
 
 参数:
 {
- "type":"随便聊聊",#公告类型 随便聊聊,延误提醒,全员公告
- "txt":"testtesttesttesttesttest"#内容
- "send_mail":1 #0:false ,1:true
+ type:随便聊聊,#公告类型 随便聊聊,延误提醒,全员公告
+ txt:testtesttesttesttesttest#内容
+ send_mail:1 #0:false ,1:true
 }
 
 
 文件上传/下载------------------------------------------------
-上传文件:post "/upload"
-下载文件:get "/upload?path=文件路径"
+上传文件:post /upload
+下载文件:get /upload?path=文件路径
 
 
 统计------------------------------------------------
-发布应用统计:get "/stats/release/app/<string:begin_time>/<string:end_time>"
-发布状态统计:get "/stats/release/status/<string:begin_time>/<string:end_time>"
-发布类型统计:get "/stats/release/type/<string:begin_time>/<string:end_time>"
+发布应用统计:get /stats/release/app/<string:begin_time>/<string:end_time>
+发布状态统计:get /stats/release/status/<string:begin_time>/<string:end_time>
+发布类型统计:get /stats/release/type/<string:begin_time>/<string:end_time>
 格式:
     begin_time:yyyy-mm-dd
     end_time:yyyy-mm-dd

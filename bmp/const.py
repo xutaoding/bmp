@@ -58,9 +58,15 @@ class DEFAULT_GROUP:
 class RELEASE:
     PASS = u"已确认"
     FAIL = u"退回"
+    FLOW_TEST = u"内部测试"
     FLOW_OP = [u"运维发布"]
-    FLOW_QA = [u"内部测试", u"正式环境测试"]
+    FLOW_QA = [FLOW_TEST, u"正式环境测试"]
     OPTIONS = "options"
+
+class LEAVE:
+    PASS = u"已确认"
+    FAIL = u"退回"
+
 
 
 # todo 清除unicode定义
@@ -91,11 +97,10 @@ class STOCK:
 class PROJECT:
     EDIT_PROJ = "edit_proj"
     EDIT_DOC = "edit_doc"
-    STATUS_NEW ="新建"
+    STATUS_NEW = "新建"
     STATUS_AHEAD = "提前完成"
     STATUS_DELAY = "延误"
     STATUS_ON_TIME = "正常推进"
-
 
     @staticmethod
     def EDIT_MEMBER(type):

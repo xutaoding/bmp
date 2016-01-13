@@ -34,6 +34,10 @@ class Config(object):
     MAX_CONTENT_LENGTH = 1 * 1024 * 1024 * 1024
     DOMAIN= "http://ops.chinascope.net/"
 
+    SSH_HOST = ""
+    SSH_USER = ""
+    SSH_PASSWORD = ""
+
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "localhost"
