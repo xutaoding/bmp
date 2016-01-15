@@ -3,7 +3,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.release import Release
 
 
-class Release_historyApi(BaseApi):
+class Release_deploy_historyApi(BaseApi):
     route = ["/release/deploy/history/<int:page>/<int:pre_page>"]
 
     def get(self, page=0, pre_page=None):

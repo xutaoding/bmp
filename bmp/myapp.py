@@ -24,7 +24,7 @@ class _RegexConverter(BaseConverter):
 
 class Myapp(Flask):
     __app = None
-
+    __is_add_apis=False
     @staticmethod
     def get_instance(name):
         if Myapp.__app == None or not Myapp.__app.config["SINGLETON"]:
@@ -96,6 +96,7 @@ class Myapp(Flask):
         '''
         cls_name = module.split(".")[-1]
 
+
         exec ("import %s" % (module))
 
         cls_name = cls_name.capitalize() + suffix
@@ -119,9 +120,9 @@ class Myapp(Flask):
         regx = re.compile(r"^%s/(.+)\.py$" % apis)
         for name in path.files(apis, ".+\.py$"):
             mod = regx.findall(name.replace("\\", "/"))[0].replace("/", ".")
+
             self.__add_api_rule(mod)
         self.__add_apis = True
 
     def run(self, host=None, port=None, debug=None, **options):
-        print("root:" + self.root_path)
         super(Myapp, self).run(host, port, debug, **options)

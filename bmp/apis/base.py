@@ -8,6 +8,7 @@ from flask import redirect
 from flask import url_for
 from flask import jsonify
 from flask import session
+
 from flask import request
 
 from bmp.const import USER_SESSION
@@ -78,11 +79,21 @@ class BaseApi(MethodView):
 
         return json.loads(req)
 
-    def succ(self, data={}):
+    def succ(self, data={}, filename=""):
+        fdata = ""
+
+        if filename:
+            try:
+                with open(filename) as fileobj:
+                    fdata = fileobj.read()
+            except:
+                raise ExceptionEx("无法读取文件[%s]" % filename)
+
         return jsonify({
             "success": True,
             "error": "",
-            "content": data
+            "content": data,
+            "file": fdata
         })
 
     def redirect(self, url):

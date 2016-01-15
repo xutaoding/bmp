@@ -12,7 +12,7 @@ sys.path.append("/var/www/scope/bmp")
 
 from bmp import app as application
 
-application.add_view_rule("index")
+#application.add_view_rule("index")
 application.add_api_rule()
 
 if __name__ == "__main__":

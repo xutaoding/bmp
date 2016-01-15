@@ -3,7 +3,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.leave import LeaveEvent
 
 
-class LeaveApi(BaseApi):
+class Leave_eventApi(BaseApi):
     route = ["/leave/event", "/leave/event/<int:page>/<int:pre_page>", "/leave/event/<int:lid>"]
 
     def get(self, page, pre_page):

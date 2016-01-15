@@ -34,15 +34,17 @@ class Config(object):
     MAX_CONTENT_LENGTH = 1 * 1024 * 1024 * 1024
     DOMAIN= "http://ops.chinascope.net/"
 
-    SSH_HOST = ""
-    SSH_USER = ""
-    SSH_PASSWORD = ""
+    SSH_HOST = "192.168.250.253"
+    SSH_USER = "depops"
+    SSH_PASSWORD = "Passwd@!"
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "localhost"
     MAIL_ALERT = "chenglong.yan@chinascopefinancial.com"
-
+    SSH_HOST = "192.168.250.253"
+    SSH_USER = "depops"
+    SSH_PASSWORD = "Passwd@!"
 
 class Dev(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"

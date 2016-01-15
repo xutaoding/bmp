@@ -82,6 +82,15 @@ class Leave(db.Model):
             .filter(Leave.uid == uid) \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
+    @staticmethod
+    def history(page=0,pre_page=None):
+        return Leave.query \
+            .filter(Leave.status!=None)\
+            .filter(Leave.status!="")\
+            .paginate(page, pre_page, False).to_page(Leave._to_dict)
+
+
+
 
 class LeaveEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

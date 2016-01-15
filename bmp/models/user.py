@@ -7,6 +7,8 @@ from bmp import db
 from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
 
+from bmp.database import Database
+
 user_group = db.Table("user_group",
                       db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
                       db.Column("group_id", db.Integer, db.ForeignKey("group.id")))
@@ -138,10 +140,9 @@ class User(db.Model):
 
     @staticmethod
     @db.transaction
-    def edit(uid, email, is_admin):
-        user = User.query.filter(User.uid == uid).one()
-        user.mail = email
-        user.is_admin = is_admin
+    def edit(submit):
+        user=User.query.filter(User.uid == submit["uid"]).one()
+        user.__init__(submit)
         db.session.flush()
         return True
 
@@ -151,6 +152,7 @@ class User(db.Model):
         user = User.query.filter(User.uid == uid).one()
         user.groups = Group.query.filter(Group.name.in_(groups.split(","))).all()
         db.session.flush()
+        return True
 
     @staticmethod
     @db.transaction

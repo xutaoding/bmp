@@ -1,5 +1,6 @@
 # coding: utf-8
 import ldap
+from ldap import modlist
 
 from bmp import app
 
@@ -11,6 +12,7 @@ def __bind(account, pwd, is_auth=False):
             init.simple_bind(account, pwd)
         else:
             init.simple_bind_s(account, pwd)
+            init.unbind_s()
         return init
     except:
         return None
@@ -43,6 +45,8 @@ def search(uid="*"):
             "x-csf-emp-1stManager"  # 上级
         ]
     )
+
+    init.unbind_s()
     return result
 
 
@@ -67,10 +71,19 @@ def auth(uid, pwd):
 
 def get_superior(uid):
     try:
-        dn, user = search(uid)[0]
-        return user["x-csf-emp-1stManager"][0].split(",")[0].split("=")[1].strip()
+        dn, user = __user_dict(search(uid))
+        return user["x-csf-emp-1stManager"].split(",")[0].split("=")[1].strip()
     except:
         return None
+
+
+def modify(uid,password,_old, _new):
+    dn,u = __user_dict(search(uid))
+    conn = __bind(dn,password)
+    try:
+        conn.modify_s(dn, modlist.modifyModlist(_old, _new))
+    finally:
+        conn.unbind_s()
 
 
 '''
@@ -82,5 +95,6 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__ == "__main__":
-    for user in all():
-        print(user)
+    pass
+
+

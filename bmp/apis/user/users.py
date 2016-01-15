@@ -5,13 +5,14 @@ import bmp.utils.user_ldap as ldap
 
 
 class UsersApi(BaseApi):
-    route = ["/users", "/users/<string:uid>", "/users/<string:uid>/<string:email>/<int:is_admin>"]
+    route = ["/users", "/users/<string:uid>"]
 
     def get(self, uid="%"):
         return self.succ(User.select(uid))
 
-    def put(self, uid, email, is_admin):
-        User.edit(uid, email, is_admin)
+    def put(self):
+        submit=self.request()
+        User.edit(submit)
         return self.succ()
 
     def delete(self, uid):

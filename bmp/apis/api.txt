@@ -34,6 +34,8 @@ type:分类信息
 获取全部当前发布申请:get /release/<int:page>/<int:pre_page>
 获取全部历史发布申请:get /release/history/<int:page>/<int:pre_page>
 获取全部当前用户的申请: get /release/self/<int:page>/<int:pre_page>
+
+
 page:页数 从1开始
 pre_page:每页长度
 
@@ -73,6 +75,21 @@ id:申请id
     desc:备注
 }
 
+部署相关------------------------------------------------
+
+发布  post    /release/deploy/<int:rid>
+未部署的发布申请 get /release/deploy/<int:page>/<int:pre_page>
+已部署的历史申请 get /release/deploy/history/<int:page>/<int:pre_page>
+
+获取发布地址 get /release/deploy/address/<int:page>/<int:pre_page>
+删除发布地址  delete  /release/deploy/address/<int:aid>
+新增发布地址  post    /release/deploy/address
+参数:
+{
+    name:名称
+    addr:地址
+    type:类型 #s_host,d_host
+}
 
 
 权限相关------------------------------------------------
