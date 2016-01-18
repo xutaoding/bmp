@@ -99,7 +99,9 @@ class Leave(db.Model):
 
 class LeaveEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    desc = db.Column(db.String(128))
     type_id = db.Column(db.Integer, db.ForeignKey("ref.id"))
+
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
 
@@ -137,6 +139,6 @@ class LeaveEvent(db.Model):
 
     @staticmethod
     def between(beg, end):
-        return [LeaveEvent._to_dict(l) for l in Leave.query \
+        return [LeaveEvent._to_dict(l) for l in LeaveEvent.query \
             .filter(or_(LeaveEvent.begin_time.between(beg, end),
                         LeaveEvent.end_time.between(beg, end))).all()]
