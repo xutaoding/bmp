@@ -11,7 +11,7 @@ class UsersApi(BaseApi):
         return self.succ(User.select(uid))
 
     def put(self):
-        submit=self.request()
+        submit = self.request()
         User.edit(submit)
         return self.succ()
 

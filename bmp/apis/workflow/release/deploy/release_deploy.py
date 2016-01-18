@@ -5,6 +5,7 @@ from bmp.models.release import Release
 from bmp.tasks.release import deploy_database
 from bmp import app
 
+
 class Release_deployApi(BaseApi):
     route = ["/release/deploy/<int:rid>", "/release/deploy/<int:page>/<int:pre_page>"]
 
@@ -12,15 +13,12 @@ class Release_deployApi(BaseApi):
         return self.succ(Release.undeployed(page, pre_page))
 
     def post(self, rid):
-        result=deploy_database(rid)
-        return self.succ(result,filename="%s/data_deploy_log/myapp.log"%app.root_path)
+        result = deploy_database(rid)
+        return self.succ(result, filename="%s/data_deploy_log/myapp.log" % app.root_path)
 
     def put(self, rid):
         Release.deploy(rid)
         return self.succ()
-
-
-
 
 
 if __name__ == "__main__":
@@ -61,12 +59,10 @@ if __name__ == "__main__":
     data["s_host"] = fmt_host(r["_from"])
     data["d_host"] = fmt_host(r["to"])
 
-
-
     print(data)
 
 
-    #print client.exec_script("/root/csfscript/dump_data/dump_data.py", data)
+    # print client.exec_script("/root/csfscript/dump_data/dump_data.py", data)
 
 
     # client = Client("192.168.0.227", "root", rsakey="C:\Users\chenglong.yan\.ssh\id_rsa")

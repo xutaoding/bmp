@@ -228,7 +228,7 @@ class Purchase(db.Model):
 
     @staticmethod
     def unfinished(user_groups):
-        from bmp.models.user import Group,User
+        from bmp.models.user import Group, User
 
         purchases = []
         uid = session[USER_SESSION]["uid"]
@@ -251,11 +251,10 @@ class Purchase(db.Model):
             if group_map.__contains__(cur_approval_type.upper()):
                 purchase.cur_approval_type_desc = group_map[cur_approval_type.upper()]
 
-            if uid in [purchase.apply_uid]+[a.uid for a in approvals] \
+            if uid in [purchase.apply_uid] + [a.uid for a in approvals] \
                     or group.intersection([a.type for a in approvals]):
                 purchases.append(purchase)
                 is_append = True
-
 
             if cur_approval_type == PURCHASE.FLOW_ONE:
                 if Purchase.__is_superior(uid, apply_uid):

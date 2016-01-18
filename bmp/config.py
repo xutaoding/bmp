@@ -32,11 +32,12 @@ class Config(object):
     HOST = ""
     PORT = 5000
     MAX_CONTENT_LENGTH = 1 * 1024 * 1024 * 1024
-    DOMAIN= "http://ops.chinascope.net/"
+    DOMAIN = "http://ops.chinascope.net/"
 
     SSH_HOST = "192.168.250.253"
     SSH_USER = "depops"
     SSH_PASSWORD = "Passwd@!"
+
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
@@ -45,6 +46,7 @@ class Test(Config):
     SSH_HOST = "192.168.250.253"
     SSH_USER = "depops"
     SSH_PASSWORD = "Passwd@!"
+
 
 class Dev(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
@@ -55,7 +57,8 @@ class Testserver(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
     HOST = "127.0.0.1"
     MAIL_ALERT = "chenglong.yan@chinascopefinancial.com"
-    DOMAIN="http://dev.ops.chinascope.net/"
+    DOMAIN = "http://dev.ops.chinascope.net/"
+
 
 class Yutest(Config):
     HOST = "192.168.0.57"

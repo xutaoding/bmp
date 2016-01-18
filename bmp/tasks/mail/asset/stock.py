@@ -1,6 +1,7 @@
 # coding: utf-8
 import re
 from datetime import timedelta
+import traceback
 
 from flask import render_template
 from flask import request
@@ -8,7 +9,6 @@ from flask import request
 import bmp.utils.mail as mail
 from bmp import app
 
-import traceback
 
 def mail_to(s):
     try:
@@ -16,7 +16,7 @@ def mail_to(s):
 
         regx = re.compile(r"^http://([a-z.]+)/")
 
-        host=regx.findall(request.headers["Referer"])[0]
+        host = regx.findall(request.headers["Referer"])[0]
 
         if "dev" in host:
             sub = u"【测试】 %s" % sub
@@ -32,5 +32,6 @@ def mail_to(s):
     except:
         traceback.print_exc()
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     pass

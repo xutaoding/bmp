@@ -77,9 +77,9 @@ def get_superior(uid):
         return None
 
 
-def modify(uid,password,_old, _new):
-    dn,u = __user_dict(search(uid))
-    conn = __bind(dn,password)
+def modify(uid, password, _old, _new):
+    dn, u = __user_dict(search(uid))
+    conn = __bind(dn, password)
     try:
         conn.modify_s(dn, modlist.modifyModlist(_old, _new))
     finally:
@@ -96,5 +96,3 @@ base DN :dc=chinascopefinancial,dc=com
 
 if __name__ == "__main__":
     pass
-
-

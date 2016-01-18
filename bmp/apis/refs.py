@@ -15,5 +15,5 @@ class RefsApi(BaseApi):
         return self.succ()
 
     def delete(self, id):
-        #Ref.delete(id)
+        # Ref.delete(id)
         return self.succ()

@@ -2,20 +2,19 @@
 import json
 import traceback
 from functools import wraps
+import os
 
 from flask.views import MethodView
 from flask import redirect
 from flask import url_for
 from flask import jsonify
 from flask import session
-
 from flask import request
 
 from bmp.const import USER_SESSION
 from bmp import log
 from bmp import app
 from bmp.utils.exception import ExceptionEx
-import os
 
 
 def jsonp(func):
@@ -86,8 +85,8 @@ class BaseApi(MethodView):
         if filename:
             try:
                 with open(filename) as fileobj:
-                    seek=os.path.getsize(filename)-1024
-                    if seek<0:seek=0
+                    seek = os.path.getsize(filename) - 1024
+                    if seek < 0: seek = 0
                     fileobj.seek(seek)
                     fdata = fileobj.read()
             except:

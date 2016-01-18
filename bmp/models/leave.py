@@ -40,10 +40,10 @@ class Leave(db.Model):
     @staticmethod
     def add(_dict):
         _dict["approval_uid"] = user_ldap.get_superior(_dict["uid"])
-
-        db.session.add(Leave(_dict))
+        leave=Leave(_dict)
+        db.session.add(leave)
         db.session.commit()
-        return True
+        return leave
 
     @staticmethod
     def approval(submit):
@@ -70,9 +70,7 @@ class Leave(db.Model):
 
     @staticmethod
     def unapprovaled(page=0, pre_page=None):
-        uid = session[USER_SESSION]["uid"]
         return Leave.query \
-            .filter(Leave.approval_uid == uid) \
             .filter(Leave.status.in_([None, ""])) \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
@@ -85,9 +83,9 @@ class Leave(db.Model):
 
     @staticmethod
     def between(beg, end):
-        uid = session[USER_SESSION]["uid"]
         return [Leave._to_dict(l) for l in Leave.query \
-            .filter(Leave.uid == uid) \
+            .filter(Leave.status != None) \
+            .filter(Leave.status != "") \
             .filter(or_(Leave.begin_time.between(beg, end),
                         Leave.end_time.between(beg, end))).all()]
 

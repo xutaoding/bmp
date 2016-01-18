@@ -4,7 +4,7 @@ from flask.ext import excel
 
 from bmp.apis.base import BaseApi
 from bmp.models.asset import StockOpt
-import pyexcel.ext.xlsx
+
 
 class Export_stockopt_searchApi(BaseApi):
     route = ["/asset/export_stockopt_search"]

@@ -22,7 +22,7 @@ class Release_typeApi(BaseApi):
             ids = g.resample("m", how="count").id
             for ix in ids.index:
                 date = time.format(ix.to_datetime(), "%Y-%m-%d")
-                result[name][date]=ids[ix]
+                result[name][date] = ids[ix]
 
         return self.succ(result)
 

@@ -4,7 +4,6 @@ import os
 import uuid
 
 from flask import request
-
 from flask import send_file
 
 from bmp.apis.base import BaseApi

@@ -49,5 +49,4 @@ if __name__ == "__main__":
                 "price_end": "",
                 "status": "领用"
             }):
-
         print(stock)

@@ -13,6 +13,5 @@ log = app.logger
 cache = app.cache
 sched = app.sched
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     print(__name__)

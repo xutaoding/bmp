@@ -8,7 +8,6 @@ from bmp import db
 from bmp.const import USER_SESSION, PROJECT
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-from sqlalchemy import or_
 
 
 class ProjectHistory(db.Model):
@@ -169,7 +168,7 @@ class Project(db.Model):
     name = db.Column(db.String(128), unique=True)
     desc = db.Column(db.String(256))
     tag = db.Column(db.String(256))
-    type_id = db.Column(db.Integer,db.ForeignKey("ref.id"))
+    type_id = db.Column(db.Integer, db.ForeignKey("ref.id"))
     summarize = db.Column(db.Text)
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
@@ -283,11 +282,11 @@ class Project(db.Model):
             else:
                 query = query.filter(Project.end_time < ProjectSchedule.end_time)
         elif check("status"):
-            proj_ids=[ps.project_id for ps in
-                      ProjectSchedule.query
-                          .filter(ProjectSchedule.type=="release")
-                          .filter(ProjectSchedule.project_id != None)
-                          .filter(ProjectSchedule.end_time!=None).all()]
+            proj_ids = [ps.project_id for ps in
+                        ProjectSchedule.query
+                            .filter(ProjectSchedule.type == "release")
+                            .filter(ProjectSchedule.project_id != None)
+                            .filter(ProjectSchedule.end_time != None).all()]
 
             query = query.filter(~Project.id.in_(proj_ids))
 

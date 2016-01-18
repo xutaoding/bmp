@@ -1,4 +1,6 @@
-import paramiko,json
+import json
+
+import paramiko
 
 
 class Client(paramiko.SSHClient):
@@ -18,9 +20,8 @@ class Client(paramiko.SSHClient):
         self.__username = username
         self.__ftp = None
 
-    def exec_script(self,path,arg):
-        return self.exec_command("sudo %s \"%s\""%(path,json.dumps(arg).replace("\"","\\\"")))
-
+    def exec_script(self, path, arg):
+        return self.exec_command("sudo %s \"%s\"" % (path, json.dumps(arg).replace("\"", "\\\"")))
 
     def exec_command(self, command, bufsize=-1, timeout=None, get_pty=False):
         stdin, stdout, stderr = paramiko.SSHClient.exec_command(self, command, bufsize, timeout, get_pty)

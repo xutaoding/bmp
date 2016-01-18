@@ -321,7 +321,7 @@ class StockOpt(db.Model):
         page = StockOpt.query \
             .filter(StockOpt.type == type) \
             .order_by(StockOpt.time.desc()) \
-            .order_by(StockOpt.update_time.desc())\
+            .order_by(StockOpt.update_time.desc()) \
             .paginate(page, pre_page)
         return page.to_page(StockOpt._to_dict)
 
@@ -350,11 +350,11 @@ class StockOpt(db.Model):
 
         query = StockOpt.query \
             .order_by(StockOpt.time.desc()) \
-            .order_by(StockOpt.update_time.desc())\
+            .order_by(StockOpt.update_time.desc()) \
             .join(User, User.uid == StockOpt.uid) \
             .join(Stock, Stock.id == StockOpt.stock_id) \
             .join(stock_category) \
-            .join(Category)\
+            .join(Category) \
             .filter(StockOpt.status.in_(["", SCRAP.TYPE]))
 
         if check("no"):

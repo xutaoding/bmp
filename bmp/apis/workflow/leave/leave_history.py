@@ -11,4 +11,4 @@ class Leave_historyApi(BaseApi):
 
 
 if __name__ == "__main__":
-    print Leave.history(1,10)
+    print Leave.history(1, 10)

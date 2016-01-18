@@ -63,10 +63,10 @@ class RELEASE:
     FLOW_QA = [FLOW_TEST, u"正式环境测试"]
     OPTIONS = "options"
 
+
 class LEAVE:
     PASS = u"已确认"
     FAIL = u"退回"
-
 
 
 # todo 清除unicode定义

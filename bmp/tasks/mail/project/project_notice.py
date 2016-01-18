@@ -9,7 +9,7 @@ from bmp.models.user import User
 
 
 def mail_to(p):
-    sub = u"【%s】 %s:%s %s" % (p.type,p.txt,p.uid,p.time.strftime("%Y-%m-%d %H:%M:%S"))
+    sub = u"【%s】 %s:%s %s" % (p.type, p.txt, p.uid, p.time.strftime("%Y-%m-%d %H:%M:%S"))
 
     regx = re.compile(r"^http://([a-z.]+)/")
 
@@ -18,7 +18,7 @@ def mail_to(p):
     if "dev" in host:
         sub = u"【测试】 %s" % sub
 
-    url = "http://%s/templates/project/index.html"%host
+    url = "http://%s/templates/project/index.html" % host
 
     html = render_template(
         "mail.project_notice.tpl.html",

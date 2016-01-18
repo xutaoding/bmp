@@ -4,6 +4,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.asset import Contract
 from bmp.tasks.mail.asset.contract import mail_to
 
+
 class ContractApi(BaseApi):
     route = ["/contract", "/contract/<int:id>"]
 
@@ -14,7 +15,7 @@ class ContractApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        contract=Contract.add(submit)
+        contract = Contract.add(submit)
         mail_to(contract)
         return self.succ()
 

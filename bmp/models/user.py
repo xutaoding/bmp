@@ -7,8 +7,6 @@ from bmp import db
 from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
 
-from bmp.database import Database
-
 user_group = db.Table("user_group",
                       db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
                       db.Column("group_id", db.Integer, db.ForeignKey("group.id")))
@@ -82,12 +80,11 @@ class Group(db.Model):
             return [Group._to_dict(g) for g in Group.query.filter(Group.name.like(name)).all()]
         return Group.query.filter(Group.name.like(name)).all()
 
-
     @staticmethod
     def get_descs():
-        descs={}
+        descs = {}
         for g in Group.query.all():
-            descs[g.name]=g.desc
+            descs[g.name] = g.desc
         return descs
 
     @staticmethod
@@ -128,20 +125,20 @@ class User(db.Model):
         if uid != "%":
             query = User.query.filter(User.uid == uid).order_by(User.uid.asc())
         user = User.query.filter(User.uid == session[USER_SESSION]["uid"]).one()
-        users = query.filter(User.is_dimiss==False).all()
+        users = query.filter(User.is_dimiss == False).all()
         users.pop(users.index(user))
         users.insert(0, user)
         return [User.__add_group(u) for u in users]
 
     @staticmethod
     def get(uid):
-        user = User.query.filter(User.is_dimiss==False).filter(User.uid == uid).one()
+        user = User.query.filter(User.is_dimiss == False).filter(User.uid == uid).one()
         return User.__add_group(user)
 
     @staticmethod
     @db.transaction
     def edit(submit):
-        user=User.query.filter(User.uid == submit["uid"]).one()
+        user = User.query.filter(User.uid == submit["uid"]).one()
         user.__init__(submit)
         db.session.flush()
         return True
@@ -212,8 +209,7 @@ class User(db.Model):
 
     @staticmethod
     def get_business_category(bc):
-        return User.query.filter(User.is_dimiss==False).filter(User.businessCategory==bc).all()
-
+        return User.query.filter(User.is_dimiss == False).filter(User.businessCategory == bc).all()
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
-
+from bmp.tasks.mail.leave import mail_to
 
 class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
@@ -16,7 +16,8 @@ class LeaveApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Leave.add(submit)
+        leave=Leave.add(submit)
+        mail_to(leave)
         return self.succ()
 
     def delete(self, lid):

@@ -2,6 +2,7 @@
 from bmp import db
 from bmp.utils.exception import ExceptionEx
 
+
 class Ref(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)

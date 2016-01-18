@@ -9,7 +9,6 @@ from werkzeug.routing import BaseConverter
 from werkzeug.contrib.cache import SimpleCache
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-
 from apscheduler.executors.pool import ProcessPoolExecutor
 
 from utils import path
@@ -24,7 +23,8 @@ class _RegexConverter(BaseConverter):
 
 class Myapp(Flask):
     __app = None
-    __is_add_apis=False
+    __is_add_apis = False
+
     @staticmethod
     def get_instance(name):
         if Myapp.__app == None or not Myapp.__app.config["SINGLETON"]:
@@ -95,7 +95,6 @@ class Myapp(Flask):
         app.add_url_rule("/",view_func=IndexView.as_view("index"))
         '''
         cls_name = module.split(".")[-1]
-
 
         exec ("import %s" % (module))
 

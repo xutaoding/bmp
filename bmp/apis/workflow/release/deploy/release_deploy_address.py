@@ -16,7 +16,7 @@ class Release_deploy_addressApi(BaseApi):
         ReleaseAddress.add(submit)
         return self.succ()
 
-    def delete(self,aid):
+    def delete(self, aid):
         ReleaseAddress.delete(aid)
         return self.succ()
 

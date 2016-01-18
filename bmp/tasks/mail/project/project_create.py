@@ -9,7 +9,6 @@ from bmp.models.user import User
 
 
 def mail_to(p):
-
     sub = u"项目创建提醒: %s" % (p.name)
 
     regx = re.compile(r"^http://([a-z.]+)/")

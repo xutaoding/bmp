@@ -6,21 +6,21 @@ import traceback
 from smtplib import SMTPException
 from datetime import datetime, timedelta
 
-from bmp import app, log
-
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ProcessPoolExecutor
 
-sched=BlockingScheduler(
-        jobstores={
-            "default": SQLAlchemyJobStore(url="mysql://ops:Ops@192.168.250.10:3306/bmp_test")
-        },
-        executors={
-            "default": ProcessPoolExecutor(1)
-        },
-        job_defaults={"coalesce": False, "max_instances": 1}
-    )
+from bmp import app, log
+
+sched = BlockingScheduler(
+    jobstores={
+        "default": SQLAlchemyJobStore(url="mysql://ops:Ops@192.168.250.10:3306/bmp_test")
+    },
+    executors={
+        "default": ProcessPoolExecutor(1)
+    },
+    job_defaults={"coalesce": False, "max_instances": 1}
+)
 
 
 def __send(sub, html, receiver, copyto, uuid, priority, minutes):
@@ -45,7 +45,8 @@ def __send(sub, html, receiver, copyto, uuid, priority, minutes):
         if minutes < 12:
             minutes += 1
             sched.add_job(__send, "date", run_date=datetime.now() + timedelta(minutes=minutes), id=uuid,
-                          args=(sub, html, receiver, copyto, uuid, priority, minutes),replace_existing=True)
+                          args=(sub, html, receiver, copyto, uuid, priority, minutes), replace_existing=True)
+
 
 def send(sub, html, receiver, copyto=[], date=None, priority="3"):
     uuid = "%s" % (uuid1())
@@ -57,7 +58,7 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
     if date: run_date = date
 
     sched.add_job(__send, "date", run_date=run_date, id=uuid,
-                  args=(sub, html, receiver, copyto, uuid, priority, minutes),replace_existing=True)
+                  args=(sub, html, receiver, copyto, uuid, priority, minutes), replace_existing=True)
     try:
         if not sched.running:
             sched.start()
@@ -66,8 +67,7 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
 
 
 if __name__ == "__main__":
-
-    send("a" ,"a",["chenglong.yan@chinascopefinancial.com"])
-    send("b" ,"b",["chenglong.yan@chinascopefinancial.com"])
+    send("a", "a", ["chenglong.yan@chinascopefinancial.com"])
+    send("b", "b", ["chenglong.yan@chinascopefinancial.com"])
 
     sched.start()

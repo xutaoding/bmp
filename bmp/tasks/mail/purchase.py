@@ -1,5 +1,6 @@
 # coding: utf-8
 import re
+import traceback
 
 from flask import render_template
 from flask import request
@@ -9,7 +10,6 @@ import bmp.utils.mail as mail
 from bmp.utils import user_ldap
 from bmp.const import PURCHASE
 
-import traceback
 
 def mail_to(p):
     try:
@@ -26,13 +26,13 @@ def mail_to(p):
             to.extend([u.mail for u in Group.get_users(PURCHASE.FIN)])
             to.append(user["mail"])
 
-        sub = u"采购编号:%s 采购申请:%s" % (p.id,",".join([g.category.name for g in p.goods]))
+        sub = u"采购编号:%s 采购申请:%s" % (p.id, ",".join([g.category.name for g in p.goods]))
 
         regx = re.compile(r"^http://([a-z.]+)/")
-        host=regx.findall(request.headers["Referer"])[0]
+        host = regx.findall(request.headers["Referer"])[0]
 
         if "dev" in host:
-            sub=u"【测试】 %s"%sub
+            sub = u"【测试】 %s" % sub
 
         url = "http://%s/templates/purchase/approval.html" % host
 
@@ -45,6 +45,6 @@ def mail_to(p):
             group_names=Group.get_descs(),
             url=url)
 
-        mail.send(sub, html, list(set(to)),priority=1)
+        mail.send(sub, html, list(set(to)), priority=1)
     except:
         traceback.print_exc()

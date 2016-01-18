@@ -1,19 +1,17 @@
 # coding=utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
-from flask import session
-from bmp.const import USER_SESSION
 
 
 class Leave_approvalApi(BaseApi):
-    route = ["/leave/approval/<int:lid>","/leave/approval/<int:page>/<int:pre_page>"]
+    route = ["/leave/approval/<int:lid>", "/leave/approval/<int:page>/<int:pre_page>"]
 
     def get(self, page, pre_page):
         return self.succ(Leave.unapprovaled(page, pre_page))
 
-    def put(self,lid):
+    def put(self, lid):
         submit = self.request()
-        submit["id"]=lid
+        submit["id"] = lid
         Leave.approval(submit)
         return self.succ()
 

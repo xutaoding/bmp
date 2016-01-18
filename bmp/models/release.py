@@ -118,7 +118,7 @@ class ReleaseAddress(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(256))
     addr = db.Column(db.String(256))
-    type = db.Column(db.String(128))#d_host s_host
+    type = db.Column(db.String(128))  # d_host s_host
 
     def __init__(self, _dict):
         self.name = _dict["name"]
@@ -134,7 +134,7 @@ class ReleaseAddress(db.Model):
 
     @staticmethod
     def delete(aid):
-        ra=ReleaseAddress.query.filter(ReleaseAddress.id==aid).one()
+        ra = ReleaseAddress.query.filter(ReleaseAddress.id == aid).one()
         db.session.delete(ra)
         db.session.commit()
         return True

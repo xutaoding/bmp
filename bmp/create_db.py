@@ -3,7 +3,7 @@
 
 # todo 自动import modules目录下表定义
 
-from const import REFS, DEFAULT_GROUP
+from const import REFS
 from models import *
 from bmp import db
 from bmp.utils import user_ldap
