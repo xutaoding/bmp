@@ -73,6 +73,7 @@ class Leave(db.Model):
         uid = session[USER_SESSION]["uid"]
         return Leave.query \
             .filter(Leave.approval_uid == uid) \
+            .filter(Leave.status.in_([None, ""])) \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
@@ -83,13 +84,19 @@ class Leave(db.Model):
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
-    def history(page=0,pre_page=None):
+    def between(beg, end):
+        uid = session[USER_SESSION]["uid"]
+        return [Leave._to_dict(l) for l in Leave.query \
+            .filter(Leave.uid == uid) \
+            .filter(or_(Leave.begin_time.between(beg, end),
+                        Leave.end_time.between(beg, end))).all()]
+
+    @staticmethod
+    def history(page=0, pre_page=None):
         return Leave.query \
-            .filter(Leave.status!=None)\
-            .filter(Leave.status!="")\
+            .filter(Leave.status != None) \
+            .filter(Leave.status != "") \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
-
-
 
 
 class LeaveEvent(db.Model):
@@ -124,3 +131,14 @@ class LeaveEvent(db.Model):
         return Leave.query \
             .filter(or_(Leave.uid == uid, Leave.approval_uid == uid)) \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
+
+    @staticmethod
+    def _to_dict(self):
+        _dict = self.to_dict()
+        return _dict
+
+    @staticmethod
+    def between(beg, end):
+        return [LeaveEvent._to_dict(l) for l in Leave.query \
+            .filter(or_(LeaveEvent.begin_time.between(beg, end),
+                        LeaveEvent.end_time.between(beg, end))).all()]

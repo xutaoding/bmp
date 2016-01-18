@@ -15,6 +15,7 @@ from bmp.const import USER_SESSION
 from bmp import log
 from bmp import app
 from bmp.utils.exception import ExceptionEx
+import os
 
 
 def jsonp(func):
@@ -85,6 +86,9 @@ class BaseApi(MethodView):
         if filename:
             try:
                 with open(filename) as fileobj:
+                    seek=os.path.getsize(filename)-1024
+                    if seek<0:seek=0
+                    fileobj.seek(seek)
                     fdata = fileobj.read()
             except:
                 raise ExceptionEx("无法读取文件[%s]" % filename)

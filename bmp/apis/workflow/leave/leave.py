@@ -1,13 +1,18 @@
 # coding=utf-8
+from datetime import datetime
+
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
 
 
 class LeaveApi(BaseApi):
-    route = ["/leave", "/leave/<int:page>/<int:pre_page>", "/leave/<int:lid>"]
+    route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
 
-    def get(self, page, pre_page):
-        return self.succ(Leave.select(page, pre_page))
+    def get(self, begin_time, end_time):
+        return self.succ(
+            Leave.between(datetime.strptime(begin_time, "%Y-%m-%d"),
+                          datetime.strptime(end_time, "%Y-%m-%d"))
+        )
 
     def post(self):
         submit = self.request()

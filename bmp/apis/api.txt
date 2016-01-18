@@ -250,17 +250,17 @@ lid:事件的id
 删除申请:delete /leave/<int:lid>
 lid:申请id
 
-获取当前用户申请:get /leave/<int:page>/<int:pre_page>
-page:页数 从1开始
-pre_page:每页长度
+获取当前用户申请:get /leave/<string:begin_time>/<string:end_time>
+begin_time:开始时间 格式:yyyy-mm-dd
+end_time:结束时间 格式:yyyy-mm-dd
 
 获取需要审批的申请:get /leave/approval/<int:page>/<int:pre_page>
 page:页数 从1开始
 pre_page:每页长度
 
-获取事件: get /leave/event/<int:page>/<int:pre_page>
-page:页数 从1开始
-pre_page:每页长度
+获取事件: get /leave/event/<string:begin_time>/<string:end_time>
+begin_time:开始时间 格式:yyyy-mm-dd
+end_time:结束时间 格式:yyyy-mm-dd
 
 
 
