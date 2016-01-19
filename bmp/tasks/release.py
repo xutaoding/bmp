@@ -21,13 +21,17 @@ ip_dict = {
 
 
 def fmt_host(_from, to):
+    d_hosts = []
     s_host = _from.split("——")[1]
-    d_host = to.split("——")[1]
 
-    if ip_dict.__contains__(d_host):
-        d_host = ip_dict[d_host]
+    for _to in to.split(" "):
+        if not _to: continue
+        d_host = _to.split("——")[1]
+        if ip_dict.__contains__(d_host):
+            d_host = ip_dict[d_host]
+        d_hosts.append(d_host)
 
-    return s_host, d_host
+    return s_host, d_hosts
 
 
 def deploy_database(rid):
@@ -50,7 +54,7 @@ def deploy_database(rid):
     result = {"params": data}
     result["return"] = client.exec_script("/root/csfscript/dump_data/dump_data.py", data)
 
-    if u"任务失败" in result["return"]:
+    if u"任务完成" not in result["return"]:
         return result
 
     r.is_deployed = True
@@ -59,4 +63,4 @@ def deploy_database(rid):
 
 
 if __name__ == "__main__":
-    pass
+    print deploy_database(161)

@@ -9,6 +9,7 @@ from bmp.database import Database
 from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
 from bmp.utils import user_ldap
+from bmp.const import LEAVE
 
 
 class Leave(db.Model):
@@ -40,7 +41,7 @@ class Leave(db.Model):
     @staticmethod
     def add(_dict):
         _dict["approval_uid"] = user_ldap.get_superior(_dict["uid"])
-        leave=Leave(_dict)
+        leave = Leave(_dict)
         db.session.add(leave)
         db.session.commit()
         return leave
@@ -84,8 +85,7 @@ class Leave(db.Model):
     @staticmethod
     def between(beg, end):
         return [Leave._to_dict(l) for l in Leave.query \
-            .filter(Leave.status != None) \
-            .filter(Leave.status != "") \
+            .filter(Leave.status ==LEAVE.PASS)\
             .filter(or_(Leave.begin_time.between(beg, end),
                         Leave.end_time.between(beg, end))).all()]
 
@@ -99,7 +99,7 @@ class Leave(db.Model):
 
 class LeaveEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    desc = db.Column(db.String(128))
+    desc = db.Column(db.String(128), default="", nullable=True)
     type_id = db.Column(db.Integer, db.ForeignKey("ref.id"))
 
     begin_time = db.Column(db.DateTime)
