@@ -91,6 +91,9 @@ id:申请id
     type:类型 #s_host,d_host
 }
 
+获取部署日志 get /release/deploy/log/<int:rid>
+rid:申请id
+
 
 权限相关------------------------------------------------
 

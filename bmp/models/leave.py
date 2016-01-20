@@ -1,8 +1,7 @@
 # coding=utf-8
-from datetime import datetime
 
 from flask import session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 from bmp import db
 from bmp.database import Database
@@ -10,6 +9,7 @@ from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
 from bmp.utils import user_ldap
 from bmp.const import LEAVE
+from datetime import datetime
 
 
 class Leave(db.Model):
@@ -85,9 +85,11 @@ class Leave(db.Model):
     @staticmethod
     def between(beg, end):
         return [Leave._to_dict(l) for l in Leave.query \
-            .filter(Leave.status ==LEAVE.PASS)\
-            .filter(or_(Leave.begin_time.between(beg, end),
-                        Leave.end_time.between(beg, end))).all()]
+            .filter(Leave.status == LEAVE.PASS) \
+            .filter(or_(
+            and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
+            and_(Leave.begin_time <= beg, Leave.end_time >= beg),
+            and_(Leave.begin_time <= end, Leave.end_time >= end))).all()]
 
     @staticmethod
     def history(page=0, pre_page=None):
@@ -139,6 +141,17 @@ class LeaveEvent(db.Model):
 
     @staticmethod
     def between(beg, end):
-        return [LeaveEvent._to_dict(l) for l in LeaveEvent.query \
-            .filter(or_(LeaveEvent.begin_time.between(beg, end),
-                        LeaveEvent.end_time.between(beg, end))).all()]
+        query = LeaveEvent.query \
+            .filter(or_(
+            and_(LeaveEvent.begin_time >= beg, LeaveEvent.end_time <= end, LeaveEvent.begin_time <= end,
+                 LeaveEvent.end_time >= beg),
+            and_(LeaveEvent.begin_time <= beg, LeaveEvent.end_time >= beg),
+            and_(LeaveEvent.begin_time <= end, LeaveEvent.end_time >= end)))
+
+        return [LeaveEvent._to_dict(l) for l in query.all()]
+
+
+if __name__ == "__main__":
+    from datetime import datetime
+
+    LeaveEvent.between(datetime(2016, 1, 15), datetime(2016, 1, 15))

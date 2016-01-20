@@ -62,5 +62,5 @@ def deploy_database(rid):
     return result
 
 
-if __name__ == "__main__":
-    print deploy_database(161)
+if __name__ == "__main__":pass
+    #print deploy_database(161)

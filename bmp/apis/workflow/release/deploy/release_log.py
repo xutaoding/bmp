@@ -7,10 +7,10 @@ from bmp import app
 
 
 class Release_logApi(BaseApi):
-    route = ["/release/deploy/log"]
+    route = ["/release/deploy/log/<int:rid>"]
 
-    def get(self):
-        return self.succ(filename="%s/data_deploy_log/myapp.log" % app.root_path)
+    def get(self,rid):
+        return self.succ(Release.get_log(rid))
 
 if __name__ == "__main__":
     pass

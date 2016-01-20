@@ -10,6 +10,14 @@ from bmp.utils.exception import ExceptionEx
 from bmp.const import RELEASE
 from bmp.database import Database
 
+class ReleaseLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    content = db.Column(db.Text)
+    release_id = db.Column(db.Integer,db.ForeignKey("release.id"))
+
+    def __init__(self,content):
+        self.content=content
+
 
 class ReleaseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -161,6 +169,7 @@ class Release(db.Model):
     to = db.Column(db.String(256), nullable=False)
     approvals = db.relationship("ReleaseApproval")
     service = db.relationship("ReleaseService", uselist=False)
+    log = db.relationship("ReleaseLog",uselist=False)
     release_type = db.Column(db.String(64), default="")
     is_finished = db.Column(db.Boolean, default=False)
     is_deployed = db.Column(db.Boolean, default=False)
@@ -175,11 +184,33 @@ class Release(db.Model):
         self.release_type = _dict["release_type"]
 
     @staticmethod
-    def _to_dict(release):
+    def _to_dict(release,show_log=False):
         _release = release.to_dict()
         _release["approvals"] = [a.to_dict() for a in release.approvals]
         _release["service"] = ReleaseService._to_dict(release.service)
+        if show_log:
+            log=release.log
+            if log:
+                _release["log"]=log.content
+            else:
+                _release["log"]=""
+
         return _release
+
+    @staticmethod
+    def get_log(rid):
+        release=Release.query.filter(Release.id==rid).one()
+        log=release.log
+        if not log:return ""
+        return log.content
+
+    @staticmethod
+    def add_log(rid,log_path):
+        with open(log_path) as log:
+            release=Release.query.filter(Release.id==rid).one()
+            release.log=Database.to_cls(ReleaseLog,log.read())
+        db.session.commit()
+        return True
 
     @staticmethod
     def select(page, pre_page):
