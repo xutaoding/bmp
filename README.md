@@ -55,7 +55,7 @@ OPS 后台程序
     数据接口实现基于 flask-sqlalchemy库
     
 ###bmp/tasks
-    异步任务相关
+    同异步任务相关
 
 ###bmp/upload
     上传文件的存放目录（正式环境需要链接存储集群)
