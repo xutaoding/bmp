@@ -16,7 +16,7 @@ class ReleaseLog(db.Model):
     release_id = db.Column(db.Integer,db.ForeignKey("release.id"))
 
     def __init__(self,content):
-        self.content=content
+        self.content=content["content"]
 
 
 class ReleaseTable(db.Model):
@@ -207,8 +207,12 @@ class Release(db.Model):
     @staticmethod
     def add_log(rid,log_path):
         with open(log_path) as log:
+            __dict={"content":log.read()}
             release=Release.query.filter(Release.id==rid).one()
-            release.log=Database.to_cls(ReleaseLog,log.read())
+            query_log=ReleaseLog.query.filter(ReleaseLog.release_id==rid)
+            if query_log.count():
+                __dict["id"]=query_log.one().id
+            release.log=Database.to_cls(ReleaseLog,__dict)
         db.session.commit()
         return True
 

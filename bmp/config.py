@@ -36,7 +36,7 @@ class Config(object):
 
     SSH_HOST = "192.168.250.253"
     SSH_USER = "depops"
-    SSH_PASSWORD = "Passwd@!"
+    SSH_PASSWORD = "Vulooz5S"
 
 
 class Test(Config):

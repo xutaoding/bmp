@@ -4,6 +4,7 @@ from bmp.models.release import Release
 
 from bmp.tasks.release import deploy_database
 from bmp import app
+from datetime import datetime
 
 
 class Release_deployApi(BaseApi):
@@ -13,7 +14,7 @@ class Release_deployApi(BaseApi):
         return self.succ(Release.undeployed(page, pre_page))
 
     def post(self, rid):
-        log_path="%s/data_deploy_log/myapp.log" % app.root_path
+        log_path="%s/data_deploy_log/myapp.%s" % (app.root_path,datetime.now().strftime("%Y-%m-%d"))
         result = deploy_database(rid)
         Release.add_log(rid,log_path)
         return self.succ(result, filename=log_path)
