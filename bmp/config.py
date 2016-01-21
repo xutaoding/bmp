@@ -34,7 +34,7 @@ class Config(object):
     MAX_CONTENT_LENGTH = 1 * 1023 * 1024 * 1024
     DOMAIN = "http://ops.chinascope.net/"
 
-    SSH_HOST = "192.168.250.253"
+    SSH_HOST = "192.168.250.200"
     SSH_USER = "depops"
     SSH_PASSWORD = "Vulooz5S"
 
