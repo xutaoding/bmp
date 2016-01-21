@@ -175,7 +175,10 @@ class Purchase(db.Model):
         if imgs: self.imgs = [Database.to_cls(PurchaseImg, img) for img in imgs]
         if contract: self.contract = contract
         self.use = submit["use"]
-        self.reson = submit["reson"]
+        if submit.__contains__("reson"):
+            self.reson = submit["reson"]
+        else:
+            self.reson = ""
 
     @staticmethod
     @db.transaction
