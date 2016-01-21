@@ -175,6 +175,7 @@ pid:采购申请的id
      }],
      supplier_id:1,#供应商id
      use:用途
+     reson:不比价理由
 }
 
 确认(退回)申请:put /purchase/<int:id>

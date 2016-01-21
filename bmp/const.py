@@ -47,6 +47,7 @@ class DEFAULT_GROUP:
     QA = "QA"
     OP = "OP"
     GUEST = "GUEST"
+    HR = "HR"
     GROUPS = {
         "QA": ["KIKI.zhang", "aurora.yang", "helen.yang"],
         "OP": ["ryan.wang", "jim.zhao"],
@@ -67,6 +68,7 @@ class RELEASE:
 class LEAVE:
     PASS = u"已确认"
     FAIL = u"退回"
+    TYPE = u"请假类型"
 
 
 # todo 清除unicode定义

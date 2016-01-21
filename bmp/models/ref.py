@@ -20,6 +20,14 @@ class Ref(db.Model):
         return [ref.to_dict() for ref in refs]
 
     @staticmethod
+    def map(type):
+        refs={}
+        for ref in Ref.select(type):
+            refs[ref["id"]]=ref["name"]
+        return refs
+
+
+    @staticmethod
     @db.transaction
     def add(name, type, parent_id=0):
         if Ref.query \

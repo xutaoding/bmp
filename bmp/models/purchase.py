@@ -154,6 +154,7 @@ class Purchase(db.Model):
     is_finished = db.Column(db.Boolean, default=False)
     is_draft = db.Column(db.Boolean, default=True)
     use = db.Column(db.String(128))
+    reson = db.Column(db.String(256))
     apply_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), nullable=False)
     apply_businessCategory = db.Column(db.String(128), nullable=False)
     apply_time = db.Column(db.DateTime, nullable=False)
@@ -174,6 +175,7 @@ class Purchase(db.Model):
         if imgs: self.imgs = [Database.to_cls(PurchaseImg, img) for img in imgs]
         if contract: self.contract = contract
         self.use = submit["use"]
+        self.reson = submit["reson"]
 
     @staticmethod
     @db.transaction
