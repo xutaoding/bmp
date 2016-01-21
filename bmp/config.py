@@ -31,7 +31,7 @@ class Config(object):
     SINGLETON = True
     HOST = ""
     PORT = 5000
-    MAX_CONTENT_LENGTH = 1 * 1024 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 1 * 1023 * 1024 * 1024
     DOMAIN = "http://ops.chinascope.net/"
 
     SSH_HOST = "192.168.250.253"
