@@ -1,7 +1,10 @@
 # coding=utf-8
+from datetime import datetime
+import threading
+
 from bmp.models.release import Release
 from bmp.utils.ssh import Client
-from bmp import app, db
+from bmp import app, db, log
 
 """
 122.144.134.3	122.144.134.3
@@ -34,13 +37,34 @@ def fmt_host(_from, to):
     return s_host, d_hosts
 
 
+def __deploy_database(rid, data):
+    r = Release.query.filter(Release.id == rid).one()
+    try:
+
+        client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+
+        if u"任务完成" not in client.exec_script("/root/csfscript/dump_data/dump_data.py", data):
+            return
+
+        r.is_deployed = True
+
+        log_path = "%s/data_deploy_log/myapp.%s" % (app.root_path, datetime.now().strftime("%Y-%m-%d"))
+        Release.add_log(r.id, log_path)
+    except Exception, e:
+        log.exception(e)
+    finally:
+        r.is_deploying = False
+        r.deploy_times += 1
+        db.session.commit()
+
+
 def deploy_database(rid):
     r = Release.query.filter(Release.id == rid).one()
-
-    data = {}
-    data["dbs"] = []
+    r.deploy_time = datetime.now()
+    r.is_deploying = True
 
     dbtype = r.service.type
+    data = {"dbs":[]}
     for d in r.service.databases:
         dbs = {"dbtype": dbtype}
         dbs["dbname"] = d.name
@@ -48,19 +72,12 @@ def deploy_database(rid):
         data["dbs"].append(dbs)
 
     data["s_host"], data["d_host"] = fmt_host(r._from, r.to)
-
-    client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
-
-    result = {"params": data}
-    result["return"] = client.exec_script("/root/csfscript/dump_data/dump_data.py", data)
-
-    if u"任务完成" not in result["return"]:
-        return result
-
-    r.is_deployed = True
     db.session.commit()
-    return result
+
+    threading.Thread(target=__deploy_database, args=(rid, data,)).start()
+
+    return data
 
 
-if __name__ == "__main__":pass
-    #print deploy_database(161)
+if __name__ == "__main__": pass
+# print deploy_database(161)

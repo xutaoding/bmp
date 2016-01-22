@@ -173,6 +173,10 @@ class Release(db.Model):
     release_type = db.Column(db.String(64), default="")
     is_finished = db.Column(db.Boolean, default=False)
     is_deployed = db.Column(db.Boolean, default=False)
+    is_deploying = db.Column(db.Boolean, default=False)
+    deploy_time = db.Column(db.DateTime)
+    deploy_times = db.Column(db.Integer,default=0)
+
 
     def __init__(self, _dict):
         self.project = _dict["project"]
@@ -202,7 +206,7 @@ class Release(db.Model):
         release=Release.query.filter(Release.id==rid).one()
         log=release.log
         if not log:return ""
-        return log.content
+        return log.content.replace("\n","\r")
 
     @staticmethod
     def add_log(rid,log_path):

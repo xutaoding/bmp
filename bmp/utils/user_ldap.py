@@ -95,7 +95,5 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__ == "__main__":
-    all=set()
     for dn,u in search():
-        all.add(u["businessCategory"][0])
-    print(all)
+        print(u)

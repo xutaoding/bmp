@@ -73,6 +73,7 @@ class Leave(db.Model):
     def unapprovaled(page=0, pre_page=None):
         return Leave.query \
             .filter(Leave.status.in_([None, ""])) \
+            .order_by(Leave.id.desc())\
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod

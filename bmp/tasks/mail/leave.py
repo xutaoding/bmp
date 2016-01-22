@@ -15,6 +15,7 @@ def mail_to(l):
     try:
         uids = [u.uid for u in Group.get_users(DEFAULT_GROUP.HR)] + [l.approval_uid]
         to = [User.get(uid)["mail"] for uid in uids]
+        to.append("hr.dept@chinascopefinancial.com")
 
         sub = u"请假申请 编号:%d 申请人:%s" % (l.id, l.uid)
 

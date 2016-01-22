@@ -14,10 +14,8 @@ class Release_deployApi(BaseApi):
         return self.succ(Release.undeployed(page, pre_page))
 
     def post(self, rid):
-        log_path="%s/data_deploy_log/myapp.%s" % (app.root_path,datetime.now().strftime("%Y-%m-%d"))
-        result = deploy_database(rid)
-        Release.add_log(rid,log_path)
-        return self.succ(result, filename=log_path)
+        result=deploy_database(rid)
+        return self.succ(result)
 
     def put(self, rid):
         Release.deploy(rid)
