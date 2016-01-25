@@ -119,9 +119,15 @@ desc:组别名
 删除管理组:delete /groups/<string:name>
 name:组名
 
+
+
+
+
 获取用户列表:get /users
 获取用户:get /users/<string:uid>
 uid:用户名
+
+导出用户列表:get /users/export
 
 编辑用户:put /users/<string:uid>/<string:mail>/<int:is_admin>
 uid:用户名

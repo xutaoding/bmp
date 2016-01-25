@@ -18,5 +18,4 @@ application.add_api_rule()
 if __name__ == "__main__":
     application.run(
         host=application.config["HOST"],
-        port=application.config["PORT"],
-        debug=True)
+        port=application.config["PORT"])

@@ -42,7 +42,8 @@ def search(uid="*"):
             "mail",
             "mobile",
             "title",
-            "x-csf-emp-1stManager"  # 上级
+            "x-csf-emp-1stManager",  # 上级
+            "cn"
         ]
     )
 
@@ -50,11 +51,15 @@ def search(uid="*"):
     return result
 
 
-def __user_dict(result):
-    dn, user = result[0]
-    for k in user:
-        user[k] = user[k][0]
-    return dn, user
+def __user_dict(_lst,use_list=False):
+    result=[]
+    for dn,user in _lst:
+        for k in user:
+            user[k] = user[k][0]
+        result.append((dn,user))
+    if not use_list:
+        return result[0]
+    return result
 
 
 def auth(uid, pwd):
@@ -86,6 +91,20 @@ def modify(uid, password, _old, _new):
         conn.unbind_s()
 
 
+
+def export(cols):
+    def to_result_dict(u):
+        _dict={}
+        for k in u:
+            if k in cols:
+                _dict[k]=u[k]
+        return _dict
+
+    for dn,u in __user_dict(search(),True):
+        yield to_result_dict(u)
+
+
+
 '''
 主机：192.168.250.2
 端口：389
@@ -95,5 +114,6 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__ == "__main__":
-    for dn,u in search():
-        print(u)
+    from flask.ext import excel
+    resp=excel.make_response_from_records(list(export()), "csv")
+    print(resp)

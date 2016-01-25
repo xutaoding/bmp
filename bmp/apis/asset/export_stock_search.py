@@ -1,4 +1,5 @@
 # coding=utf-8
+import pyexcel.ext.xlsx
 from flask import request
 from flask.ext import excel
 
