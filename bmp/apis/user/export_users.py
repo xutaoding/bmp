@@ -10,8 +10,10 @@ import bmp.utils.user_ldap as user_ldap
 class Export_usersApi(BaseApi):
     route = ["/users/export"]
 
-    def get(self):
+    def auth(self):
+        return True
 
+    def get(self):
         result=[]
         for u in user_ldap.export(["cn","businessCategory","title","mail"]):
             _dict={

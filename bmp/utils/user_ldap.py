@@ -42,7 +42,8 @@ def search(uid="*"):
             "mail",
             "mobile",
             "title",
-            "x-csf-emp-1stManager",  # 上级
+            "x-csf-emp-1stManager",
+            "x-csf-emp-2ndManager",  # 审批人
             "cn"
         ]
     )
@@ -77,7 +78,7 @@ def auth(uid, pwd):
 def get_superior(uid):
     try:
         dn, user = __user_dict(search(uid))
-        return user["x-csf-emp-1stManager"].split(",")[0].split("=")[1].strip()
+        return user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip()
     except:
         return None
 
@@ -114,6 +115,4 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__ == "__main__":
-    from flask.ext import excel
-    resp=excel.make_response_from_records(list(export()), "csv")
-    print(resp)
+    pass
