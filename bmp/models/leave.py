@@ -84,9 +84,14 @@ class Leave(db.Model):
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
-    def between(beg, end):
-        return [Leave._to_dict(l) for l in Leave.query \
-            .filter(Leave.status == LEAVE.PASS) \
+    def between(beg, end,is_history=False):
+        if is_history:
+            query=Leave.query.filter(Leave.status != None).filter(Leave.status != "")
+        else:
+            query=Leave.query.filter(Leave.status == LEAVE.PASS)
+
+
+        return [Leave._to_dict(l) for l in query
             .filter(or_(
             and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
             and_(Leave.begin_time <= beg, Leave.end_time >= beg),

@@ -47,7 +47,7 @@ class DEFAULT_GROUP:
     QA = "QA"
     OP = "OP"
     GUEST = "GUEST"
-    HR = "HR"
+    LEAVE_MAIL = "LEAVE_MAIL"
     GROUPS = {
         "QA": ["KIKI.zhang", "aurora.yang", "helen.yang"],
         "OP": ["ryan.wang", "jim.zhao"],

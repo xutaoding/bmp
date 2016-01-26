@@ -1,5 +1,5 @@
 # coding=utf-8
-import pyexcel.ext.xlsx
+import pyexcel.ext.xls
 from flask.ext import excel
 
 from bmp.apis.base import BaseApi
@@ -9,9 +9,6 @@ import bmp.utils.user_ldap as user_ldap
 
 class Export_usersApi(BaseApi):
     route = ["/users/export"]
-
-    def auth(self):
-        return True
 
     def get(self):
         result=[]
@@ -24,7 +21,7 @@ class Export_usersApi(BaseApi):
             }
             result.append(_dict)
 
-        resp = excel.make_response_from_records(result, "xlsx")
-        resp.headers["Content-Disposition"] = "attachment; filename=user.xlsx"
+        resp = excel.make_response_from_records(result, "csv",encoding="utf-8")
+        resp.headers["Content-Disposition"] = "attachment; filename=user.csv"
 
         return resp
