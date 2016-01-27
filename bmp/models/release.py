@@ -7,7 +7,7 @@ from bmp import db
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
 from bmp.utils.exception import ExceptionEx
-from bmp.const import RELEASE
+from bmp.const import RELEASE,RELEASE_SERVICE
 from bmp.database import Database
 
 class ReleaseLog(db.Model):
@@ -254,6 +254,8 @@ class Release(db.Model):
     def undeployed(page, pre_page):
         page = Release.query \
             .join(ReleaseApproval) \
+            .join(ReleaseService)\
+            .filter(ReleaseService.name==RELEASE_SERVICE.DATA_BASE)\
             .filter(Release.is_finished == False) \
             .filter(ReleaseApproval.type == RELEASE.FLOW_TEST) \
             .filter(ReleaseApproval.status == RELEASE.PASS) \

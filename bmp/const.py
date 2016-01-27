@@ -64,6 +64,9 @@ class RELEASE:
     FLOW_QA = [FLOW_TEST, u"正式环境测试"]
     OPTIONS = "options"
 
+class RELEASE_SERVICE:
+    DATA_BASE = u"数据库"
+
 
 class LEAVE:
     PASS = u"已确认"
