@@ -40,7 +40,7 @@ class Leave(db.Model):
 
     @staticmethod
     def add(_dict):
-        _dict["approval_uid"] = user_ldap.get_superior(_dict["uid"])
+        #_dict["approval_uid"] = user_ldap.get_superior(_dict["uid"])
         leave = Leave(_dict)
         db.session.add(leave)
         db.session.commit()

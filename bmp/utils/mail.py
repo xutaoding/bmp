@@ -6,21 +6,7 @@ import traceback
 from smtplib import SMTPException
 from datetime import datetime, timedelta
 
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.executors.pool import ProcessPoolExecutor
-
-from bmp import app, log
-
-sched = BlockingScheduler(
-    jobstores={
-        "default": SQLAlchemyJobStore(url="mysql://ops:Ops@192.168.250.10:3306/bmp_test")
-    },
-    executors={
-        "default": ProcessPoolExecutor(1)
-    },
-    job_defaults={"coalesce": False, "max_instances": 1}
-)
+from bmp import app, log,sched
 
 
 def __send(sub, html, receiver, copyto, uuid, priority, minutes):
@@ -49,17 +35,18 @@ def __send(sub, html, receiver, copyto, uuid, priority, minutes):
 
 
 def send(sub, html, receiver, copyto=[], date=None, priority="3"):
-    uuid = "%s" % (uuid1())
-    print("send %s to %s" % (sub, ";".join(receiver)))
-
-    minutes = 1
-
-    run_date = datetime.now() + timedelta(minutes=minutes)
-    if date: run_date = date
-
-    sched.add_job(__send, "date", run_date=run_date, id=uuid,
-                  args=(sub, html, receiver, copyto, uuid, priority, minutes), replace_existing=True)
     try:
+        uuid = "%s" % (uuid1())
+        print("send %s to %s" % (sub, ";".join(receiver)))
+
+        minutes = 1
+
+        run_date = datetime.now() + timedelta(minutes=minutes)
+        if date: run_date = date
+
+        sched.add_job(__send, "date", run_date=run_date, id=uuid,
+                      args=(sub, html, receiver, copyto, uuid, priority, minutes), replace_existing=True)
+
         if not sched.running:
             sched.start()
     except:
