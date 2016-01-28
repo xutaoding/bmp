@@ -8,20 +8,34 @@ import bmp.utils.user_ldap as user_ldap
 
 
 class Export_usersApi(BaseApi):
-    route = ["/users/export"]
+    route = ["/users/export","/users/export/<string:field>"]
 
-    def get(self):
+    def get(self,field=""):
         result=[]
-        for u in user_ldap.export(["cn","businessCategory","title","mail"]):
-            _dict={
-                "名":u["cn"],
-                "部门":u["businessCategory"],
-                "职务":u["title"],
-                "电子邮件地址":u["mail"]
-            }
+
+        field_default={
+            "cn":"名",
+            "businessCategory":"部门",
+            "title":"职务",
+            "mail":"电子邮件地址",
+        }
+
+        field_ext={
+            "mobile":"手机"
+        }
+
+        fields=dict(field_default.items()+field_ext.items())
+
+        if field in fields.keys():
+            fields={field:fields[field],"uid":"用户名"}
+        else:
+            fields=field_default
+
+        for u in user_ldap.export(fields.keys()):
+            _dict={}
+            for key in u.keys():_dict[fields[key]]=u[key]
             result.append(_dict)
 
-        resp = excel.make_response_from_records(result, "csv",encoding="utf-8")
-        resp.headers["Content-Disposition"] = "attachment; filename=user.csv"
-
+        resp = excel.make_response_from_records(result, "xlsx")
+        resp.headers["Content-Disposition"] = "attachment; filename=user.xlsx"
         return resp

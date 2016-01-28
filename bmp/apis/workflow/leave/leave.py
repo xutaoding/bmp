@@ -5,6 +5,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
 from bmp.tasks.mail.leave import mail_to
 
+
 class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
 
@@ -16,8 +17,8 @@ class LeaveApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        leave=Leave.add(submit)
-        mail_to(leave,submit["copy_to_uid"])
+        leave = Leave.add(submit)
+        mail_to(leave, submit["copy_to_uid"])
         return self.succ()
 
     def delete(self, lid):
