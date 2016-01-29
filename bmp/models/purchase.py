@@ -153,7 +153,7 @@ class Purchase(db.Model):
     cur_approval_type = db.Column(db.String(128))
     is_finished = db.Column(db.Boolean, default=False)
     is_draft = db.Column(db.Boolean, default=True)
-    use = db.Column(db.String(128))
+    use = db.Column(db.Text)
     reson = db.Column(db.String(256))
     apply_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), nullable=False)
     apply_businessCategory = db.Column(db.String(128), nullable=False)
