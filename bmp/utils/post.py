@@ -22,4 +22,4 @@ def test(method, url, data=None, exe=False):
 
 
 if __name__ == "__main__":
-    pass
+    test("post","127.0.0.1:8080",data={"abc":"中文"},exe=True)

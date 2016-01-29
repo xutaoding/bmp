@@ -31,4 +31,5 @@ class UsersApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    import requests
+    requests.post("http://192.168.0.227",data={"data":"5"}.__str__())
