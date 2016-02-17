@@ -9,6 +9,8 @@ from bmp.const import USER_SESSION, PROJECT
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 
+from sqlalchemy import or_
+
 
 class ProjectHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -73,7 +75,7 @@ class ProjectSchedule(db.Model):
     def _to_dict(self):
         _dict = self.to_dict()
         _dict["members"] = [m.to_dict() for m in self.members]
-        _dict["_status"] = Project._schedule_status(self.end_time_create, self.end_time)
+        # _dict["_status"] = Project._schedule_status(self.status,self.end_time_create, self.end_time)
         return _dict
 
     @staticmethod
@@ -178,7 +180,7 @@ class Project(db.Model):
     release_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     man_day = db.Column(db.Integer)
-    resource = db.Column(db.String(128))
+    resource = db.Column(db.Text)
 
     docs = db.relationship("ProjectDoc", backref=db.backref("project"))
     schedules = db.relationship("ProjectSchedule", backref=db.backref("project"))
@@ -233,7 +235,7 @@ class Project(db.Model):
         if not (src_time and dst_time):
             return status
 
-        if stat!=PROJECT.STATUS_FINISH:
+        if stat != PROJECT.STATUS_FINISH:
             if src_time == dst_time:
                 status = PROJECT.STATUS_ON_TIME
             elif src_time > dst_time:
@@ -286,9 +288,19 @@ class Project(db.Model):
         if check("status") and (check("status") != PROJECT.STATUS_NEW):
             query = query.join(ProjectSchedule).filter(ProjectSchedule.type == "release")
             if check("status") == PROJECT.STATUS_ON_TIME:
-                query = query.filter(Project.end_time == ProjectSchedule.end_time)
+                query = query \
+                    .filter(Project.end_time >= ProjectSchedule.end_time) \
+                    .filter(ProjectSchedule.status != PROJECT.STATUS_FINISH)
+
             elif check("status") == PROJECT.STATUS_AHEAD:
-                query = query.filter(Project.end_time > ProjectSchedule.end_time)
+                query = query \
+                    .filter(Project.end_time > ProjectSchedule.end_time) \
+                    .filter(ProjectSchedule.status == PROJECT.STATUS_FINISH)
+
+            elif check("status") == PROJECT.STATUS_FINISH:
+                query = query \
+                    .filter(Project.end_time == ProjectSchedule.end_time) \
+                    .filter(ProjectSchedule.status == PROJECT.STATUS_FINISH)
             else:
                 query = query.filter(Project.end_time < ProjectSchedule.end_time)
         elif check("status"):

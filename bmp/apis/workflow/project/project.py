@@ -34,4 +34,5 @@ class ProjectApi(BaseApi):
 
 
 if __name__ == "__main__":
-    print Project.search({"submit": {"status": "新建"}}, 1, 100)
+    pass
+

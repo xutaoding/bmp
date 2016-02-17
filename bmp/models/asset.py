@@ -10,13 +10,128 @@ from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
 
-stock_category = db.Table("stock_category",
-                          db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
-                          db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
-stock_spec_category = db.Table("stock_spec_category",
-                               db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
-                               db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
+class Domain(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(128))
+    sp = db.Column(db.String(128))
+    end_time = db.Column(db.DateTime)
+
+    icp = db.relationship("Icp", backref=db.backref("domain"))
+
+    def __init__(self, _dict):
+        for k, v in _dict.items():
+            if "time" in k:
+                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
+            else:
+                setattr(self, k, v)
+
+    @staticmethod
+    def add(_dict):
+        domain = Domain(_dict)
+        db.session.add(domain)
+        db.session.commit()
+        return domain
+
+    @staticmethod
+    def delete(did):
+        domain = Domain.query.filter(Domain.id == did).one()
+        db.session.delete(domain)
+        db.session.commit()
+        return True
+
+    @staticmethod
+    def _to_dict(domain):
+        return domain.to_dict()
+
+    @staticmethod
+    def select():
+        return [Domain._to_dict(d) for d in Domain.query.all()]
+
+    @staticmethod
+    def get(did):
+        return Domain._to_dict(Domain.query.filter(Domain.id == did).one())
+
+    @staticmethod
+    @db.transaction
+    def edit(_dict):
+        domain = Database.to_cls(Domain, _dict)
+        db.session.flush()
+        return True
+
+
+class Cert(db.Model):  # ssl证书
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(128))
+    sp = db.Column(db.String(128))
+    end_time = db.Column(db.DateTime)
+
+    def __init__(self, _dict):
+        for k, v in _dict.items():
+            if "time" in k:
+                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
+            else:
+                setattr(self, k, v)
+
+    @staticmethod
+    def add(_dict):
+        cert = Cert(_dict)
+        db.session.add(cert)
+        db.session.commit()
+        return cert
+
+    @staticmethod
+    def delete(did):
+        cert = Cert.query.filter(Cert.id == did).one()
+        db.session.delete(cert)
+        db.session.commit()
+        return True
+
+    @staticmethod
+    def _to_dict(cert):
+        return cert.to_dict()
+
+    @staticmethod
+    def select():
+        return [Cert._to_dict(d) for d in Cert.query.all()]
+
+
+class Icp(db.Model):  # 备案信息
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(128))
+    domain_id = db.Column(db.Integer, db.ForeignKey("domain.id"))
+    end_time = db.Column(db.DateTime)
+
+    def __init__(self, _dict):
+        for k, v in _dict.items():
+            if "time" in k:
+                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
+            else:
+                setattr(self, k, v)
+
+    @staticmethod
+    def add(_dict):
+        icp = Icp(_dict)
+        db.session.add(icp)
+        db.session.commit()
+        return icp
+
+    @staticmethod
+    def delete(did):
+        icp = Icp.query.filter(Icp.id == did).one()
+        db.session.delete(icp)
+        db.session.commit()
+        return True
+
+    @staticmethod
+    def _to_dict(icp):
+        _dict = icp.to_dict()
+        _dict["domain"] = icp.domain
+        return _dict
+
+    @staticmethod
+    def select():
+        return [Icp._to_dict(i) for i in Icp.query.all()]
 
 
 class Supplier(db.Model):
@@ -256,6 +371,15 @@ class Category(db.Model):
         for category in categorys:
             ids.extend(Category.get_child_ids(category.id))
         return ids
+
+
+stock_category = db.Table("stock_category",
+                          db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
+                          db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
+
+stock_spec_category = db.Table("stock_spec_category",
+                               db.Column("stock_id", db.Integer, db.ForeignKey("stock.id")),
+                               db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 
 class StockOpt(db.Model):

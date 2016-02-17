@@ -28,5 +28,3 @@ if __name__ == "__main__":
 
 
 
-# print client.exec_command("ls /root/csfscript/dump_data/logs")
-# print client.exec_command("sudo  /root/csfscript/dump_data/dump_data.py \"%s\""%json.dumps(data).replace("\"","\\\""))
