@@ -513,7 +513,7 @@ pid:项目id
  type:demand,#项目阶段 需求:demand,研发:develop,测试:test,发布:release
  begin_time:1990-01-01,#需求周期
  end_time:1990-01-02,#需求周期
- status:1,#refs的id,项目状态
+ status:完成,#
  reson:变更原因,
  desc:
 }

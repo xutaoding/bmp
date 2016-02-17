@@ -228,16 +228,26 @@ class Project(db.Model):
         return True
 
     @staticmethod
-    def _schedule_status(src_time, dst_time):
+    def _schedule_status(stat, src_time, dst_time):
         status = PROJECT.STATUS_NEW
         if not (src_time and dst_time):
             return status
-        if src_time == dst_time:
-            status = PROJECT.STATUS_ON_TIME
-        elif src_time > dst_time:
-            status = PROJECT.STATUS_AHEAD
+
+        if stat!=PROJECT.STATUS_FINISH:
+            if src_time == dst_time:
+                status = PROJECT.STATUS_ON_TIME
+            elif src_time > dst_time:
+                status = PROJECT.STATUS_ON_TIME
+            else:
+                status = PROJECT.STATUS_DELAY
         else:
-            status = PROJECT.STATUS_DELAY
+            if src_time == dst_time:
+                status = PROJECT.STATUS_FINISH
+            elif src_time > dst_time:
+                status = PROJECT.STATUS_AHEAD
+            else:
+                status = PROJECT.STATUS_DELAY
+
         return status
 
     @staticmethod
@@ -250,7 +260,7 @@ class Project(db.Model):
         _dict["status"] = PROJECT.STATUS_NEW
         for sche in _dict["schedules"]:
             if sche["type"] == "release":
-                _dict["status"] = Project._schedule_status(_dict["end_time"], sche["end_time"])
+                _dict["status"] = Project._schedule_status(sche["status"], _dict["end_time"], sche["end_time"])
         return _dict
 
     @staticmethod

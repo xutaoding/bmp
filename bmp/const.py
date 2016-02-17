@@ -103,9 +103,10 @@ class PROJECT:
     EDIT_PROJ = "edit_proj"
     EDIT_DOC = "edit_doc"
     STATUS_NEW = "新建"
+    STATUS_ON_TIME = "正常推进"
+    STATUS_FINISH = "完成"
     STATUS_AHEAD = "提前完成"
     STATUS_DELAY = "延误"
-    STATUS_ON_TIME = "正常推进"
 
     @staticmethod
     def EDIT_MEMBER(type):
