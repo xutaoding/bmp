@@ -120,9 +120,6 @@ desc:组别名
 name:组名
 
 
-
-
-
 获取用户列表:get /users
 获取用户:get /users/<string:uid>
 uid:用户名
@@ -137,8 +134,7 @@ is_admin:管理员:1:是,0:不是
 更新用户所属组:groups /users/<string:uid>
 uid:用户名
 groups:用户组
-
-例:
+参考:
 {
     groups:UP,QA,OP
 }
@@ -319,6 +315,7 @@ id:合同id
 删除合同:delete /contract/<int:id>
 
 新建供应商:post /supplier
+参考:
 {
     name:联想,
     connector:联系人,
@@ -328,10 +325,10 @@ id:合同id
 }
 
 获取全部供应商:get /supplier
-
 获取指定供应商:get /supplier/<int:id>
 
 更新供应商:put /supplier/<int:id>
+参考:
 {
     name:联想,
     connector:dgsg,
@@ -341,6 +338,82 @@ id:合同id
 }
 
 删除供应商:delete /supplier/<int:id>
+
+
+
+新增域名:post /domain
+参考:
+{
+    name:www.baidu.com,#域名
+    sp:万网,#服务商
+    end_time:2000-01-01,#到期时间
+}
+
+获取全部域名:get /domain
+获取指定域名:get /domain/<int:id>
+id:域名id
+
+删除域名:delete /domain/<int:id>
+id:域名id
+
+修改域名:put /domain/<int:id>
+id:域名id
+参考:
+{
+    name:www.baidu.com,#域名
+    sp:万网,#服务商
+    end_time:2000-01-01,#到期时间
+}
+
+
+新增证书:post /cert
+参考:
+{
+    name:www.baidu.com,#证书
+    sp:万网,#服务商
+    end_time:2000-01-01,#到期时间
+}
+
+获取全部证书:get /cert
+获取指定证书:get /cert/<int:id>
+id:证书id
+
+删除证书:delete /cert/<int:id>
+id:证书id
+
+修改证书:put /cert/<int:id>
+id:证书id
+参考:
+{
+    name:www.baidu.com,#域名
+    sp:万网,#服务商
+    end_time:2000-01-01,#到期时间
+}
+
+新增备案信息:post /icp
+
+获取全部备案信息:get /icp
+获取指定备案信息:get /icp/<int:id>
+id:备案信息id
+
+删除备案信息:delete /icp/<int:id>
+id:备案信息id
+
+修改备案信息:put /icp/<int:id>
+id:备案信息id
+参考:
+{
+    type:工信部 公安部 亚马逊·北京
+    company:主办单位
+    company_type:单位性质
+    no:网站备案/许可证号
+    site:网站名称
+    main_page:网站首页网址
+    chk_time:审核时间
+    domain_id:域名
+    elb:ELB
+    ip:IP
+}
 
 
 库存管理------------------------------------------------
@@ -480,8 +553,7 @@ pid:项目编号
 {
  docs:[#相关资料
          {url:资料url1},
-         {url:资料url2}
-        ]
+         {url:资料url2}]
 }
 
 添加相关资料:post /porject/doc/<int:pid>
@@ -501,8 +573,7 @@ sid:阶段信息(需求、研发、测试、发布)id
 {
  members:[#相关人员
             {uid:chenglong.yan},
-            {uid:mingming.zhang}
-        ]
+            {uid:mingming.zhang}]
 }
 
 更新阶段信息(需求、研发、测试、发布) put /project/schedule/<int:pid>
@@ -544,6 +615,6 @@ pre_page:每页长度
 格式:
     begin_time:yyyy-mm-dd
     end_time:yyyy-mm-dd
-例:
+参考:
     /stats/release/status/2015-01-01/2015-12-12
     /stats/release/app/2015-01-01/2015-12-12

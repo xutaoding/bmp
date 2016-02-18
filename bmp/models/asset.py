@@ -95,12 +95,25 @@ class Cert(db.Model):  # ssl证书
     def select():
         return [Cert._to_dict(d) for d in Cert.query.all()]
 
+    @staticmethod
+    def get(did):
+        return Cert._to_dict(Cert.query.filter(Cert.id == did).one())
 
+
+# 主办单位	单位性质	网站备案/许可证号	网站名称	网站首页网址	审核时间 域名	ELB	IP
 class Icp(db.Model):  # 备案信息
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128))
+    type = db.Column(db.String(128))
+
+    company = db.Column(db.String(128))
+    company_type = db.Column(db.String(128))
+    no = db.Column(db.String(128))
+    site = db.Column(db.String(128))
+    main_page = db.Column(db.String(128))
+    chk_time = db.Column(db.DateTime)
     domain_id = db.Column(db.Integer, db.ForeignKey("domain.id"))
-    end_time = db.Column(db.DateTime)
+    elb = db.Column(db.String(128))
+    ip = db.Column(db.String(128))
 
     def __init__(self, _dict):
         for k, v in _dict.items():
