@@ -356,10 +356,10 @@ id:域名id
 删除域名:delete /domain/<int:id>
 id:域名id
 
-修改域名:put /domain/<int:id>
-id:域名id
+修改域名:put /domain
 参考:
 {
+    id:域名id
     name:www.baidu.com,#域名
     sp:万网,#服务商
     end_time:2000-01-01,#到期时间
@@ -381,10 +381,10 @@ id:证书id
 删除证书:delete /cert/<int:id>
 id:证书id
 
-修改证书:put /cert/<int:id>
-id:证书id
+修改证书:put /cert
 参考:
 {
+    id:证书id
     name:www.baidu.com,#域名
     sp:万网,#服务商
     end_time:2000-01-01,#到期时间

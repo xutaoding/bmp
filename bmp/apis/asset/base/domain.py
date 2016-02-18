@@ -19,16 +19,11 @@ class DomainApi(BaseApi):
         Domain.delete(id)
         return self.succ()
 
-    def put(self, id):
+    def put(self):
         submit=self.request()
-        submit["id"]=id
         Domain.edit(submit)
         return self.succ()
 
 
 if __name__ == "__main__":
-    Domain.add({
-        "name":"baidu.com",
-        "sp":"万网",
-        "end_time":"2000-01-01"
-    })
+    pass

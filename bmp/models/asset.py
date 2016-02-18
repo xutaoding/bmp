@@ -54,8 +54,13 @@ class Domain(db.Model):
 
     @staticmethod
     @db.transaction
-    def edit(_dict):
-        domain = Database.to_cls(Domain, _dict)
+    def edit(_dicts):
+
+        if isinstance(_dicts,dict):
+            _dicts=[_dicts]
+
+        for _dict in _dicts:
+            domain = Database.to_cls(Domain, _dict)
         db.session.flush()
         return True
 
@@ -98,6 +103,18 @@ class Cert(db.Model):  # ssl证书
     @staticmethod
     def get(did):
         return Cert._to_dict(Cert.query.filter(Cert.id == did).one())
+
+    @staticmethod
+    @db.transaction
+    def edit(_dicts):
+
+        if isinstance(_dicts,dict):
+            _dicts=[_dicts]
+
+        for _dict in _dicts:
+            domain = Database.to_cls(Domain, _dict)
+        db.session.flush()
+        return True
 
 
 # 主办单位	单位性质	网站备案/许可证号	网站名称	网站首页网址	审核时间 域名	ELB	IP
