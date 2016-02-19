@@ -13,7 +13,8 @@ class IcpApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        return self.succ(Icp.add(submit))
+        Icp.add(submit)
+        return self.succ()
 
     def delete(self, id):
         Icp.delete(id)

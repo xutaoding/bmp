@@ -13,7 +13,8 @@ class CertApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        return self.succ(Cert.add(submit))
+        Cert.add(submit)
+        return self.succ()
 
     def delete(self, id):
         Cert.delete(id)

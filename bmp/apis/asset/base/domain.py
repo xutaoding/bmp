@@ -13,7 +13,8 @@ class DomainApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        return self.succ(Domain.add(submit))
+        Domain.add(submit)
+        return self.succ()
 
     def delete(self, id):
         Domain.delete(id)
