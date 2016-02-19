@@ -1,10 +1,5 @@
 # coding: utf-8
-import re
 
-from flask import render_template
-from flask import request
-
-import bmp.utils.mail as mail
 from bmp.const import DEFAULT_GROUP, LEAVE
 from bmp.models.user import User, Group
 from bmp.models.ref import Ref
@@ -29,13 +24,4 @@ class Mail(BaseMail):
             ref=Ref.map(LEAVE.TYPE))
 
 
-def mail_to(l,copy_to_uid):
-    try:
-        mail=Mail()
-        mail.to(l,copy_to_uid)
-    except Exception, e:
-        log.exception(e)
 
-
-if __name__ == "__main__":
-    pass

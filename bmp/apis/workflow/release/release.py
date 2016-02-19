@@ -1,7 +1,7 @@
 # coding=utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release, ReleaseApproval
-from bmp.tasks.mail.release import mail_to
+from bmp.tasks.mail.release import Mail
 
 '''
     模块：发布申请
@@ -39,7 +39,7 @@ class ReleaseApi(BaseApi):
     def put(self, rid):
         submit = self.request()
         if ReleaseApproval.edit(rid, submit):
-            mail_to(Release.query.filter(Release.id == rid).one(), submit)
+            Mail().to(Release.query.filter(Release.id == rid).one(), submit)
             return self.succ()
         return self.fail()
 
@@ -47,7 +47,7 @@ class ReleaseApi(BaseApi):
         submit = self.request()
         release = Release.add(submit)
         submit["status"] = ""
-        mail_to(release, submit)
+        Mail().to(release, submit)
         return self.succ()
 
 

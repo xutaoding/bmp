@@ -2,7 +2,7 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.project import Project
-from bmp.tasks.mail.project.project_create import mail_to
+from bmp.tasks.mail.project.project_create import Mail
 
 
 class ProjectApi(BaseApi):
@@ -15,7 +15,7 @@ class ProjectApi(BaseApi):
     def post(self):
         submit = self.request()
         proj = Project.add(submit)
-        mail_to(proj)
+        Mail().to(proj)
         return self.succ()
 
     def put(self, pid):

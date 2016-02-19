@@ -1,18 +1,14 @@
 # coding: utf-8
-import re
+
+from bmp import log
 import traceback
-
-from flask import render_template
-from flask import request
-
 from bmp.models.user import Group, User
-import bmp.utils.mail as mail
 from bmp.utils import user_ldap
 from bmp.const import PURCHASE
+from base import BaseMail
 
-
-def mail_to(p):
-    try:
+class Mail(BaseMail):
+    def to(self, p):
         approvals = p.approvals
         to = []
         if not p.is_finished:
@@ -28,23 +24,15 @@ def mail_to(p):
 
         sub = u"采购编号:%s 采购申请:%s" % (p.id, ",".join([g.category.name for g in p.goods]))
 
-        regx = re.compile(r"^http://([a-z.]+)/")
-        host = regx.findall(request.headers["Referer"])[0]
-
-        if "dev" in host:
-            sub = u"【测试】 %s" % sub
-
-        url = "http://%s/templates/purchase/approval.html" % host
-
-        html = render_template(
+        self.send(
+            to,
+            sub,
+            "/templates/purchase/approval.html",
             "mail.purchase.tpl.html",
-            sub=sub,
             purchase=p,
             goods=p.goods,
             approvals=approvals,
-            group_names=Group.get_descs(),
-            url=url)
+            group_names=Group.get_descs())
 
-        mail.send(sub, html, list(set(to)), priority=1)
-    except:
-        traceback.print_exc()
+
+

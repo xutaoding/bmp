@@ -1,17 +1,12 @@
 # coding: utf-8
-import re
-import traceback
 
-from flask import render_template
-from flask import request
-
+from bmp import log
 from bmp.models.user import Group, User
-import bmp.utils.mail as mail
 from bmp.const import RELEASE, DEFAULT_GROUP
+from bmp.tasks.mail.base import BaseMail
 
-
-def mail_to(r, submit):
-    try:
+class Mail(BaseMail):
+    def to(self, r,submit):
         approvals = r.approvals
         to, cc = [], []
         to_group = [DEFAULT_GROUP.QA]
@@ -35,25 +30,13 @@ def mail_to(r, submit):
         except:
             pass
 
-
-        # Referer: http://dev.ops.chinascope.net/templates/release/history.html
-
-        regx = re.compile(r"^http://([a-z.]+)/")
-
-        host = regx.findall(request.headers["Referer"])[0]
-
-        if "dev" in host:
-            sub = u"【测试】 %s" % sub
-
-        url = "http://%s/templates/release/release.html" % host
-
-        html = render_template(
+        self.send(
+            to,
+            sub,
+            "/templates/release/release.html",
             "mail.tpl.html",
-            sub=sub,
+            cc=cc,
             release=r,
-            approvals=approvals,
-            url=url)
+            approvals=approvals)
 
-        mail.send(sub, html, list(set(to)), cc)
-    except:
-        traceback.print_exc()
+

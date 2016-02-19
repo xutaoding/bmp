@@ -8,7 +8,7 @@ class BaseMail:
     def __init__(self):
         pass
 
-    def send(self,to,sub,url,tpl,**kwargs):
+    def send(self,to,sub,url,tpl,cc=[],date=None,**kwargs):
 
         regx = re.compile(r"^http://([a-z.]+)/")
         host = regx.findall(request.headers["Referer"])[0]
@@ -20,4 +20,5 @@ class BaseMail:
 
         html = render_template(tpl,**kwargs)
 
-        mail.send(sub,html,list(set(to)))
+
+        mail.send(sub,html,list(set(to)),cc,date)

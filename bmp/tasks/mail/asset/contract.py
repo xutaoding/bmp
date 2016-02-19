@@ -1,34 +1,17 @@
 # coding: utf-8
-import re
 from datetime import timedelta
-import traceback
-
-from flask import render_template
-from flask import request
-
-import bmp.utils.mail as mail
 from bmp import app
 
+from bmp.tasks.mail.base import BaseMail
 
-def mail_to(c):
-    try:
-        sub = u"合同提醒 %s 将于 %s 结束" % (c.desc, c.end_time.strftime("%Y-%m-%d"))
-
-        regx = re.compile(r"^http://([a-z.]+)/")
-
-        host = regx.findall(request.headers["Referer"])[0]
-
-        if "dev" in host:
-            sub = u"【测试】 %s" % sub
-
-        url = "http://%s/templates/asset/contract.html" % host
-
-        html = render_template(
-            "mail.contract.tpl.html",
-            sub=sub,
-            url=url)
-
-        mail.send(sub, html, receiver=[app.config["MAIL_ALERT"]], date=c.end_time - timedelta(days=30))
-        mail.send(sub, html, receiver=[app.config["MAIL_ALERT"]], date=c.end_time - timedelta(days=60))
-    except:
-        traceback.print_exc()
+class Mail(BaseMail):
+    def to(self, c):
+        def __send(days):
+            self.send(
+                [app.config["MAIL_ALERT"]],
+                u"合同提醒 %s 将于 %s 结束" % (c.desc, c.end_time.strftime("%Y-%m-%d")),
+                "/templates/asset/contract.html",
+                "mail.contract.tpl.html",
+                date=c.end_time - timedelta(days=days))
+        __send(30)
+        __send(60)

@@ -1,7 +1,7 @@
 # coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
-from bmp.tasks.mail.asset.stock import mail_to
+from bmp.tasks.mail.asset.stock import Mail
 
 
 class StockApi(BaseApi):
@@ -17,7 +17,7 @@ class StockApi(BaseApi):
     def post(self):
         submit = self.request()
         stock = Stock.add(submit)
-        mail_to(stock)
+        Mail().to(stock)
         return self.succ()
 
     def delete(self, sid):
@@ -33,19 +33,3 @@ class StockApi(BaseApi):
     def search(self, page=None, pre_page=None):
         submit = self.request()
         return self.succ(Stock.search(submit, page, pre_page))
-
-
-if __name__ == "__main__":
-    for stock in Stock.search(
-            {
-                "no": "",
-                "stock_in_time_begin": None,
-                "stock_in_time_end": None,
-                "uid": "",
-                "businessCategory": "",
-                "category_id": "",
-                "price_start": "",
-                "price_end": "",
-                "status": "领用"
-            }):
-        print(stock)

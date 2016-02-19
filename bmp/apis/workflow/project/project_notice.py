@@ -2,7 +2,7 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.project import ProjectNotice
-from bmp.tasks.mail.project.project_notice import mail_to
+from bmp.tasks.mail.project.project_notice import Mail
 
 
 class Project_noticeApi(BaseApi):
@@ -18,7 +18,7 @@ class Project_noticeApi(BaseApi):
 
         if submit.__contains__("send_mail") \
                 and submit["send_mail"]:
-            mail_to(notice)
+            Mail().to(notice)
         return self.succ()
 
 

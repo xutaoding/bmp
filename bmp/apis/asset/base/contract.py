@@ -2,7 +2,7 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Contract
-from bmp.tasks.mail.asset.contract import mail_to
+from bmp.tasks.mail.asset.contract import Mail
 
 
 class ContractApi(BaseApi):
@@ -16,7 +16,7 @@ class ContractApi(BaseApi):
     def post(self):
         submit = self.request()
         contract = Contract.add(submit)
-        mail_to(contract)
+        Mail().to(contract)
         return self.succ()
 
     def delete(self, id):

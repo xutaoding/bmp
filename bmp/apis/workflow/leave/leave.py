@@ -3,7 +3,7 @@ from datetime import datetime
 
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
-from bmp.tasks.mail.leave import mail_to
+from bmp.tasks.mail.leave import Mail
 
 
 class LeaveApi(BaseApi):
@@ -18,7 +18,7 @@ class LeaveApi(BaseApi):
     def post(self):
         submit = self.request()
         leave = Leave.add(submit)
-        mail_to(leave, submit["copy_to_uid"])
+        Mail().to(leave, submit["copy_to_uid"])
         return self.succ()
 
     def delete(self, lid):
