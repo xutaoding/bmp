@@ -2,6 +2,7 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Domain
+from bmp.tasks.mail.asset.domain import Mail
 
 
 class DomainApi(BaseApi):
@@ -22,7 +23,13 @@ class DomainApi(BaseApi):
 
     def put(self):
         submit=self.request()
-        Domain.edit(submit)
+
+        domains=Domain.edit(submit)
+
+        mail=Mail()
+        for domain in domains:
+            mail.to(domain)
+
         return self.succ()
 
 

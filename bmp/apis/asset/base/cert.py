@@ -2,7 +2,7 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Cert
-
+from bmp.tasks.mail.asset.cert import Mail
 
 class CertApi(BaseApi):
     route = ["/cert", "/cert/<int:id>"]
@@ -13,7 +13,8 @@ class CertApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Cert.add(submit)
+        cert=Cert.add(submit)
+        Mail().to(cert)
         return self.succ()
 
     def delete(self, id):
@@ -22,7 +23,13 @@ class CertApi(BaseApi):
 
     def put(self):
         submit=self.request()
-        Cert.edit(submit)
+
+        certs=Cert.edit(submit)
+        mail=Mail()
+
+        for cert in certs:
+            mail.to(cert)
+
         return self.succ()
 
 
