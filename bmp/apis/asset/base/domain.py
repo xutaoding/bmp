@@ -14,7 +14,8 @@ class DomainApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Domain.add(submit)
+        domain=Domain.add(submit)
+        Mail().to(domain)
         return self.succ()
 
     def delete(self, id):

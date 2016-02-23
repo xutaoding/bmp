@@ -17,8 +17,6 @@ class Domain(db.Model):
     sp = db.Column(db.String(128))
     end_time = db.Column(db.DateTime)
 
-    icp = db.relationship("Icp", backref=db.backref("domain"))
-
     def __init__(self, _dict):
         for k, v in _dict.items():
             if "time" in k:
@@ -111,7 +109,7 @@ class Cert(db.Model):  # ssl证书
         return certs
 
 
-# 主办单位	单位性质	网站备案/许可证号	网站名称	网站首页网址	审核时间 域名	ELB	IP
+# 主办单位  单位性质    网站备案/许可证号	网站名称	网站首页网址	审核时间  域名  ELB IP
 class Icp(db.Model):  # 备案信息
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(128))
@@ -122,9 +120,9 @@ class Icp(db.Model):  # 备案信息
     site = db.Column(db.String(128))
     main_page = db.Column(db.String(128))
     chk_time = db.Column(db.DateTime)
-    domain_id = db.Column(db.Integer, db.ForeignKey("domain.id"))
-    elb = db.Column(db.String(128))
-    ip = db.Column(db.String(128))
+    domain = db.Column(db.Text)
+    elb = db.Column(db.Text)
+    ip = db.Column(db.Text)
 
     def __init__(self, _dict):
         for k, v in _dict.items():
