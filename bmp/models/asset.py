@@ -158,6 +158,17 @@ class Icp(db.Model):  # 备案信息
         return [Icp._to_dict(i) for i in Icp.query.all()]
 
 
+    @staticmethod
+    @db.transaction
+    def edit(_dict):
+        Database.to_cls(Icp, _dict)
+        db.session.flush()
+        return True
+
+    @staticmethod
+    def get(iid):
+        return Icp._to_dict(Icp.query.filter(Icp.id == iid).one())
+
 class Supplier(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)

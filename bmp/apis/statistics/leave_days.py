@@ -15,6 +15,9 @@ class Leave_daysApi(BaseApi):
         leaves = pd.read_json(
             json.dumps(Leave.between(begin_time, end_time)))
 
+        if leaves.empty:
+            return self.succ([])
+
         for name, g in leaves.groupby("uid"):
             result.set_value(len(result), ["name", "days"], [name, g.days.sum()])
 
@@ -26,5 +29,7 @@ class Leave_daysApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    leaves = pd.read_json(
+        json.dumps(Leave.between("2000-01-01", "2000-01-02")))
 
+    print(leaves)
