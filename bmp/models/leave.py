@@ -25,6 +25,8 @@ class Leave(db.Model):
     status = db.Column(db.String(128), nullable=False)
     feedback = db.Column(db.String(128), nullable=True)
 
+    copy_to_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     approval_time = db.Column(db.DateTime)
 

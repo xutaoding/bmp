@@ -1,7 +1,6 @@
 # coding: utf-8
 
 
-# todo 自动import modules目录下表定义
 
 from bmp.models import *
 from bmp import db

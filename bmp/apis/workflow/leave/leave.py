@@ -18,7 +18,7 @@ class LeaveApi(BaseApi):
     def post(self):
         submit = self.request()
         leave = Leave.add(submit)
-        Mail().to(leave, submit["copy_to_uid"])
+        Mail().to(leave)
         return self.succ()
 
     def delete(self, lid):
