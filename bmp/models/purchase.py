@@ -49,10 +49,11 @@ class PurchaseGoods(db.Model):  # 采购物品
         self.amount = _dict["amount"]
 
     @staticmethod
-    def _to_dict(self):
+    def _to_dict(self,inc_purchase=False):
         _dict = self.to_dict()
         category = self.category
         spec = self.spec
+        purchase = self.purchase
 
         if category:
             _dict["category"] = category.to_dict()
@@ -60,7 +61,23 @@ class PurchaseGoods(db.Model):  # 采购物品
         if spec:
             _dict["spec"] = spec.to_dict()
 
+        for k,v in purchase.to_dict().items():
+            if not _dict.__contains__(k):
+                _dict[k]=v
         return _dict
+
+    @staticmethod
+    def between(beg, end):
+        return [
+            PurchaseGoods._to_dict(p,True)
+            for p in PurchaseGoods.query
+                .join(Purchase)
+                .filter(Purchase.is_finished==True)
+                .filter(Purchase.is_draft==False)
+                .filter(Purchase.apply_time>=beg)
+                .filter(Purchase.apply_time<=end).all()
+        ]
+
 
 
 class PurchaseImg(db.Model):  # 比价图片
@@ -144,7 +161,7 @@ class Purchase(db.Model):
     approvals = db.relationship("PurchaseApproval")
     contract = db.relationship("Contract", uselist=False, backref=db.backref("purchase"))
     imgs = db.relationship("PurchaseImg")
-    goods = db.relationship("PurchaseGoods")
+    goods = db.relationship("PurchaseGoods",backref=db.backref("purchase"))
     supplier = db.relationship("Supplier",
                                secondary=purchase_supplier,
                                backref=db.backref("purchases"),
@@ -371,6 +388,22 @@ class Purchase(db.Model):
                 _dict["申请人"] = str(purchase["apply_uid"])
                 _export.append(_dict)
         return _export
+
+
+    @staticmethod
+    def between(beg, end):
+        return [
+            Purchase._to_dict(p)
+            for p in Purchase.query
+                .filter(Purchase.is_finished==True)\
+                .filter(Purchase.is_draft==False)\
+                .filter(Purchase.apply_time>=beg)\
+                .filter(Purchase.apply_time<=end).all()
+        ]
+
+
+
+
 
 
 if __name__ == "__main__":
