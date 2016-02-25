@@ -353,8 +353,12 @@ id:合同id
 获取指定域名:get /domain/<int:id>
 id:域名id
 
-删除域名:delete /domain/<int:id>
-id:域名id
+删除域名:delete /domain
+参考:
+{
+    ids:1,2,3,4,5#域名的id序列,逗号分割
+}
+
 
 修改域名:put /domain
 参考:
@@ -378,8 +382,11 @@ id:域名id
 获取指定证书:get /cert/<int:id>
 id:证书id
 
-删除证书:delete /cert/<int:id>
-id:证书id
+删除证书:delete /cert
+参考:
+{
+    ids:1,2,3,4,5#证书的id序列,逗号分割
+}
 
 修改证书:put /cert
 参考:

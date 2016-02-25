@@ -18,8 +18,9 @@ class DomainApi(BaseApi):
         Mail().to(domain)
         return self.succ()
 
-    def delete(self, id):
-        Domain.delete(id)
+    def delete(self):
+        submit = self.request()
+        Domain.delete(submit["ids"].split(","))
         return self.succ()
 
     def put(self):

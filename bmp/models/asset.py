@@ -32,10 +32,15 @@ class Domain(db.Model):
         return domain
 
     @staticmethod
-    def delete(did):
-        domain = Domain.query.filter(Domain.id == did).one()
-        db.session.delete(domain)
-        db.session.commit()
+    @db.transaction
+    def delete(dids):
+        if not isinstance(dids, list):
+            dids = [dids]
+
+        for did in dids:
+            domain = Domain.query.filter(Domain.id == did).one()
+            db.session.delete(domain)
+        db.session.flush()
         return True
 
     @staticmethod
@@ -53,9 +58,9 @@ class Domain(db.Model):
     @staticmethod
     @db.transaction
     def edit(_dicts):
-        if isinstance(_dicts,dict):
-            _dicts=[_dicts]
-        domains=[Database.to_cls(Domain, _dict) for _dict in _dicts]
+        if isinstance(_dicts, dict):
+            _dicts = [_dicts]
+        domains = [Database.to_cls(Domain, _dict) for _dict in _dicts]
         db.session.flush()
         return domains
 
@@ -81,10 +86,15 @@ class Cert(db.Model):  # ssl证书
         return cert
 
     @staticmethod
-    def delete(did):
-        cert = Cert.query.filter(Cert.id == did).one()
-        db.session.delete(cert)
-        db.session.commit()
+    @db.transaction
+    def delete(dids):
+        if not isinstance(dids, list):
+            dids = [dids]
+
+        for did in dids:
+            cert = Cert.query.filter(Cert.id == did).one()
+            db.session.delete(cert)
+        db.session.flush()
         return True
 
     @staticmethod
@@ -102,9 +112,9 @@ class Cert(db.Model):  # ssl证书
     @staticmethod
     @db.transaction
     def edit(_dicts):
-        if isinstance(_dicts,dict):
-            _dicts=[_dicts]
-        certs=[Database.to_cls(Cert, _dict) for _dict in _dicts]
+        if isinstance(_dicts, dict):
+            _dicts = [_dicts]
+        certs = [Database.to_cls(Cert, _dict) for _dict in _dicts]
         db.session.flush()
         return certs
 
@@ -155,7 +165,6 @@ class Icp(db.Model):  # 备案信息
     def select():
         return [Icp._to_dict(i) for i in Icp.query.all()]
 
-
     @staticmethod
     @db.transaction
     def edit(_dict):
@@ -166,6 +175,7 @@ class Icp(db.Model):  # 备案信息
     @staticmethod
     def get(iid):
         return Icp._to_dict(Icp.query.filter(Icp.id == iid).one())
+
 
 class Supplier(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

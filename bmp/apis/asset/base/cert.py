@@ -18,7 +18,8 @@ class CertApi(BaseApi):
         return self.succ()
 
     def delete(self, id):
-        Cert.delete(id)
+        submit = self.request()
+        Cert.delete(submit["ids"].split(","))
         return self.succ()
 
     def put(self):
