@@ -72,6 +72,8 @@ class PurchaseGoods(db.Model):  # 采购物品
             PurchaseGoods._to_dict(p,True)
             for p in PurchaseGoods.query
                 .join(Purchase)
+                .join(PurchaseApproval,PurchaseApproval.purchase_id==PurchaseGoods.purchase_id)
+                .filter(PurchaseApproval.status!=PURCHASE.FAIL)
                 .filter(Purchase.is_finished==True)
                 .filter(Purchase.is_draft==False)
                 .filter(Purchase.apply_time>=beg)

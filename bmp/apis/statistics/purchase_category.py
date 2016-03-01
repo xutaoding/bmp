@@ -35,7 +35,11 @@ class Purchase_categoryApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    for pg in PurchaseGoods.between("1990-01-01","2017-01-01"):
+        print(pg["category"]["name"])
+        print(pg)
+
+
 
 
 
