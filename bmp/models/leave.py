@@ -86,18 +86,21 @@ class Leave(db.Model):
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
-    def between(beg, end,is_history=False):
-        if is_history:
-            query=Leave.query.filter(Leave.status != None).filter(Leave.status != "")
-        else:
-            query=Leave.query.filter(Leave.status == LEAVE.PASS)
+    def between(beg, end,query_type=False):
+        # if is_history:
+        #     query=Leave.query.filter(Leave.status != None).filter(Leave.status != "")
+        # else:
 
-
-        return [Leave._to_dict(l) for l in query
-            .filter(or_(
+        query=Leave.query\
+            .filter(Leave.status == LEAVE.PASS).filter(or_(
             and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
             and_(Leave.begin_time <= beg, Leave.end_time >= beg),
-            and_(Leave.begin_time <= end, Leave.end_time >= end))).all()]
+            and_(Leave.begin_time <= end, Leave.end_time >= end)))
+
+        if query_type:
+            return query
+
+        return [Leave._to_dict(l) for l in query.all()]
 
     @staticmethod
     def history(page=0, pre_page=None):
@@ -105,6 +108,15 @@ class Leave(db.Model):
             .filter(Leave.status != None) \
             .filter(Leave.status != "") \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
+
+    @staticmethod
+    def search(begin_time,end_time,name):
+        query=Leave.between(begin_time,end_time,query_type=True)\
+            .filter(Leave.approval_uid.ilike("%"+name+"%"))
+
+        return [Leave._to_dict(l) for l in query.all()]
+
+
 
 
 class LeaveEvent(db.Model):

@@ -4,7 +4,7 @@ from bmp import log
 import traceback
 from bmp.models.user import Group, User
 from bmp.utils import user_ldap
-from bmp.const import PURCHASE
+from bmp.const import PURCHASE,DEFAULT_GROUP
 from base import BaseMail
 
 class Mail(BaseMail):
@@ -19,7 +19,7 @@ class Mail(BaseMail):
                 to.extend([u.mail for u in Group.get_users(p.cur_approval_type)])
         else:
             user = User.get(p.apply_uid)
-            to.extend([u.mail for u in Group.get_users(PURCHASE.FIN)])
+            to.extend([u.mail for u in Group.get_users(DEFAULT_GROUP.PURCHASE.FIN)])
             to.append(user["mail"])
 
         sub = u"采购编号:%s 采购申请:%s" % (p.id, ",".join([g.category.name for g in p.goods]))

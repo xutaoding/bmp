@@ -47,12 +47,17 @@ class DEFAULT_GROUP:
     QA = "QA"
     OP = "OP"
     GUEST = "GUEST"
-    LEAVE_MAIL = "LEAVE_MAIL"
-    GROUPS = {
-        "QA": ["KIKI.zhang", "aurora.yang", "helen.yang"],
-        "OP": ["ryan.wang", "jim.zhao"],
-        "GUEST": []
-    }
+
+    class LEAVE:
+        MAIL = "LEAVE_MAIL"
+        APPROVAL = "LEAVE_APPROVAL"
+        SEARCH = "LEAVEL_SEARCH"
+
+    class PURCHASE:
+        FIN = "FIN"  # "财务"
+        UP = "UP"  # 上级
+        BOSS = "BOSS"  # 老板
+        LAW = "LAW"  # 法务
 
 
 # todo 清除unicode定义
@@ -63,6 +68,7 @@ class RELEASE:
     FLOW_OP = [u"运维发布"]
     FLOW_QA = [FLOW_TEST, u"正式环境测试"]
     OPTIONS = "options"
+
 
 class RELEASE_SERVICE:
     DATA_BASE = u"数据库"
@@ -78,7 +84,6 @@ class LEAVE:
 class PURCHASE:
     PASS = u"已确认"
     FAIL = u"退回"
-    GROUP_NAMES = {"FIN": u"财务", "UP": u"上级", "BOSS": u"老板", "LAW": u"法务"}
     FIN = "FIN"
     FLOW_ONE = "UP"
     FLOW_TWO = "FIN"
