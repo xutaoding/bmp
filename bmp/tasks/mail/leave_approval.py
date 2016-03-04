@@ -21,7 +21,7 @@ class Mail(BaseMail):
         if status != LEAVE.PASS:
             status = u"已退回"
 
-        sub = u"请假申请%s 编号:%d 申请人:%s 审批时间:%s" % (status, l.id, l.uid,l.approval_time.strftime("%Y-%m-%d"))
+        sub = u"请假申请%s 编号:%d 申请人:%s 审批时间:%s" % (status, l.id, l.uid, l.approval_time.strftime("%Y-%m-%d"))
 
         self.send(
             to,
