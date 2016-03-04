@@ -11,7 +11,7 @@ class Mail(BaseMail):
     def to(self, l):
         uids = [l.uid, l.approval_uid] + l.copy_to_uid.split(",")
         if l.status == LEAVE.PASS:
-            uids += [u.uid for u in Group.get_users(DEFAULT_GROUP.LEAVE_MAIL)]
+            uids += [u.uid for u in Group.get_users(DEFAULT_GROUP.LEAVE.MAIL)]
             to = [User.get(uid)["mail"] for uid in uids]
             to.append("hr.dept@chinascopefinancial.com")
         else:
@@ -21,7 +21,7 @@ class Mail(BaseMail):
         if status != LEAVE.PASS:
             status = u"已退回"
 
-        sub = u"请假申请%s 编号:%d 申请人:%s" % (status, l.id, l.uid)
+        sub = u"请假申请%s 编号:%d 申请人:%s 审批时间:%s" % (status, l.id, l.uid,l.approval_time.strftime("%Y-%m-%d"))
 
         self.send(
             to,

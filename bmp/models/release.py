@@ -7,16 +7,17 @@ from bmp import db
 from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
 from bmp.utils.exception import ExceptionEx
-from bmp.const import RELEASE,RELEASE_SERVICE
+from bmp.const import RELEASE, RELEASE_SERVICE
 from bmp.database import Database
+
 
 class ReleaseLog(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     content = db.Column(db.Text)
-    release_id = db.Column(db.Integer,db.ForeignKey("release.id"))
+    release_id = db.Column(db.Integer, db.ForeignKey("release.id"))
 
-    def __init__(self,content):
-        self.content=content["content"]
+    def __init__(self, content):
+        self.content = content["content"]
 
 
 class ReleaseTable(db.Model):
@@ -169,14 +170,13 @@ class Release(db.Model):
     to = db.Column(db.String(256), nullable=False)
     approvals = db.relationship("ReleaseApproval")
     service = db.relationship("ReleaseService", uselist=False)
-    log = db.relationship("ReleaseLog",uselist=False)
+    log = db.relationship("ReleaseLog", uselist=False)
     release_type = db.Column(db.String(64), default="")
     is_finished = db.Column(db.Boolean, default=False)
     is_deployed = db.Column(db.Boolean, default=False)
     is_deploying = db.Column(db.Boolean, default=False)
     deploy_time = db.Column(db.DateTime)
-    deploy_times = db.Column(db.Integer,default=0)
-
+    deploy_times = db.Column(db.Integer, default=0)
 
     def __init__(self, _dict):
         self.project = _dict["project"]
@@ -188,35 +188,35 @@ class Release(db.Model):
         self.release_type = _dict["release_type"]
 
     @staticmethod
-    def _to_dict(release,show_log=False):
+    def _to_dict(release, show_log=False):
         _release = release.to_dict()
         _release["approvals"] = [a.to_dict() for a in release.approvals]
         _release["service"] = ReleaseService._to_dict(release.service)
         if show_log:
-            log=release.log
+            log = release.log
             if log:
-                _release["log"]=log.content
+                _release["log"] = log.content
             else:
-                _release["log"]=""
+                _release["log"] = ""
 
         return _release
 
     @staticmethod
     def get_log(rid):
-        release=Release.query.filter(Release.id==rid).one()
-        log=release.log
-        if not log:return ""
-        return log.content.replace("\n","\r")
+        release = Release.query.filter(Release.id == rid).one()
+        log = release.log
+        if not log: return ""
+        return log.content.replace("\n", "\r")
 
     @staticmethod
-    def add_log(rid,log_path):
+    def add_log(rid, log_path):
         with open(log_path) as log:
-            __dict={"content":log.read()}
-            release=Release.query.filter(Release.id==rid).one()
-            query_log=ReleaseLog.query.filter(ReleaseLog.release_id==rid)
+            __dict = {"content": log.read()}
+            release = Release.query.filter(Release.id == rid).one()
+            query_log = ReleaseLog.query.filter(ReleaseLog.release_id == rid)
             if query_log.count():
-                __dict["id"]=query_log.one().id
-            release.log=Database.to_cls(ReleaseLog,__dict)
+                __dict["id"] = query_log.one().id
+            release.log = Database.to_cls(ReleaseLog, __dict)
         db.session.commit()
         return True
 
@@ -254,8 +254,8 @@ class Release(db.Model):
     def undeployed(page, pre_page):
         page = Release.query \
             .join(ReleaseApproval) \
-            .join(ReleaseService)\
-            .filter(ReleaseService.name==RELEASE_SERVICE.DATA_BASE)\
+            .join(ReleaseService) \
+            .filter(ReleaseService.name == RELEASE_SERVICE.DATA_BASE) \
             .filter(Release.is_finished == False) \
             .filter(ReleaseApproval.type == RELEASE.FLOW_TEST) \
             .filter(ReleaseApproval.status == RELEASE.PASS) \

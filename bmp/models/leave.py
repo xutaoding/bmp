@@ -20,13 +20,15 @@ class Leave(db.Model):
     dept = db.Column(db.String(128))
     days = db.Column(db.Float)
     tel = db.Column(db.String(128))
+
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
+    apply_time = db.Column(db.DateTime)
+
     status = db.Column(db.String(128), nullable=False)
     feedback = db.Column(db.String(128), nullable=True)
 
     copy_to_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
-
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     approval_time = db.Column(db.DateTime)
 
@@ -39,10 +41,11 @@ class Leave(db.Model):
 
         if not _dict.__contains__("id"):
             self.uid = session[USER_SESSION]["uid"]
+            self.apply_time = datetime.now().strftime("%Y-%m-%d")
 
     @staticmethod
     def add(_dict):
-        #_dict["approval_uid"] = user_ldap.get_superior(_dict["uid"])
+        # _dict["approval_uid"] = user_ldap.get_superior(_dict["uid"])
         leave = Leave(_dict)
         db.session.add(leave)
         db.session.commit()
@@ -75,7 +78,7 @@ class Leave(db.Model):
     def unapprovaled(page=0, pre_page=None):
         return Leave.query \
             .filter(Leave.status.in_([None, ""])) \
-            .order_by(Leave.id.desc())\
+            .order_by(Leave.id.desc()) \
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
@@ -86,12 +89,12 @@ class Leave(db.Model):
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
-    def between(beg, end,query_type=False):
+    def between(beg, end, query_type=False):
         # if is_history:
         #     query=Leave.query.filter(Leave.status != None).filter(Leave.status != "")
         # else:
 
-        query=Leave.query\
+        query = Leave.query \
             .filter(Leave.status == LEAVE.PASS).filter(or_(
             and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
             and_(Leave.begin_time <= beg, Leave.end_time >= beg),
@@ -110,13 +113,11 @@ class Leave(db.Model):
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
-    def search(begin_time,end_time,name):
-        query=Leave.between(begin_time,end_time,query_type=True)\
-            .filter(Leave.approval_uid.ilike("%"+name+"%"))
+    def search(begin_time, end_time, name):
+        query = Leave.between(begin_time, end_time, query_type=True) \
+            .filter(Leave.approval_uid.ilike("%" + name + "%"))
 
         return [Leave._to_dict(l) for l in query.all()]
-
-
 
 
 class LeaveEvent(db.Model):

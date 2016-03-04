@@ -51,7 +51,7 @@ class DEFAULT_GROUP:
     class LEAVE:
         MAIL = "LEAVE_MAIL"
         APPROVAL = "LEAVE_APPROVAL"
-        SEARCH = "LEAVEL_SEARCH"
+        SEARCH = "LEAVE_SEARCH"
 
     class PURCHASE:
         FIN = "FIN"  # "财务"
