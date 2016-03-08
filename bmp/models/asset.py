@@ -49,7 +49,7 @@ class Domain(db.Model):
 
     @staticmethod
     def select():
-        return [Domain._to_dict(d) for d in Domain.query.all()]
+        return [Domain._to_dict(d) for d in Domain.query.order_by(Domain.end_time).all()]
 
     @staticmethod
     def get(did):
@@ -103,7 +103,7 @@ class Cert(db.Model):  # ssl证书
 
     @staticmethod
     def select():
-        return [Cert._to_dict(d) for d in Cert.query.all()]
+        return [Cert._to_dict(d) for d in Cert.query.order_by(Cert.end_time).all()]
 
     @staticmethod
     def get(did):
