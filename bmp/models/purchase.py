@@ -191,7 +191,7 @@ class Purchase(db.Model):
 
         self.goods = [Database.to_cls(PurchaseGoods, g) for g in goods]
         self.supplier = supplier
-        if imgs: self.imgs = [Database.to_cls(PurchaseImg, img) for img in imgs]
+        if isinstance(imgs,list): self.imgs = [Database.to_cls(PurchaseImg, img) for img in imgs]
         if contract: self.contract = contract
         self.use = submit["use"]
         if submit.__contains__("reson"):
