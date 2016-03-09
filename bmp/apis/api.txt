@@ -221,7 +221,9 @@ pre_page:每页长度
 
 请假相关------------------------------------------------
 
+
 请假申请:post /leave
+参数:
 {
     uid:申请人
     reson:理由
@@ -233,6 +235,19 @@ pre_page:每页长度
     end_time:结束时间
     status:审批的状态
     feedback:审批人的反馈信息
+}
+
+请假修改:put /leave/<int:lid>
+lid:请假申请的id
+参数:
+{
+    reson:理由
+    type_id:申请类型 # /refs 接口获取 分类:请假类型
+    dept:部门
+    days:天数
+    tel:电话
+    begin_time:开始时间
+    end_time:结束时间
 }
 
 审批申请:put /leave/approval/<int:lid>

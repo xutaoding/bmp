@@ -25,6 +25,15 @@ class LeaveApi(BaseApi):
         Leave.delete(lid)
         return self.succ()
 
+    def put(self,lid):
+        submit = self.request()
+        submit["id"]=lid
+
+        Leave.edit(submit)
+        return self.succ()
+
+
+
 
 if __name__ == "__main__":
     pass

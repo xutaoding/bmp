@@ -119,6 +119,13 @@ class Leave(db.Model):
 
         return [Leave._to_dict(l) for l in query.all()]
 
+    @staticmethod
+    def edit(_dict):
+        leave = Database.to_cls(Leave, _dict)
+        db.session.commit()
+        return True
+
+
 
 class LeaveEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
