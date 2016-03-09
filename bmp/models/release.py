@@ -181,13 +181,13 @@ class Release(db.Model):
     deploy_times = db.Column(db.Integer, default=0)
 
     def __init__(self, _dict):
-        self.project = _dict["project"]
-        self._from = _dict["_from"]
-        self.to = _dict["to"]
-        self.release_time = datetime.strptime(_dict["release_time"], "%Y-%m-%d %H:%M")
-        self.copy_to_uid = _dict["copy_to_uid"]
-        self.content = _dict["content"]
-        self.release_type = _dict["release_type"]
+        for k, v in _dict.items():
+            if "release_time" == k:
+                setattr(self, k, datetime.strptime(v, "%Y-%m-%d  %H:%M"))
+            elif "service" == k:
+                self.service=Database.to_cls(ReleaseService,v)
+            else:
+                setattr(self, k, v)
 
     @staticmethod
     def _to_dict(release, show_log=False):
@@ -321,7 +321,6 @@ class Release(db.Model):
     @db.transaction
     def edit(submit):
         release = Database.to_cls(Release, submit)
-        release.service = Database.to_cls(ReleaseService, submit["service"])
         db.session.flush()
         return True
 
