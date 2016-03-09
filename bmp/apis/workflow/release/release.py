@@ -45,9 +45,11 @@ class ReleaseApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        release = Release.add(submit)
-        submit["status"] = ""
-        Mail().to(release, submit)
+        Release.add(submit)
+        return self.succ()
+
+    def delete(self,rid):
+        Release.delete(rid)
         return self.succ()
 
 

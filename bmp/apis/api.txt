@@ -79,7 +79,8 @@ id:申请id
     desc:备注
 }
 
-
+删除申请:delete /release/<int:id>
+id:申请id
 
 
 

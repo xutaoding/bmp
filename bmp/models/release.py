@@ -301,9 +301,7 @@ class Release(db.Model):
         from bmp.models.user import User
         user = User.query.filter(User.uid == session[USER_SESSION]["uid"]).one()
 
-        release = Release(submit)
-        service = ReleaseService(submit["service"])
-        release.service = service
+        release = Database.to_cls(Release,submit)
         release.approvals = []
         release.apply_uid = user.uid
         if user.groups:
@@ -322,7 +320,7 @@ class Release(db.Model):
     def edit(submit):
         release = Database.to_cls(Release, submit)
         db.session.flush()
-        return True
+        return release
 
     @staticmethod
     @db.transaction
@@ -352,6 +350,18 @@ class Release(db.Model):
         release.is_deployed = True
         db.session.commit()
         return True
+
+
+
+    @staticmethod
+    @db.transaction
+    def delete(pid):
+        release=Release.query.filter(Release.id == pid).one()
+        if release.is_draft:
+            raise ExceptionEx("该申请已提交,无法删除")
+
+        db.session.delete(release)
+        db.session.flush()
 
 
 if __name__ == "__main__":
