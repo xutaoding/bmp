@@ -357,7 +357,7 @@ class Release(db.Model):
     @db.transaction
     def delete(pid):
         release=Release.query.filter(Release.id == pid).one()
-        if release.is_draft:
+        if not release.is_draft:
             raise ExceptionEx("该申请已提交,无法删除")
 
         db.session.delete(release)
