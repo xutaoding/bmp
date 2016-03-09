@@ -9,6 +9,7 @@ from bmp.const import DEFAULT_GROUP
 from bmp.utils.exception import ExceptionEx
 from bmp.const import RELEASE, RELEASE_SERVICE
 from bmp.database import Database
+from sqlalchemy import or_
 
 
 class ReleaseLog(db.Model):
@@ -172,6 +173,7 @@ class Release(db.Model):
     service = db.relationship("ReleaseService", uselist=False)
     log = db.relationship("ReleaseLog", uselist=False)
     release_type = db.Column(db.String(64), default="")
+    is_draft = db.Column(db.Boolean, default=True)
     is_finished = db.Column(db.Boolean, default=False)
     is_deployed = db.Column(db.Boolean, default=False)
     is_deploying = db.Column(db.Boolean, default=False)
@@ -229,6 +231,17 @@ class Release(db.Model):
     def unfinished(page, pre_page):
         page = Release.query \
             .filter(Release.is_finished == False) \
+            .filter(or_(Release.is_draft == None, Release.is_draft == False)) \
+            .order_by(Release.apply_time.desc()) \
+            .paginate(page, pre_page)
+        return page.to_page(Release._to_dict)
+
+    @staticmethod
+    def drafts(page, pre_page):
+        page = Release.query \
+            .filter(Release.is_finished == False) \
+            .filter(Release.is_draft == True) \
+            .filter(Release.apply_uid == session[USER_SESSION]["uid"]) \
             .order_by(Release.apply_time.desc()) \
             .paginate(page, pre_page)
         return page.to_page(Release._to_dict)
@@ -237,6 +250,7 @@ class Release(db.Model):
     def self(page, pre_page):
         page = Release.query \
             .filter(Release.is_finished == False) \
+            .filter(or_(Release.is_draft == None, Release.is_draft == False)) \
             .filter(Release.apply_uid == session[USER_SESSION]["uid"]) \
             .order_by(Release.apply_time.desc()) \
             .paginate(page, pre_page)
@@ -298,6 +312,7 @@ class Release(db.Model):
             release.apply_group = DEFAULT_GROUP.GUEST
 
         release.apply_time = datetime.now()
+
         db.session.add(release)
         db.session.flush()
         return release

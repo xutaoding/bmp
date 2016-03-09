@@ -52,4 +52,5 @@ class ReleaseApi(BaseApi):
 
 
 if __name__ == "__main__":
-    print Release.get(1)
+
+    print(Release.unfinished(1,10))
