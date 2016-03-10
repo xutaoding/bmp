@@ -120,7 +120,11 @@ class User(db.Model):
         return _user
 
     @staticmethod
-    def select(uid):
+    def uids():
+        return [u.uid for u in User.query.all()]
+
+    @staticmethod
+    def select(uid="%"):
         query = User.query.order_by(User.uid.asc())
         if uid != "%":
             query = User.query.filter(User.uid == uid).order_by(User.uid.asc())

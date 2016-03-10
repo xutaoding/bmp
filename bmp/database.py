@@ -7,6 +7,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import bmp.utils.time as time
 from bmp.utils.exception import ExceptionEx
 
+from sqlalchemy.schema import MetaData
+
 
 class Database(SQLAlchemy):
     def __init__(self, app):

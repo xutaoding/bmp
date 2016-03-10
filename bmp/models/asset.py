@@ -119,7 +119,7 @@ class Cert(db.Model):  # ssl证书
         return certs
 
 
-# 主办单位  单位性质    网站备案/许可证号	网站名称	网站首页网址	审核时间  域名  ELB IP
+# 主办单位  单位性质    网站备案/许可证号	网站名称    网站首页网址  审核时间  域名  ELB IP
 class Icp(db.Model):  # 备案信息
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(128))

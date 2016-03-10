@@ -20,14 +20,18 @@ class Client(paramiko.SSHClient):
         self.__username = username
         self.__ftp = None
 
-    def exec_script(self, path, arg):
-        return self.exec_command("sudo %s \"%s\"" % (
-            path,
-            json.dumps(arg)
-                .replace("\"", "\\\"")
-        ))
+    def exec_script(self, path, arg,replace_arg=True):
+        if replace_arg:
+            return self.exec_command("sudo %s \"%s\"" % (
+                path,
+                json.dumps(arg)
+                    .replace("\"", "\\\"")
+            ))
+        else:
+            return self.exec_command("sudo %s %s"%(path,arg))
 
     def exec_command(self, command, bufsize=-1, timeout=None, get_pty=False):
+        print command
         stdin, stdout, stderr = paramiko.SSHClient.exec_command(self, command, bufsize, timeout, get_pty)
         print stderr.read()
         return stdout.read()
@@ -47,3 +51,4 @@ class Client(paramiko.SSHClient):
 
 if __name__ == "__main__":
     pass
+
