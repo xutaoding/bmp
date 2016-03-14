@@ -633,6 +633,23 @@ pre_page:每页长度
  send_mail:1 #0:false ,1:true
 }
 
+资源管理相关------------------------------------------------
+获取主机信息:get /idc/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
+
+新增主机信息:post /idc
+参数:
+{
+    ip:服务器ip
+    type_id:服务类型 (/refs 接口获取 分类:服务)
+}
+
+获取指定主机信息:get /idc/<int:iid>
+iid:主机id
+
+删除主机信息:delete /idc/<int:iid>
+iid:主机id
 
 文件上传/下载------------------------------------------------
 上传文件:post /upload

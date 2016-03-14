@@ -3,6 +3,7 @@ from bmp import db
 from bmp.models.base import BaseModel
 from bmp.database import Database
 from datetime import datetime
+from bmp.utils.exception import ExceptionEx
 from bmp.utils.ssh import Client
 import json
 from bmp import app
@@ -96,31 +97,47 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         return True
 
     @staticmethod
-    def add(submit):
-        client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+    @db.transaction
+    def add(submits):
+        results=[]
+        if not isinstance(submits,list):
+            submits=[submits]
 
-        def exec_script(path):
-            info = client.exec_script(path, submit["ip"], False)
-            return json.loads(info.replace("u'", "'").replace("'", "\""))
+        for submit in submits:
+            try:
 
-        submit["host_ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")
-        submit["system_time"] = datetime.strptime(
-            exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
-            "%Y-%m-%d %I:%M:%S %p"
-        )
-        submit.update(exec_script("/root/csfscript/host_info/get_host_info.py"))
+                result={"ip":submit["ip"],"type_id":submit["type_id"],"success":False}
+                results.append(result)
 
-        host_interfaces = submit.pop("host_interfaces")
-        host_disks = submit.pop("host_disks")
+                client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
 
-        idc_host = Database.to_cls(Idc_host, submit)
-        idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
-                            exec_script("/root/csfscript/host_info/get_ps_info.py")]
-        idc_host.host_interfaces = [Database.to_cls(Idc_host_interface, _dict) for _dict in host_interfaces]
-        idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
+                def exec_script(path):
+                    info = client.exec_script(path, submit["ip"], False)
+                    return json.loads(info.replace("u'", "'").replace("'", "\""))
 
-        db.session.add(idc_host)
-        db.session.commit()
+                submit["host_ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")
+                submit["system_time"] = datetime.strptime(
+                    exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
+                    "%Y-%m-%d %I:%M:%S %p"
+                )
+                submit.update(exec_script("/root/csfscript/host_info/get_host_info.py"))
+
+                host_interfaces = submit.pop("host_interfaces")
+                host_disks = submit.pop("host_disks")
+
+                idc_host = Database.to_cls(Idc_host, submit)
+                idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
+                                    exec_script("/root/csfscript/host_info/get_ps_info.py")]
+                idc_host.host_interfaces = [Database.to_cls(Idc_host_interface, _dict) for _dict in host_interfaces]
+                idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
+
+                db.session.add(idc_host)
+                db.session.commit()
+                result["success"]=True
+            except:
+                pass
+
+        return results
 
 
 if __name__ == "__main__":
