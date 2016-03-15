@@ -4,7 +4,7 @@ from bmp.models.idc import Idc_host
 
 
 class IdcApi(BaseApi):
-    route = ["/idc","/idc/<int:iid>", "/idc/<int:page>/<int:pre_page>"]
+    route = ["/idc", "/idc/<int:iid>", "/idc/<int:page>/<int:pre_page>"]
 
     def get(self, page=0, pre_page=None, iid=None):
         if None != iid:
@@ -15,6 +15,10 @@ class IdcApi(BaseApi):
         submit = self.request()
         return self.succ(Idc_host.add(submit))
 
-    def delete(self,iid):
-        return self.succ(Idc_host.delete(iid))
+    def put(self, iid):
+        submit = self.request()
+        submit["id"] = iid
+        return self.succ(Idc_host.edit(submit))
 
+    def delete(self, iid):
+        return self.succ(Idc_host.delete(iid))

@@ -7,6 +7,7 @@ from bmp.utils.exception import ExceptionEx
 from bmp.utils.ssh import Client
 import json
 from bmp import app
+import traceback
 
 
 class Idc_host_disk(BaseModel, db.Model):
@@ -43,16 +44,45 @@ class Idc_host_ps(BaseModel, db.Model):
 
     idc_host_id = db.Column(db.Integer, db.ForeignKey("idc_host.id"))
 
+    def __init__(self, submit):
+        submit["ports"] = ",".join(submit["ports"])
+        BaseModel.__init__(self, submit)
 
-    def __init__(self,submit):
-        submit["ports"]=",".join(submit["ports"])
-        BaseModel.__init__(self,submit)
+    @staticmethod
+    def get(iid):
+        return [
+            Idc_host_ps._to_dict(ps) for ps in Idc_host_ps.query.filter(Idc_host_ps.idc_host_id==iid).all()]
+
+    @staticmethod
+    def _to_dict(self):
+        _dict = self.to_dict()
+        return _dict
+
+    @staticmethod
+    def add(iid):
+        idc_host = Idc_host.query.filter(Idc_host.id == iid).one()
+
+        client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+
+        def exec_script(path):
+            info = client.exec_script(path, idc_host.ip, False)
+            return json.loads(info.replace("u'", "'").replace("'", "\""))
+
+        idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
+                            exec_script("/root/csfscript/host_info/get_ps_info.py")]
+
+
+        Idc_host_ps.query.filter(Idc_host_ps.idc_host_id==None).delete()
+
+        db.session.commit()
+        return True
 
 
 class Idc_host(BaseModel, db.Model):  # 主机信息
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     ip = db.Column(db.String(128))
     type_id = db.Column(db.Integer, db.ForeignKey("ref.id"))
+    desc = db.Column(db.String(256))
 
     host_kernel = db.Column(db.Text)
     cpu_processor = db.Column(db.Text)
@@ -75,7 +105,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
     @staticmethod
     def get(iid):
-        return Idc_host._to_dict(Idc_host.query.filter(Idc_host.id==iid).one())
+        return Idc_host._to_dict(Idc_host.query.filter(Idc_host.id == iid).one())
 
     @staticmethod
     def select(page=0, pre_page=None):
@@ -84,30 +114,42 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
     @staticmethod
     def _to_dict(self):
-        _dict=self.to_dict()
-        _dict["host_interfaces"]=[i.to_dict() for i in self.host_interfaces]
-        _dict["host_disks"]=[d.to_dict() for d in self.host_disks]
-        _dict["ps_info"]=[ps.to_dict() for ps in self.ps_info]
+        _dict = self.to_dict()
+        _dict["host_interfaces"] = [i.to_dict() for i in self.host_interfaces]
+        _dict["host_disks"] = [d.to_dict() for d in self.host_disks]
+        _dict["ps_info"] = [ps.to_dict() for ps in self.ps_info]
         return _dict
 
     @staticmethod
     def delete(iid):
-        db.session.delete(Idc_host.query.filter(Idc_host.id==iid).one())
+        db.session.delete(Idc_host.query.filter(Idc_host.id == iid).one())
+        db.session.commit()
+        return True
+
+    @staticmethod
+    def edit(submit):
+        idc_host = Database.to_cls(Idc_host, submit)
         db.session.commit()
         return True
 
     @staticmethod
     @db.transaction
     def add(submits):
-        results=[]
-        if not isinstance(submits,list):
-            submits=[submits]
+        results = []
+        if not isinstance(submits, list):
+            submits = [submits]
 
         for submit in submits:
             try:
-
-                result={"ip":submit["ip"],"type_id":submit["type_id"],"success":False}
+                result = {"ip": submit["ip"], "type_id": submit["type_id"], "success": False, "error": ""}
                 results.append(result)
+
+                if Idc_host.query \
+                        .filter(Idc_host.ip == submit["ip"]) \
+                        .filter(Idc_host.type_id == submit["type_id"]) \
+                        .count():
+                    result["error"] = "%s 已经存在" % submit["ip"]
+                    continue
 
                 client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
 
@@ -128,19 +170,20 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
                 idc_host = Database.to_cls(Idc_host, submit)
                 idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
                                     exec_script("/root/csfscript/host_info/get_ps_info.py")]
+
+                Idc_host_ps.query.filter(Idc_host_ps.idc_host_id==None).delete()
+
                 idc_host.host_interfaces = [Database.to_cls(Idc_host_interface, _dict) for _dict in host_interfaces]
                 idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
 
                 db.session.add(idc_host)
-                db.session.commit()
-                result["success"]=True
+                db.session.flush()
+                result["success"] = True
             except:
-                pass
+                traceback.print_exc()
 
         return results
 
 
 if __name__ == "__main__":
-    from bmp.models.ref import Ref
-    #print Idc_host.add({"ip":"192.168.250.111","type_id":12})
     Idc_host.delete(1)

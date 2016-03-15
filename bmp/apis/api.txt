@@ -651,6 +651,15 @@ iid:主机id
 删除主机信息:delete /idc/<int:iid>
 iid:主机id
 
+
+获取进程信息:get /idc/ps/<int:iid>
+iid:主机id
+
+新增、更新进程信息:post /idc/ps/<int:iid>
+iid:主机id
+
+
+
 文件上传/下载------------------------------------------------
 上传文件:post /upload
 下载文件:get /upload?path=文件路径
