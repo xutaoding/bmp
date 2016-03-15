@@ -51,7 +51,7 @@ class Idc_host_ps(BaseModel, db.Model):
     @staticmethod
     def get(iid):
         return [
-            Idc_host_ps._to_dict(ps) for ps in Idc_host_ps.query.filter(Idc_host_ps.idc_host_id==iid).all()]
+            Idc_host_ps._to_dict(ps) for ps in Idc_host_ps.query.filter(Idc_host_ps.idc_host_id == iid).all()]
 
     @staticmethod
     def _to_dict(self):
@@ -71,8 +71,7 @@ class Idc_host_ps(BaseModel, db.Model):
         idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
                             exec_script("/root/csfscript/host_info/get_ps_info.py")]
 
-
-        Idc_host_ps.query.filter(Idc_host_ps.idc_host_id==None).delete()
+        Idc_host_ps.query.filter(Idc_host_ps.idc_host_id == None).delete()
 
         db.session.commit()
         return True
@@ -108,9 +107,11 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         return Idc_host._to_dict(Idc_host.query.filter(Idc_host.id == iid).one())
 
     @staticmethod
-    def select(page=0, pre_page=None):
-        return Idc_host.query \
-            .paginate(page, pre_page, False).to_page(Idc_host._to_dict)
+    def select(page=0, pre_page=None,filter=None):
+        query=Idc_host.query
+        for k,v in filter.items():
+            query=Idc_host.query.filter(getattr(Idc_host,k).like("%"+v+"%"))
+        return query.paginate(page, pre_page, False).to_page(Idc_host._to_dict)
 
     @staticmethod
     def _to_dict(self):
@@ -171,7 +172,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
                 idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
                                     exec_script("/root/csfscript/host_info/get_ps_info.py")]
 
-                Idc_host_ps.query.filter(Idc_host_ps.idc_host_id==None).delete()
+                Idc_host_ps.query.filter(Idc_host_ps.idc_host_id == None).delete()
 
                 idc_host.host_interfaces = [Database.to_cls(Idc_host_interface, _dict) for _dict in host_interfaces]
                 idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]

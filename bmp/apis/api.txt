@@ -659,11 +659,38 @@ iid:主机id
 iid:主机id
 
 
+查询主机信息:get /idc/search/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
 
 文件上传/下载------------------------------------------------
 上传文件:post /upload
 下载文件:get /upload?path=文件路径
-
+参数:
+{
+    id,
+    ip ,
+    type_id,
+    desc ,
+    host_kernel ,
+    cpu_processor ,
+    default_gateway ,
+    time_zone ,
+    processor_cores ,
+    product_name ,
+    host_lang ,
+    memory_total ,
+    dns ,
+    serial_number ,
+    host_interfaces,
+    host_disks,
+    host_os ,
+    processor_vcpus ,
+    host_name ,
+    ssh_info ,
+    system_time ,
+    ps_info
+}
 
 统计------------------------------------------------
 发布应用统计:get /stats/release/app/<string:begin_time>/<string:end_time>

@@ -9,9 +9,8 @@ class Idc_ps_infoApi(BaseApi):
     def get(self,iid=None):
         return self.succ(Idc_host_ps.get(iid))
 
-    def post(self):
-        submit = self.request()
-        return self.succ(Idc_host_ps.add(submit))
+    def post(self,iid):
+        return self.succ(Idc_host_ps.add(iid))
 
 
 if __name__=="__main__":
