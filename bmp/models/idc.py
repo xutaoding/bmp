@@ -8,6 +8,7 @@ from bmp.utils.ssh import Client
 import json
 from bmp import app
 import traceback
+from sqlalchemy import or_
 
 
 class Idc_host_disk(BaseModel, db.Model):
@@ -107,10 +108,17 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         return Idc_host._to_dict(Idc_host.query.filter(Idc_host.id == iid).one())
 
     @staticmethod
-    def select(page=0, pre_page=None,filter=None):
+    def select(page=0, pre_page=None,filter={}):
         query=Idc_host.query
+
         for k,v in filter.items():
-            query=Idc_host.query.filter(getattr(Idc_host,k).like("%"+v+"%"))
+            if isinstance(v,list):
+                query=Idc_host.query.filter(or_(*[
+                    getattr(Idc_host,k).like("%"+_v+"%") for _v in v
+                ]))
+            else:
+                query=query.filter(getattr(Idc_host,k).like("%"+v+"%"))
+
         return query.paginate(page, pre_page, False).to_page(Idc_host._to_dict)
 
     @staticmethod
