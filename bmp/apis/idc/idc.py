@@ -22,3 +22,8 @@ class IdcApi(BaseApi):
 
     def delete(self, iid):
         return self.succ(Idc_host.delete(iid))
+
+
+
+if __name__=="__main__":
+    print Idc_host.select(1,10)

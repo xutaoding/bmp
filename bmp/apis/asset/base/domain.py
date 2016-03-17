@@ -10,7 +10,7 @@ class DomainApi(BaseApi):
 
     def get(self, id=0):
         if id:self.succ(Domain.get(id))
-        return self.succ(Domain.select())
+        return self.succ(Domain.select(_orders=Domain.end_time))
 
     def post(self):
         submit = self.request()

@@ -7,7 +7,7 @@ class Idc_ps_infoApi(BaseApi):
     route = ["/idc/ps/<int:iid>"]
 
     def get(self,iid=None):
-        return self.succ(Idc_host_ps.get(iid))
+        return self.succ(Idc_host_ps.select(_filter={"idc_host_id":iid}))
 
     def post(self,iid):
         return self.succ(Idc_host_ps.add(iid))

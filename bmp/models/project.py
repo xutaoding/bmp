@@ -9,7 +9,6 @@ from bmp.const import USER_SESSION, PROJECT
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 
-from sqlalchemy import or_
 
 
 class ProjectHistory(db.Model):
@@ -98,7 +97,6 @@ class ProjectSchedule(db.Model):
     @staticmethod
     def edit(_dict):
         ps = Database.to_cls(ProjectSchedule, _dict)
-
         ProjectHistory.add(ps.project_id, PROJECT.EDIT_SCHEDULE(ps.type), _dict)
         db.session.commit()
         return True

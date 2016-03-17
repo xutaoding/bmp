@@ -13,8 +13,10 @@ class StockoptApi(BaseApi):
     ]
 
     def get(self, type, page=0, pre_page=None, id=0):
-        if id: return self.succ(StockOpt.get(type, id))
-        return self.succ(StockOpt.select(type, page, pre_page))
+        if id: return self.succ(StockOpt.get(id,_filter={"type":type}))
+        return self.succ(StockOpt.select(page, pre_page,
+                                         _filters=[StockOpt.type==type],
+                                         _orders=[StockOpt.time.desc(),StockOpt.update_time.desc()]))
 
     def post(self):
         submit = self.request()

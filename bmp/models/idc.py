@@ -49,18 +49,8 @@ class Idc_host_ps(BaseModel, db.Model):
         submit["ports"] = ",".join(submit["ports"])
         BaseModel.__init__(self, submit)
 
-    @staticmethod
-    def get(iid):
-        return [
-            Idc_host_ps._to_dict(ps) for ps in Idc_host_ps.query.filter(Idc_host_ps.idc_host_id == iid).all()]
-
-    @staticmethod
-    def _to_dict(self):
-        _dict = self.to_dict()
-        return _dict
-
-    @staticmethod
-    def add(iid):
+    @classmethod
+    def add(cls,iid):
         idc_host = Idc_host.query.filter(Idc_host.id == iid).one()
 
         client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
@@ -83,6 +73,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
     ip = db.Column(db.String(128))
     type_id = db.Column(db.Integer, db.ForeignKey("ref.id"))
     desc = db.Column(db.String(256))
+    cate = db.Column(db.String(128))
 
     host_kernel = db.Column(db.Text)
     cpu_processor = db.Column(db.Text)
@@ -103,23 +94,6 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
     system_time = db.Column(db.DateTime)
     ps_info = db.relationship("Idc_host_ps")
 
-    @staticmethod
-    def get(iid):
-        return Idc_host._to_dict(Idc_host.query.filter(Idc_host.id == iid).one())
-
-    @staticmethod
-    def select(page=0, pre_page=None,filter={}):
-        query=Idc_host.query
-
-        for k,v in filter.items():
-            if isinstance(v,list):
-                query=Idc_host.query.filter(or_(*[
-                    getattr(Idc_host,k).like("%"+_v+"%") for _v in v
-                ]))
-            else:
-                query=query.filter(getattr(Idc_host,k).like("%"+v+"%"))
-
-        return query.paginate(page, pre_page, False).to_page(Idc_host._to_dict)
 
     @staticmethod
     def _to_dict(self):
@@ -129,21 +103,9 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         _dict["ps_info"] = [ps.to_dict() for ps in self.ps_info]
         return _dict
 
-    @staticmethod
-    def delete(iid):
-        db.session.delete(Idc_host.query.filter(Idc_host.id == iid).one())
-        db.session.commit()
-        return True
-
-    @staticmethod
-    def edit(submit):
-        idc_host = Database.to_cls(Idc_host, submit)
-        db.session.commit()
-        return True
-
-    @staticmethod
+    @classmethod
     @db.transaction
-    def add(submits):
+    def add(cls,submits):
         results = []
         if not isinstance(submits, list):
             submits = [submits]
@@ -195,4 +157,4 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
 
 if __name__ == "__main__":
-    Idc_host.delete(1)
+    print Idc_host.get(2)

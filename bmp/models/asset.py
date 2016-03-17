@@ -10,117 +10,24 @@ from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
 import bmp.utils.time as time
 
+from base import BaseModel
 
-class Domain(db.Model):
+
+class Domain(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     sp = db.Column(db.String(128))
     end_time = db.Column(db.DateTime)
 
-    def __init__(self, _dict):
-        for k, v in _dict.items():
-            if "time" in k:
-                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
-            else:
-                setattr(self, k, v)
-
-    @staticmethod
-    def add(_dict):
-        domain = Domain(_dict)
-        db.session.add(domain)
-        db.session.commit()
-        return domain
-
-    @staticmethod
-    @db.transaction
-    def delete(dids):
-        if not isinstance(dids, list):
-            dids = [dids]
-
-        for did in dids:
-            domain = Domain.query.filter(Domain.id == did).one()
-            db.session.delete(domain)
-        db.session.flush()
-        return True
-
-    @staticmethod
-    def _to_dict(domain):
-        return domain.to_dict()
-
-    @staticmethod
-    def select():
-        return [Domain._to_dict(d) for d in Domain.query.order_by(Domain.end_time).all()]
-
-    @staticmethod
-    def get(did):
-        return Domain._to_dict(Domain.query.filter(Domain.id == did).one())
-
-    @staticmethod
-    @db.transaction
-    def edit(_dicts):
-        if isinstance(_dicts, dict):
-            _dicts = [_dicts]
-        domains = [Database.to_cls(Domain, _dict) for _dict in _dicts]
-        db.session.flush()
-        return domains
-
-
-class Cert(db.Model):  # ssl证书
+class Cert(BaseModel,db.Model):  # ssl证书
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     sp = db.Column(db.String(128))
     end_time = db.Column(db.DateTime)
-
-    def __init__(self, _dict):
-        for k, v in _dict.items():
-            if "time" in k:
-                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
-            else:
-                setattr(self, k, v)
-
-    @staticmethod
-    def add(_dict):
-        cert = Cert(_dict)
-        db.session.add(cert)
-        db.session.commit()
-        return cert
-
-    @staticmethod
-    @db.transaction
-    def delete(dids):
-        if not isinstance(dids, list):
-            dids = [dids]
-
-        for did in dids:
-            cert = Cert.query.filter(Cert.id == did).one()
-            db.session.delete(cert)
-        db.session.flush()
-        return True
-
-    @staticmethod
-    def _to_dict(cert):
-        return cert.to_dict()
-
-    @staticmethod
-    def select():
-        return [Cert._to_dict(d) for d in Cert.query.order_by(Cert.end_time).all()]
-
-    @staticmethod
-    def get(did):
-        return Cert._to_dict(Cert.query.filter(Cert.id == did).one())
-
-    @staticmethod
-    @db.transaction
-    def edit(_dicts):
-        if isinstance(_dicts, dict):
-            _dicts = [_dicts]
-        certs = [Database.to_cls(Cert, _dict) for _dict in _dicts]
-        db.session.flush()
-        return certs
 
 
 # 主办单位  单位性质    网站备案/许可证号	网站名称    网站首页网址  审核时间  域名  ELB IP
-class Icp(db.Model):  # 备案信息
+class Icp(BaseModel,db.Model):  # 备案信息
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(128))
 
@@ -134,50 +41,14 @@ class Icp(db.Model):  # 备案信息
     elb = db.Column(db.Text)
     ip = db.Column(db.Text)
 
-    def __init__(self, _dict):
-        for k, v in _dict.items():
-            if "time" in k:
-                setattr(self, k, datetime.strptime(v, "%Y-%m-%d"))
-            else:
-                setattr(self, k, v)
-
-    @staticmethod
-    def add(_dict):
-        icp = Icp(_dict)
-        db.session.add(icp)
-        db.session.commit()
-        return icp
-
-    @staticmethod
-    def delete(did):
-        icp = Icp.query.filter(Icp.id == did).one()
-        db.session.delete(icp)
-        db.session.commit()
-        return True
-
     @staticmethod
     def _to_dict(icp):
         _dict = icp.to_dict()
         _dict["domain"] = icp.domain
         return _dict
 
-    @staticmethod
-    def select():
-        return [Icp._to_dict(i) for i in Icp.query.all()]
 
-    @staticmethod
-    @db.transaction
-    def edit(_dict):
-        Database.to_cls(Icp, _dict)
-        db.session.flush()
-        return True
-
-    @staticmethod
-    def get(iid):
-        return Icp._to_dict(Icp.query.filter(Icp.id == iid).one())
-
-
-class Supplier(db.Model):
+class Supplier(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)
     connector = db.Column(db.String(128))
@@ -188,113 +59,13 @@ class Supplier(db.Model):
     last_time = db.Column(db.DateTime)
     path = db.Column(db.String(256))
 
-    def __init__(self, _dict):
-        for key, value in _dict.items():
-            setattr(self, key, value)
-
-    @staticmethod
-    def add(_dict):
-        _dict["connector"] = session[USER_SESSION]["uid"]
-        if not _dict.__contains__("path"): _dict["path"] = ""
-        new_supplier = Supplier(_dict)
-        new_supplier.create_time = datetime.now()
-        new_supplier.last_time = datetime.now()
-        db.session.add(new_supplier)
-        db.session.commit()
-        return True
-
-    @staticmethod
-    def delete(id):
-        supplier = Supplier.query.filter(Supplier.id == id).one()
-        db.session.delete(supplier)
-        db.session.commit()
-        return True
-
-    @staticmethod
-    @db.transaction
-    def edit(id, _dict):
-        supplier = Supplier.query.filter(Supplier.id == id).one()
-        supplier.name = _dict["name"]
-        supplier.connector = _dict["connector"]
-        supplier.tel = _dict["tel"]
-        supplier.addr = _dict["addr"]
-        supplier.interfaceor = _dict["interfaceor"]
-        supplier.path = _dict["path"]
-        # supplier.create_time = datetime.now()
-
-        supplier.last_time = datetime.now()
-        db.session.flush()
-        return True
-
-    @staticmethod
-    def history():
-        query = Supplier.query.order_by(Supplier.id.desc())
-        return [supplier.to_dict() for supplier in query.all()]
-
-    @staticmethod
-    def get(sid):
-        return Supplier.query.filter(Supplier.id == sid).one().to_dict()
-
-
-class Contract(db.Model):
+class Contract(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc = db.Column(db.String(128))
     begin_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"))
     path = db.Column(db.String(256))  # 合同文件路径
-
-    def __init__(self, _dict):
-        if _dict.__contains__("id"):
-            return
-
-        if _dict["begin_time"]:
-            self.begin_time = datetime.strptime(_dict["begin_time"], "%Y-%m-%d")
-        else:
-            self.begin_time = datetime.now()
-        if _dict["end_time"]:
-            self.end_time = datetime.strptime(_dict["end_time"], "%Y-%m-%d")
-        else:
-            self.end_time = datetime.now()
-
-        if _dict.__contains__("path"):
-            self.path = _dict["path"]
-        else:
-            self.path = ""
-
-        if _dict.__contains__("desc"):
-            self.desc = _dict["desc"]
-
-    @staticmethod
-    def add(_dict):
-        contract = Contract(_dict)
-        db.session.add(contract)
-        db.session.commit()
-        return contract
-
-    @staticmethod
-    def delete(id):
-        contract = Contract.query.filter(Contract.id == id).one()
-        db.session.delete(contract)
-        db.session.commit()
-        return True
-
-    @staticmethod
-    @db.transaction
-    def edit(id, _dict):
-        contract = Contract.query.filter(Contract.id == id).one()
-        contract.begin_time = datetime.strptime(_dict["begin_time"], "%Y-%m-%d")
-        contract.end_time = datetime.strptime(_dict["end_time"], "%Y-%m-%d")
-        contract.path = _dict["path"]
-
-        if _dict.__contains__("purchase_id") and _dict["purchase_id"]:
-            contract.purchase_id = _dict["purchase_id"]
-
-        if _dict.__contains__("desc"):
-            contract.desc = _dict["desc"]
-
-        db.session.flush()
-        return True
 
     @staticmethod
     def _to_dict(contract):
@@ -308,60 +79,29 @@ class Contract(db.Model):
             _dict["purchase"] = purchase
         return _dict
 
-    @staticmethod
-    def select():
-        query = Contract.query.order_by(Contract.id.desc())
-        return [Contract._to_dict(contract) for contract in query.all()]
 
-    @staticmethod
-    def get(id):
-        return Contract._to_dict(Contract.query.filter(Contract.id == id).one())
-
-
-class Category(db.Model):
+class Category(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     parent_id = db.Column(db.Integer)
     is_del = db.Column(db.Boolean, default=False)
 
-    def __init__(self, _dict):
-        self.name = _dict["name"]
-        self.parent_id = _dict["parent_id"]
-
-    @staticmethod
+    @classmethod
     @db.transaction
-    def add(_dict):
+    def add(cls,_dict):
         query = Category.query \
             .filter(Category.parent_id == _dict["parent_id"]) \
             .filter(Category.name == _dict["name"])
 
-        def is_exist(is_del):
-            if query.filter(Category.is_del == is_del).count():
-                return True
-            return False
-
-        if is_exist(is_del=False):
+        if query.filter(Category.is_del == False).count():
             raise ExceptionEx("分类%s已经存在" % _dict["name"])
 
-        if is_exist(is_del=True):
+        if query.filter(Category.is_del == True).count():
             category = query.one()
             category.is_del = False
         else:
             db.session.add(Category(_dict))
 
-        db.session.flush()
-        return True
-
-    @staticmethod
-    @db.transaction
-    def edit(id, _dict):
-        if Category.query \
-                .filter(Category.parent_id == _dict["parent_id"]) \
-                .filter(Category.name == _dict["name"]).count():
-            return False
-        category = Category.query.filter(Category.id == id).one()
-        category.name = _dict["name"]
-        category.parent_id = _dict["parent_id"]
         db.session.flush()
         return True
 
@@ -375,9 +115,9 @@ class Category(db.Model):
         category = Category.query.filter(Category.id == id).one()
         category.is_del = True
 
-    @staticmethod
+    @classmethod
     @db.transaction
-    def delete(id):
+    def delete(cls,id):
         Category.__delete(id)
 
     @staticmethod
@@ -391,7 +131,7 @@ class Category(db.Model):
         return sub
 
     @staticmethod
-    def select(parent_id):
+    def select_sub(parent_id):
         return Category.__select_sub(parent_id)
 
     @staticmethod
@@ -425,7 +165,7 @@ stock_spec_category = db.Table("stock_spec_category",
                                db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 
-class StockOpt(db.Model):
+class StockOpt(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(64))
     uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
@@ -454,27 +194,8 @@ class StockOpt(db.Model):
         elif not Stock.query.filter(Stock.id == _dict["stock_id"]).count():
             raise ExceptionEx("库存不存在")
 
-        Stock.init(self, _dict)
-
-    @staticmethod
-    def add(_dict):
-        db.session.add(StockOpt(_dict))
-        db.session.commit()
-        return True
-
-    @staticmethod
-    @db.transaction
-    def edit(_dict):
-        opt = Database.to_cls(StockOpt, _dict)
-        db.session.commit()
-        return True
-
-    @staticmethod
-    def delete(id):
-        stockopt = StockOpt.query.filter(StockOpt.id == id).one()
-        db.session.delete(stockopt)
-        db.session.commit()
-        return True
+        Stock.__init__(self, _dict)
+        BaseModel.__init__(self)
 
     @staticmethod
     def _to_dict(self):
@@ -484,26 +205,13 @@ class StockOpt(db.Model):
         return opt
 
     @staticmethod
-    def select(type, page, pre_page):
-        page = StockOpt.query \
-            .filter(StockOpt.type == type) \
-            .order_by(StockOpt.time.desc()) \
-            .order_by(StockOpt.update_time.desc()) \
-            .paginate(page, pre_page)
-        return page.to_page(StockOpt._to_dict)
-
-    @staticmethod
     def approvals(page, pre_page):  # todo 添加报废的审批组
         page = StockOpt.query \
             .filter(StockOpt.type == SCRAP.TYPE) \
             .filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.FAIL])).paginate(page, pre_page)
         return page.to_page(StockOpt._to_dict)
 
-    @staticmethod
-    def get(type, id):
-        return StockOpt._to_dict(StockOpt.query \
-                                 .filter(StockOpt.type == type) \
-                                 .filter(StockOpt.id == id).one())
+
 
     @staticmethod
     def search(submit, page=None, pre_page=None):
@@ -668,8 +376,7 @@ class Stock(db.Model):
             _export.append(_dict)
         return _export
 
-    @staticmethod
-    def init(self, _dict):
+    def __init__(self, _dict):
         for k, v in _dict.items():
             if k == "category_id":
                 query = Category.query.filter(Category.id == v)
@@ -688,12 +395,9 @@ class Stock(db.Model):
             else:
                 setattr(self, k, v)
 
-    def __init__(self, _dict):
-        Stock.init(self, _dict)
-
-    @staticmethod
+    @classmethod
     @db.transaction
-    def add(_dict):
+    def add(cls,_dict):
         '''
         固定资产编号 格式固定一下
         部门+年+月+0001
@@ -737,15 +441,7 @@ class Stock(db.Model):
 
         stock = Database.to_cls(Stock, _dict)
         db.session.flush()
-
-    @staticmethod
-    @db.transaction
-    def delete(id):
-        stock = Stock.query.filter(Stock.id == id).one()
-        for opt in stock.opts:
-            db.session.delete(opt)
-        db.session.delete(stock)
-        db.session.flush()
+        return stock
 
     @staticmethod
     def _to_dict(self, show_opt=False):

@@ -8,9 +8,6 @@ from flask import request
 class Idc_searchApi(BaseApi):
     route = ["/idc/search/<int:page>/<int:pre_page>"]
 
-    def auth(self):
-        return True
-
     def get(self, page, pre_page):
         submit = {}
 

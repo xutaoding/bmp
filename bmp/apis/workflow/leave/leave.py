@@ -5,6 +5,8 @@ from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
 from bmp.tasks.mail.leave import Mail
 
+from flask import session
+from bmp.const import USER_SESSION
 
 class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
@@ -17,6 +19,9 @@ class LeaveApi(BaseApi):
 
     def post(self):
         submit = self.request()
+        submit["uid"] = session[USER_SESSION]["uid"]
+        submit["apply_time"] = datetime.now()
+
         leave = Leave.add(submit)
         Mail().to(leave)
         return self.succ()

@@ -7,12 +7,11 @@ class CategoryApi(BaseApi):
     route = ["/asset/base/category", "/asset/base/category/<int:id>"]
 
     def get(self, id=0):
-        return self.succ(Category.select(id))
+        return self.succ(Category.select_sub(id))
 
     def post(self):
         submit = self.request()
-        if not Category.add(submit):
-            return self.fail()
+        Category.add(submit)
         return self.succ()
 
     def delete(self, id):
@@ -21,8 +20,9 @@ class CategoryApi(BaseApi):
 
     def put(self, id):
         submit = self.request()
-        if not Category.edit(id, submit):
-            return self.fail()
+        submit["id"]=id
+
+        Category.edit(submit)
         return self.succ()
 
 
