@@ -5,8 +5,9 @@ from uuid import uuid1
 import traceback
 from smtplib import SMTPException
 from datetime import datetime, timedelta
-
+import pytz
 from bmp import app, log,sched
+import email
 
 
 def __send(sub, html, receiver, copyto, uuid, priority, minutes):
@@ -16,6 +17,9 @@ def __send(sub, html, receiver, copyto, uuid, priority, minutes):
     msg["Subject"] = sub
     msg["From"] = app.config["MAIL_DEFAULT_SENDER"]
     msg["To"] = ";".join(receiver)
+    msg["Date"] = email.utils.formatdate(localtime=True)
+
+
     if copyto:
         msg["Cc"] = ";".join(copyto)
     try:
@@ -44,8 +48,12 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
         run_date = datetime.now() + timedelta(minutes=minutes)
         if date: run_date = date
 
-        sched.add_job(__send, "date", run_date=run_date, id=uuid,
-                      args=(sub, html, receiver, copyto, uuid, priority, minutes), replace_existing=True)
+        sched.add_job(__send,
+                      "date",
+                      run_date=run_date,
+                      id=uuid,
+                      args=(sub, html, receiver, copyto, uuid, priority, minutes),
+                      replace_existing=True)
 
         if not sched.running:
             sched.start()
@@ -54,7 +62,4 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
 
 
 if __name__ == "__main__":
-    send("a", "a", ["chenglong.yan@chinascopefinancial.com"])
-    send("b", "b", ["chenglong.yan@chinascopefinancial.com"])
-
-    sched.start()
+    pass
