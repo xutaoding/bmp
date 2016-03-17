@@ -28,9 +28,10 @@ class SupplierApi(BaseApi):
 
     def put(self, id):
         submit = self.request()
-        Supplier.edit(id, submit)
+        submit["id"] = id
+        Supplier.edit(submit)
         return self.succ()
 
 
 if __name__ == "__main__":
-    pass
+    print Supplier.select(_orders=Supplier.id.desc())

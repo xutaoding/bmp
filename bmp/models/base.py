@@ -26,13 +26,14 @@ class BaseModel(object):
             for cb in callbacks.keys():
                 if k in cb:
                     set_attr(k,callbacks[cb]())
+
             set_attr( k, v)
 
 
     @classmethod
-    def get(cls,_id,_filter={}):
-        _filter["id"]=_id
-        result=cls.select(_filter=_filter)
+    def get(cls,_id,_filters=[]):
+        _filters.append(cls.id==_id)
+        result=cls.select(_filters=_filters)
         return result[0] if result else result
 
 
@@ -40,10 +41,10 @@ class BaseModel(object):
     def select(cls,page=None,pre_page=None,_filters=[],_orders=[]):
         query=cls.query
 
-        if _orders and not isinstance(_orders,list):
+        if not isinstance(_orders,list):
             _orders=[_orders]
 
-        if _filters and not isinstance(_filters,list):
+        if not isinstance(_filters,list):
             _filters=[_filters]
 
         for _filter in _filters:
@@ -55,7 +56,7 @@ class BaseModel(object):
         if page:
             return query.paginate(page, pre_page, False).to_page(cls._to_dict)
         else:
-            return query.all()
+            return [cls._to_dict(result) for result in query.all()]
 
     @classmethod
     @db.transaction

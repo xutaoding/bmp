@@ -13,15 +13,18 @@ class IdcApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        return self.succ(Idc_host.add(submit))
+        Idc_host.add(submit)
+        return self.succ()
 
     def put(self, iid):
         submit = self.request()
         submit["id"] = iid
-        return self.succ(Idc_host.edit(submit))
+        Idc_host.edit(submit)
+        return self.succ()
 
     def delete(self, iid):
-        return self.succ(Idc_host.delete(iid))
+        Idc_host.delete(iid)
+        return self.succ()
 
 
 

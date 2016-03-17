@@ -25,7 +25,9 @@ class ContractApi(BaseApi):
 
     def put(self, id):
         submit = self.request()
-        Contract.edit(id, submit)
+        submit["id"]=id
+
+        Contract.edit(submit)
         return self.succ()
 
 

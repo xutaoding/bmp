@@ -13,7 +13,7 @@ class StockoptApi(BaseApi):
     ]
 
     def get(self, type, page=0, pre_page=None, id=0):
-        if id: return self.succ(StockOpt.get(id,_filter={"type":type}))
+        if id: return self.succ(StockOpt.get(id,_filters={"type":type}))
         return self.succ(StockOpt.select(page, pre_page,
                                          _filters=[StockOpt.type==type],
                                          _orders=[StockOpt.time.desc(),StockOpt.update_time.desc()]))
@@ -39,16 +39,4 @@ class StockoptApi(BaseApi):
 
 
 if __name__ == "__main__":
-    for stock in StockOpt.search(
-            {
-                "no": "",
-                "stock_in_time_begin": None,
-                "stock_in_time_end": None,
-                "uid": "",
-                "businessCategory": "",
-                "category_id": "",
-                "price_start": "",
-                "price_end": "",
-                "status": "领用"
-            }):
-        print(stock)
+    pass

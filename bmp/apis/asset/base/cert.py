@@ -17,7 +17,7 @@ class CertApi(BaseApi):
         Mail().to(cert)
         return self.succ()
 
-    def delete(self, id):
+    def delete(self):
         submit = self.request()
         Cert.delete(submit["ids"].split(","))
         return self.succ()

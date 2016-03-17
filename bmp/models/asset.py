@@ -37,15 +37,9 @@ class Icp(BaseModel,db.Model):  # 备案信息
     site = db.Column(db.String(128))
     main_page = db.Column(db.String(128))
     chk_time = db.Column(db.DateTime)
-    domain = db.Column(db.Text)
+    domain = db.Column(db.Text,default="")
     elb = db.Column(db.Text)
     ip = db.Column(db.Text)
-
-    @staticmethod
-    def _to_dict(icp):
-        _dict = icp.to_dict()
-        _dict["domain"] = icp.domain
-        return _dict
 
 
 class Supplier(BaseModel,db.Model):
@@ -194,8 +188,8 @@ class StockOpt(BaseModel,db.Model):
         elif not Stock.query.filter(Stock.id == _dict["stock_id"]).count():
             raise ExceptionEx("库存不存在")
 
-        Stock.__init__(self, _dict)
-        BaseModel.__init__(self)
+        BaseModel.__init__(self,_dict)
+
 
     @staticmethod
     def _to_dict(self):
@@ -280,7 +274,7 @@ class StockOpt(BaseModel,db.Model):
         return _export
 
 
-class Stock(db.Model):
+class Stock(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     no = db.Column(db.String(128), unique=True)
     category = db.relationship("Category",
@@ -377,6 +371,8 @@ class Stock(db.Model):
         return _export
 
     def __init__(self, _dict):
+        BaseModel.__init__(self)
+
         for k, v in _dict.items():
             if k == "category_id":
                 query = Category.query.filter(Category.id == v)
@@ -394,6 +390,8 @@ class Stock(db.Model):
                 pass
             else:
                 setattr(self, k, v)
+
+
 
     @classmethod
     @db.transaction
@@ -433,9 +431,9 @@ class Stock(db.Model):
         db.session.flush()
         return stock
 
-    @staticmethod
+    @classmethod
     @db.transaction
-    def edit(_dict):
+    def edit(cls,_dict):
         if Stock.query.filter(Stock.no == _dict["no"]).count():
             raise ExceptionEx("库存编号已存在")
 
@@ -463,19 +461,21 @@ class Stock(db.Model):
 
         return _dict
 
-    @staticmethod
-    def get(id):
+    @classmethod
+    def get(cls,_id,_filters=[]):
         return Stock._to_dict(Stock.query.filter(Stock.id == id).one(), True)
 
-    @staticmethod
-    def select(page, pre_page, nan_opt):
+    @classmethod
+    def select(cls,page=None,pre_page=None,_filters=[],_orders=[]):
         query = Stock.query.order_by(Stock.stock_in_time.desc())
-        if nan_opt:
+        if _filters:
             opts = StockOpt.query.filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.TYPE])).all()
             in_opts = [opt.stock_id for opt in opts]
             query = query.filter(~Stock.id.in_(in_opts))
         page = query.paginate(page, pre_page)
         return page.to_page(Stock._to_dict)
+
+
 
 
 if __name__ == "__main__":
