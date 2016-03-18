@@ -9,7 +9,7 @@ import json
 from bmp import app
 import traceback
 from sqlalchemy import or_
-
+from bmp import  log
 
 class Idc_host_disk(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -148,12 +148,13 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
                 db.session.add(idc_host)
                 result["success"] = True
-            except:
-                traceback.print_exc()
+            except  Exception, e:
+                log.exception(e)
 
         db.session.commit()
         return results
 
 
 if __name__ == "__main__":
-    print Idc_host.add({})
+    from bmp.models.ref import Ref
+    print Idc_host.add({"ip":"192.168.250.111","type_id":2})

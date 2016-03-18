@@ -14,11 +14,14 @@ class BaseModel(object):
 
         def set_attr(k,v):
             if "time" in k and not isinstance(v,datetime):
-                dt=pd.to_datetime(v)
-                if dt is not pd.NaT:
-                    setattr(self,k,dt.to_datetime())
-                else:
-                    setattr(self,k,datetime.now())
+                try:
+                    dt=pd.to_datetime(v)
+                    if dt is not pd.NaT:
+                        setattr(self,k,dt.to_datetime())
+                    else:
+                        setattr(self,k,datetime.now())
+                except:
+                    setattr(self,k,v)
             else:
                 setattr(self,k,v)
 
