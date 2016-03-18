@@ -104,7 +104,6 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         return _dict
 
     @classmethod
-    @db.transaction
     def add(cls,submits):
         results = []
         if not isinstance(submits, list):
@@ -148,13 +147,13 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
                 idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
 
                 db.session.add(idc_host)
-                db.session.flush()
                 result["success"] = True
             except:
                 traceback.print_exc()
 
+        db.session.commit()
         return results
 
 
 if __name__ == "__main__":
-    print Idc_host.get(2)
+    print Idc_host.add({})

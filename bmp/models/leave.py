@@ -43,14 +43,13 @@ class Leave(BaseModel,db.Model):
         return leave
 
     @classmethod
-    @db.transaction
     def delete(cls,lid):
         leave = Leave.query.filter(Leave.id == lid).one()
         if leave.status:
             raise ExceptionEx("申请已审批,无法删除")
 
         db.session.delete(leave)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod

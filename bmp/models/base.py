@@ -59,7 +59,6 @@ class BaseModel(object):
             return [cls._to_dict(result) for result in query.all()]
 
     @classmethod
-    @db.transaction
     def delete(cls,_ids):
         if not isinstance(_ids,list):
             _ids=[_ids]
@@ -67,7 +66,7 @@ class BaseModel(object):
         for _id in _ids:
             result = cls.query.filter(cls.id == _id).one()
             db.session.delete(result)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @classmethod
@@ -77,15 +76,12 @@ class BaseModel(object):
         return idc_host
 
     @classmethod
-    @db.transaction
     def edit(cls,_dicts):
         if not isinstance(_dicts, list):
             _dicts = [_dicts]
         results = [Database.to_cls(cls, _dict) for _dict in _dicts]
-        db.session.flush()
+        db.session.commit()
         return results
-
-
 
     @classmethod
     def add(cls,_dict):

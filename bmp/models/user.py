@@ -46,22 +46,20 @@ class Group(db.Model):
         return True
 
     @staticmethod
-    @db.transaction
     def add(name, desc):
         if Group.query.filter(Group.name == name).count():
             return False
         db.session.add(Group(name, desc))
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
-    @db.transaction
     def delete(name):
         group = Group.query.filter(Group.name == name).one()
         if group.is_buildin:
             raise ExceptionEx("禁止删除内建组")
         db.session.delete(group)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
@@ -140,49 +138,44 @@ class User(db.Model):
         return User.__add_group(user)
 
     @staticmethod
-    @db.transaction
     def edit(submit):
         user = User.query.filter(User.uid == submit["uid"]).one()
         user.__init__(submit)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
-    @db.transaction
     def set_groups(uid, groups):
         user = User.query.filter(User.uid == uid).one()
         user.groups = Group.query.filter(Group.name.in_(groups.split(","))).all()
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
-    @db.transaction
     def delete(uid):
         user = User.query.filter(User.uid == uid).one()
         db.session.delete(user)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
-    @db.transaction
     def add(_dict):
         new_user = User(_dict)
         user = User.query.filter(User.uid == new_user.uid)
         if user.count():
             user = user.one()
             user.last_time = datetime.now()
-            db.session.flush()
+            db.session.commit()
             return True
 
         new_user.is_admin = False
         new_user.create_time = datetime.now()
         new_user.last_time = datetime.now()
         db.session.add(new_user)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
-    @db.transaction
     def update(_ldaps):
         users = User.query.all()
         user_dict = {}
@@ -208,7 +201,7 @@ class User(db.Model):
             user.is_admin = False
             db.session.add(user)
 
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod

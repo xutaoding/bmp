@@ -81,7 +81,6 @@ class Category(BaseModel,db.Model):
     is_del = db.Column(db.Boolean, default=False)
 
     @classmethod
-    @db.transaction
     def add(cls,_dict):
         query = Category.query \
             .filter(Category.parent_id == _dict["parent_id"]) \
@@ -96,7 +95,7 @@ class Category(BaseModel,db.Model):
         else:
             db.session.add(Category(_dict))
 
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
@@ -110,7 +109,6 @@ class Category(BaseModel,db.Model):
         category.is_del = True
 
     @classmethod
-    @db.transaction
     def delete(cls,id):
         Category.__delete(id)
 
@@ -394,7 +392,6 @@ class Stock(BaseModel,db.Model):
 
 
     @classmethod
-    @db.transaction
     def add(cls,_dict):
         '''
         固定资产编号 格式固定一下
@@ -428,17 +425,16 @@ class Stock(BaseModel,db.Model):
         _dict["no"] = create_no()
         stock = Stock(_dict)
         db.session.add(stock)
-        db.session.flush()
+        db.session.commit()
         return stock
 
     @classmethod
-    @db.transaction
     def edit(cls,_dict):
         if Stock.query.filter(Stock.no == _dict["no"]).count():
             raise ExceptionEx("库存编号已存在")
 
         stock = Database.to_cls(Stock, _dict)
-        db.session.flush()
+        db.session.commit()
         return stock
 
     @staticmethod

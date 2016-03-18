@@ -102,12 +102,11 @@ class ProjectSchedule(db.Model):
         return True
 
     @staticmethod
-    @db.transaction
     def edit_members(_dict):
         ps = ProjectSchedule.query.filter(ProjectSchedule.id == _dict["schedule_id"]).one()
         ps.members = [Database.to_cls(ProjectScheduleMember, m) for m in _dict["members"]]
         ProjectHistory.add(ps.project_id, PROJECT.EDIT_MEMBER(ps.type), _dict)
-        db.session.flush()
+        db.session.commit()
 
 
 class ProjectDoc(db.Model):
@@ -193,23 +192,20 @@ class Project(db.Model):
         self.create_uid = session[USER_SESSION]["uid"]
 
     @staticmethod
-    @db.transaction
     def edit(_dict):
         proj = Database.to_cls(Project, _dict)
         ProjectHistory.add(proj.id, PROJECT.EDIT_PROJ, _dict)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
-    @db.transaction
     def edit_doc(_dict):
         ps = Project.query.filter(Project.id == _dict["project_id"]).one()
         ps.docs = [Database.to_cls(ProjectDoc, d) for d in _dict["docs"]]
         ProjectHistory.add(ps.id, PROJECT.EDIT_DOC, _dict)
-        db.session.flush()
+        db.session.commit()
 
     @staticmethod
-    @db.transaction
     def add(_dict):
         from bmp.models.user import User
 
@@ -225,7 +221,7 @@ class Project(db.Model):
 
         proj = Project(_dict)
         db.session.add(proj)
-        db.session.flush()
+        db.session.commit()
         return proj
 
     @staticmethod

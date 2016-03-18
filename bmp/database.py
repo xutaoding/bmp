@@ -108,3 +108,4 @@ class Database(SQLAlchemy):
                 return call_func()
 
         return __fun
+

@@ -124,7 +124,6 @@ class PurchaseApproval(db.Model):
         return PURCHASE.FLOW[cur + 1]
 
     @staticmethod
-    @db.transaction
     def edit(id, submit):
         approval = PurchaseApproval.query \
             .filter(PurchaseApproval.purchase_id == id) \
@@ -154,7 +153,7 @@ class PurchaseApproval(db.Model):
             elif _approval.type == PURCHASE.FLOW_FOUR:
                 purchase.is_finished = True
 
-        db.session.flush()
+        db.session.commit()
         return purchase
 
 
@@ -200,11 +199,10 @@ class Purchase(db.Model):
             self.reson = ""
 
     @staticmethod
-    @db.transaction
     def add(submit):
         purchase = Purchase(submit)
         db.session.add(purchase)
-        db.session.flush()
+        db.session.commit()
         return purchase
 
     @staticmethod
@@ -311,16 +309,14 @@ class Purchase(db.Model):
         return page.to_page(Purchase._to_dict)
 
     @staticmethod
-    @db.transaction
     def delete(pid):
         db.session.delete(Purchase.query.filter(Purchase.id == pid).one())
-        db.session.flush()
+        db.session.commit()
 
     @staticmethod
-    @db.transaction
     def edit(submit):
         purchase = Database.to_cls(Purchase, submit)
-        db.session.flush()
+        db.session.commit()
 
     @staticmethod
     def approval(pid):

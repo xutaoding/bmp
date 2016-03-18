@@ -28,7 +28,6 @@ class Ref(db.Model):
 
 
     @staticmethod
-    @db.transaction
     def add(name, type, parent_id=0):
         if Ref.query \
                 .filter(Ref.type == type) \
@@ -37,7 +36,7 @@ class Ref(db.Model):
             raise ExceptionEx("该分类已存在")
 
         db.session.add(Ref(name, type, parent_id))
-        db.session.flush()
+        db.session.commit()
 
     @staticmethod
     def delete(id):

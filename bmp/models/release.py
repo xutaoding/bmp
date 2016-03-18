@@ -103,7 +103,6 @@ class ReleaseApproval(db.Model):
         self.uid = _dict["uid"]
 
     @staticmethod
-    @db.transaction
     def edit(id, submit):
         approval = ReleaseApproval.query.filter(
             ReleaseApproval.release_id == id,
@@ -120,7 +119,7 @@ class ReleaseApproval(db.Model):
             release.is_finished = True
 
         db.session.add(_approval)
-        db.session.flush()
+        db.session.commit()
         return True
 
 
@@ -139,7 +138,7 @@ class ReleaseAddress(db.Model):
     def add(submit):
         ra = ReleaseAddress(submit)
         db.session.add(ra)
-        db.session.flush()
+        db.session.commit()
         return True
 
     @staticmethod
@@ -296,7 +295,6 @@ class Release(db.Model):
         return Release._to_dict(Release.query.filter(Release.id == rid).one())
 
     @staticmethod
-    @db.transaction
     def add(submit):
         from bmp.models.user import User
         user = User.query.filter(User.uid == session[USER_SESSION]["uid"]).one()
@@ -312,18 +310,16 @@ class Release(db.Model):
         release.apply_time = datetime.now()
 
         db.session.add(release)
-        db.session.flush()
+        db.session.commit()
         return release
 
     @staticmethod
-    @db.transaction
     def edit(submit):
         release = Database.to_cls(Release, submit)
-        db.session.flush()
+        db.session.commit()
         return release
 
     @staticmethod
-    @db.transaction
     def approval(id, submit):
 
         approvals = ReleaseApproval.query.filter(
@@ -354,14 +350,13 @@ class Release(db.Model):
 
 
     @staticmethod
-    @db.transaction
     def delete(pid):
         release=Release.query.filter(Release.id == pid).one()
         if not release.is_draft:
             raise ExceptionEx("该申请已提交,无法删除")
 
         db.session.delete(release)
-        db.session.flush()
+        db.session.commit()
 
 
 if __name__ == "__main__":
