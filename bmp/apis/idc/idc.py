@@ -13,8 +13,7 @@ class IdcApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        Idc_host.add(submit)
-        return self.succ()
+        return self.succ(Idc_host.add(submit))
 
     def put(self, iid):
         submit = self.request()
