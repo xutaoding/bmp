@@ -13,13 +13,14 @@ import bmp.utils.time as time
 from base import BaseModel
 
 
-class Domain(BaseModel,db.Model):
+class Domain(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     sp = db.Column(db.String(128))
     end_time = db.Column(db.DateTime)
 
-class Cert(BaseModel,db.Model):  # ssl证书
+
+class Cert(BaseModel, db.Model):  # ssl证书
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     sp = db.Column(db.String(128))
@@ -27,7 +28,7 @@ class Cert(BaseModel,db.Model):  # ssl证书
 
 
 # 主办单位  单位性质    网站备案/许可证号	网站名称    网站首页网址  审核时间  域名  ELB IP
-class Icp(BaseModel,db.Model):  # 备案信息
+class Icp(BaseModel, db.Model):  # 备案信息
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(128))
 
@@ -37,12 +38,12 @@ class Icp(BaseModel,db.Model):  # 备案信息
     site = db.Column(db.String(128))
     main_page = db.Column(db.String(128))
     chk_time = db.Column(db.DateTime)
-    domain = db.Column(db.Text,default="")
+    domain = db.Column(db.Text, default="")
     elb = db.Column(db.Text)
     ip = db.Column(db.Text)
 
 
-class Supplier(BaseModel,db.Model):
+class Supplier(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True)
     connector = db.Column(db.String(128))
@@ -53,7 +54,8 @@ class Supplier(BaseModel,db.Model):
     last_time = db.Column(db.DateTime)
     path = db.Column(db.String(256))
 
-class Contract(BaseModel,db.Model):
+
+class Contract(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc = db.Column(db.String(128))
     begin_time = db.Column(db.DateTime)
@@ -74,14 +76,14 @@ class Contract(BaseModel,db.Model):
         return _dict
 
 
-class Category(BaseModel,db.Model):
+class Category(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     parent_id = db.Column(db.Integer)
     is_del = db.Column(db.Boolean, default=False)
 
     @classmethod
-    def add(cls,_dict):
+    def add(cls, _dict):
         query = Category.query \
             .filter(Category.parent_id == _dict["parent_id"]) \
             .filter(Category.name == _dict["name"])
@@ -109,7 +111,7 @@ class Category(BaseModel,db.Model):
         category.is_del = True
 
     @classmethod
-    def delete(cls,id):
+    def delete(cls, id):
         Category.__delete(id)
 
     @staticmethod
@@ -157,7 +159,7 @@ stock_spec_category = db.Table("stock_spec_category",
                                db.Column("category_id", db.Integer, db.ForeignKey("category.id")))
 
 
-class StockOpt(BaseModel,db.Model):
+class StockOpt(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(64))
     uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
@@ -186,8 +188,7 @@ class StockOpt(BaseModel,db.Model):
         elif not Stock.query.filter(Stock.id == _dict["stock_id"]).count():
             raise ExceptionEx("库存不存在")
 
-        BaseModel.__init__(self,_dict)
-
+        BaseModel.__init__(self, _dict)
 
     @staticmethod
     def _to_dict(self):
@@ -202,8 +203,6 @@ class StockOpt(BaseModel,db.Model):
             .filter(StockOpt.type == SCRAP.TYPE) \
             .filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.FAIL])).paginate(page, pre_page)
         return page.to_page(StockOpt._to_dict)
-
-
 
     @staticmethod
     def search(submit, page=None, pre_page=None):
@@ -272,7 +271,7 @@ class StockOpt(BaseModel,db.Model):
         return _export
 
 
-class Stock(BaseModel,db.Model):
+class Stock(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     no = db.Column(db.String(128), unique=True)
     category = db.relationship("Category",
@@ -389,10 +388,8 @@ class Stock(BaseModel,db.Model):
             else:
                 setattr(self, k, v)
 
-
-
     @classmethod
-    def add(cls,_dict):
+    def add(cls, _dict):
         '''
         固定资产编号 格式固定一下
         部门+年+月+0001
@@ -429,7 +426,7 @@ class Stock(BaseModel,db.Model):
         return stock
 
     @classmethod
-    def edit(cls,_dict):
+    def edit(cls, _dict):
         if Stock.query.filter(Stock.no == _dict["no"]).count():
             raise ExceptionEx("库存编号已存在")
 
@@ -458,11 +455,11 @@ class Stock(BaseModel,db.Model):
         return _dict
 
     @classmethod
-    def get(cls,_id,_filters=[]):
+    def get(cls, _id, _filters=[]):
         return Stock._to_dict(Stock.query.filter(Stock.id == id).one(), True)
 
     @classmethod
-    def select(cls,page=None,pre_page=None,_filters=[],_orders=[]):
+    def select(cls, page=None, pre_page=None, _filters=[], _orders=[]):
         query = Stock.query.order_by(Stock.stock_in_time.desc())
         if _filters:
             opts = StockOpt.query.filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.TYPE])).all()
@@ -472,8 +469,5 @@ class Stock(BaseModel,db.Model):
         return page.to_page(Stock._to_dict)
 
 
-
-
 if __name__ == "__main__":
-    from bmp import db
-    print(db.metadata)
+    pass

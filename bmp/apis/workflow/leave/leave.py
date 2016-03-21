@@ -13,7 +13,7 @@ class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
 
     def get(self, begin_time, end_time):
-        return self.succ(Leave.between(begin_time+" 00:00:00",end_time+" 23:59:59"))
+        return self.succ(Leave.between(begin_time,end_time))
 
     def post(self):
         submit = self.request()

@@ -14,7 +14,7 @@ class Leave_searchApi(BaseApi):
         if session[USER_SESSION]["uid"] not in [u.uid for u in Group.get_users(DEFAULT_GROUP.LEAVE.SEARCH)]:
             name = session[USER_SESSION]["uid"]
 
-        return self.succ(Leave.search(begin_time+" 00:00:00",end_time+" 23:59:59", name))
+        return self.succ(Leave.search(begin_time,end_time, name))
 
 
 if __name__ == "__main__":

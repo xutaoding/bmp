@@ -8,3 +8,4 @@ bmp.log
 bmp/upload/
 *.sql
 *.json
+db/

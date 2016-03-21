@@ -14,7 +14,7 @@ from datetime import datetime
 from base import BaseModel
 
 
-class Leave(BaseModel,db.Model):
+class Leave(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     reson = db.Column(db.String(128))
@@ -34,7 +34,6 @@ class Leave(BaseModel,db.Model):
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     approval_time = db.Column(db.DateTime)
 
-
     @staticmethod
     def approval(submit):
         submit["approval_time"] = datetime.now().strftime("%Y-%m-%d")
@@ -43,7 +42,7 @@ class Leave(BaseModel,db.Model):
         return leave
 
     @classmethod
-    def delete(cls,lid):
+    def delete(cls, lid):
         leave = Leave.query.filter(Leave.id == lid).one()
         if leave.status:
             raise ExceptionEx("申请已审批,无法删除")
@@ -61,6 +60,9 @@ class Leave(BaseModel,db.Model):
 
     @staticmethod
     def between(beg, end, query_type=False):
+        beg += " 00:00:00"
+        end += " 23:59:59"
+
         query = Leave.query \
             .filter(Leave.status == LEAVE.PASS).filter(or_(
             and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
@@ -87,10 +89,7 @@ class Leave(BaseModel,db.Model):
         return [Leave._to_dict(l) for l in query.all()]
 
 
-
-
-
-class LeaveEvent(BaseModel,db.Model):
+class LeaveEvent(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc = db.Column(db.String(128), default="", nullable=True)
     type_id = db.Column(db.Integer, db.ForeignKey("ref.id"))
