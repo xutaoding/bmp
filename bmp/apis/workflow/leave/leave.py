@@ -7,15 +7,13 @@ from bmp.tasks.mail.leave import Mail
 
 from flask import session
 from bmp.const import USER_SESSION
+from datetime import timedelta
 
 class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
 
     def get(self, begin_time, end_time):
-        return self.succ(
-            Leave.between(datetime.strptime(begin_time, "%Y-%m-%d"),
-                          datetime.strptime(end_time, "%Y-%m-%d"))
-        )
+        return self.succ(Leave.between(begin_time+" 00:00:00",end_time+" 23:59:59"))
 
     def post(self):
         submit = self.request()

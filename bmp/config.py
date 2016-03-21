@@ -46,20 +46,3 @@ class Test(Config):
     SSH_HOST = "192.168.250.253"
     SSH_USER = "depops"
     SSH_PASSWORD = "Passwd@!"
-
-
-class Dev(Config):
-    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
-    HOST = "192.168.0.143"
-
-
-class Testserver(Config):
-    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
-    HOST = "127.0.0.1"
-    MAIL_ALERT = "chenglong.yan@chinascopefinancial.com"
-    DOMAIN = "http://dev.ops.chinascope.net/"
-
-
-class Yutest(Config):
-    HOST = "192.168.0.57"
-    SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/test"

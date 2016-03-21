@@ -475,4 +475,5 @@ class Stock(BaseModel,db.Model):
 
 
 if __name__ == "__main__":
-    pass
+    from bmp import db
+    print(db.metadata)
