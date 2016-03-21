@@ -83,7 +83,7 @@ class Database(SQLAlchemy):
 
         return self
 
-    def transaction(self, fun):
+    def log(self, fun):
         def __fun(*args, **kwargs):
             def call_func():
                 try:
