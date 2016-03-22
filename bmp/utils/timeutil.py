@@ -8,9 +8,15 @@ def format(dt, fmt):
     # dt=datetime.strptime(dt, fmt) - timedelta(hours=8)
     return dt.__str__()
 
-
-
-
+from datetime import timedelta
 
 if __name__ == "__main__":
-    print format("2015-01-01 01:01", "%Y-%m-%d %H:%M")
+
+    dt=datetime.now()
+    print dt
+    print(dt)
+
+
+
+
+

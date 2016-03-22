@@ -11,7 +11,7 @@ from bmp.const import PURCHASE
 import bmp.utils.user_ldap as ldap
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-import bmp.utils.time as time
+import bmp.utils.timeutil as time
 
 purchase_supplier = db.Table("purchase_supplier",
                              db.Column("purchase_id", db.Integer, db.ForeignKey("purchase.id")),

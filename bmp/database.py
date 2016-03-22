@@ -4,7 +4,7 @@ import platform
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
-import bmp.utils.time as time
+import bmp.utils.timeutil as time
 from bmp.utils.exception import ExceptionEx
 
 from sqlalchemy.schema import MetaData

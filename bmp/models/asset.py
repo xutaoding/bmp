@@ -8,7 +8,7 @@ from bmp import db
 from bmp.const import USER_SESSION, SCRAP, STOCK
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-import bmp.utils.time as time
+import bmp.utils.timeutil as time
 
 from base import BaseModel
 
