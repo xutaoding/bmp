@@ -10,21 +10,24 @@ from datetime import timedelta
 class ReportApi(BaseApi):
     route = [
         "/report",
-        "/report/<string:year>/<string:weeks>",
-        "/report/<string:year>/<string:weeks>/<int:team_id>",
+        "/report/<int:year>/<int:weeks>",
+        "/report/<int:year>/<int:weeks>/<int:team_id>",
         "/report/<int:rid>"
     ]
 
     def get(self, year, weeks, team_id=None):
-        dt = datetime(year, 1, 1) + timedelta(weeks=weeks)
+        dt = datetime(year, 1, 1) + timedelta(weeks=weeks-1)
         beg_time = dt - timedelta(days=dt.weekday())
         end_time = (dt + timedelta(days=6 - dt.weekday())).replace(hour=23, minute=59, second=59)
         if team_id:
-            return Report.select(
+            result=Report.select(
                 _filters=[Report.create_time.between(beg_time, end_time), Report.team_id == team_id])
         else:
-            return Report.select(
+            result=Report.select(
                 _filters=[Report.create_time.between(beg_time, end_time)])
+
+        return self.succ(result)
+
 
     def post(self):
         submit = self.request()
@@ -44,5 +47,5 @@ class ReportApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
-    # report=Report.add({"schedule":"test","create_time":datetime.now()})
+
+    report=Report.add({"schedule":"test","create_time":datetime.now()})

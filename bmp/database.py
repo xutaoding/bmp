@@ -85,27 +85,13 @@ class Database(SQLAlchemy):
 
     def log(self, fun):
         def __fun(*args, **kwargs):
-            def call_func():
-                try:
-                    result = fun(*args, **kwargs)
-                    self.session.commit()
-                    return result
-                except ExceptionEx, ex:
-                    raise ex
-                except Exception, e:
-                    raise e
-
-            if "Windows" != platform.system():
-                import fcntl
-                self.lock = open(self.app.root_path + "/transaction.lock")
-                try:
-                    fcntl.flock(self.lock, fcntl.LOCK_EX)
-                    return call_func()
-                finally:
-                    fcntl.flock(self.lock, fcntl.LOCK_UN)
-
-            else:
-                return call_func()
-
+            try:
+                result = fun(*args, **kwargs)
+                self.session.commit()
+                return result
+            except ExceptionEx, ex:
+                raise ex
+            except Exception, e:
+                raise e
         return __fun
 

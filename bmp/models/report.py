@@ -27,5 +27,5 @@ class Report(BaseModel, db.Model):
     @staticmethod
     def _to_dict(self):
         _dict=self.to_dict()
-        _dict["questions"]=self.questions
+        _dict["issues"]=self.issues
         return _dict

@@ -84,11 +84,14 @@ class BaseModel(object):
         return results
 
     @classmethod
-    def add(cls, _dict):
-        result = cls(_dict)
-        db.session.add(result)
+    def add(cls, _dicts):
+        if not isinstance(_dicts,list):
+            _dicts=[_dicts]
+
+        for _dict in _dicts:
+            db.session.add(cls(_dict))
         db.session.commit()
-        return result
+        return True
 
     @staticmethod
     def _to_dict(self):

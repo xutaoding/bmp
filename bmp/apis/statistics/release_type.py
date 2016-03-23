@@ -5,7 +5,7 @@ import pandas as pd
 
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release
-from bmp.utils import time
+from bmp.utils import timeutil as time
 
 
 class Release_typeApi(BaseApi):
