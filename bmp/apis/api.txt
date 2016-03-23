@@ -651,6 +651,15 @@ iid:主机id
 删除主机信息:delete /idc/<int:iid>
 iid:主机id
 
+更新主机信息:put /idc/<int:iid>
+iid:主机id
+参数:
+{
+    ip:服务器ip(更新主机详情必须)
+    type_id:服务类型 (/refs 接口获取 分类:服务)
+
+    desc:描述信息
+}
 
 获取进程信息:get /idc/ps/<int:iid>
 iid:主机id
@@ -701,8 +710,6 @@ rid:待解决问题的id
 
 删除待解决的问题:delete /report/<int:rid>
 rid:解决的问题的id
-
-
 
 
 新增团队:post /report/team

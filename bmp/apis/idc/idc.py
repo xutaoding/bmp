@@ -28,4 +28,4 @@ class IdcApi(BaseApi):
 
 
 if __name__=="__main__":
-    print Idc_host.select(1,10)
+    print Idc_host.add(10)

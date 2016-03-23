@@ -455,7 +455,7 @@ class Stock(BaseModel, db.Model):
         return _dict
 
     @classmethod
-    def get(cls, _id, _filters=[]):
+    def get(cls, _id, _filters=None):
         return Stock._to_dict(Stock.query.filter(Stock.id == id).one(), True)
 
     @classmethod

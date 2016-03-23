@@ -7,9 +7,12 @@ import pandas as pd
 
 
 class BaseModel(object):
-    def __init__(self, submit=None, callbacks={}):
+    def __init__(self, submit=None, callbacks=None):
         if not submit:
             return
+
+        if not callbacks:
+            callbacks={}
 
         def set_attr(k, v):
             if "time" in k and not isinstance(v, datetime):
@@ -32,14 +35,18 @@ class BaseModel(object):
             set_attr(k, v)
 
     @classmethod
-    def get(cls, _id, _filters=[]):
+    def get(cls, _id, _filters=None):
+        if not _filters:_filters=[]
+
         _filters.append(cls.id == _id)
         result = cls.select(_filters=_filters)
         return result[0] if result else result
 
     @classmethod
-    def select(cls, page=None, pre_page=None, _filters=[], _orders=[]):
+    def select(cls, page=None, pre_page=None, _filters=None, _orders=None):
         query = cls.query
+        if not _filters:_filters=[]
+        if not _orders:_orders=[]
 
         if not isinstance(_orders, list):
             _orders = [_orders]
@@ -99,5 +106,4 @@ class BaseModel(object):
 
 
 if __name__ == "__main__":
-    bm=BaseModel()
-    bm.edit()
+    pass

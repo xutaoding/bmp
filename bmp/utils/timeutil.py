@@ -11,10 +11,7 @@ def format(dt, fmt):
 from datetime import timedelta
 
 if __name__ == "__main__":
-
-    dt=datetime.now()
-    print dt
-    print(dt)
+    pass
 
 
 

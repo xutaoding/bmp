@@ -103,6 +103,45 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         _dict["ps_info"] = [ps.to_dict() for ps in self.ps_info]
         return _dict
 
+
+    @staticmethod
+    def __update(submit):
+        client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+        def exec_script(path):
+            info = client.exec_script(path, submit["ip"], False)
+            return json.loads(info.replace("u'", "'").replace("'", "\""))
+
+        if not submit.__contains__("ip"):#更新描述信息
+            idc_host = Database.to_cls(Idc_host, submit)
+            return idc_host
+
+        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")
+        submit["system_time"] = datetime.strptime(
+            exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
+            "%Y-%m-%d %I:%M:%S %p"
+        )
+        submit.update(exec_script("/root/csfscript/host_info/get_host_info.py"))
+
+        host_interfaces = submit.pop("host_interfaces")
+        host_disks = submit.pop("host_disks")
+
+        idc_host = Database.to_cls(Idc_host, submit)
+        idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
+                            exec_script("/root/csfscript/host_info/get_ps_info.py")]
+
+        Idc_host_ps.query.filter(Idc_host_ps.idc_host_id == None).delete()
+
+        idc_host.host_interfaces = [Database.to_cls(Idc_host_interface, _dict) for _dict in host_interfaces]
+        idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
+        return idc_host
+
+
+    @classmethod
+    def edit(cls,submit):
+        idc_host=Idc_host.__update(submit)
+        db.session.commit()
+        return True
+
     @classmethod
     def add(cls,submits):
         results = []
@@ -121,32 +160,10 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
                     result["error"] = "%s 已经存在" % submit["ip"]
                     continue
 
-                client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
-
-                def exec_script(path):
-                    info = client.exec_script(path, submit["ip"], False)
-                    return json.loads(info.replace("u'", "'").replace("'", "\""))
-
-                submit["host_ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")
-                submit["system_time"] = datetime.strptime(
-                    exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
-                    "%Y-%m-%d %I:%M:%S %p"
-                )
-                submit.update(exec_script("/root/csfscript/host_info/get_host_info.py"))
-
-                host_interfaces = submit.pop("host_interfaces")
-                host_disks = submit.pop("host_disks")
-
-                idc_host = Database.to_cls(Idc_host, submit)
-                idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
-                                    exec_script("/root/csfscript/host_info/get_ps_info.py")]
-
-                Idc_host_ps.query.filter(Idc_host_ps.idc_host_id == None).delete()
-
-                idc_host.host_interfaces = [Database.to_cls(Idc_host_interface, _dict) for _dict in host_interfaces]
-                idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
+                idc_host=Idc_host.__update(submit)
 
                 db.session.add(idc_host)
+
                 result["success"] = True
             except  Exception, e:
                 log.exception(e)
