@@ -663,6 +663,61 @@ iid:主机id
 page:页数 从1开始
 pre_page:每页长度
 
+
+周报相关------------------------------------------------
+
+获取全部团队周报:get /report/<string:year>/<string:weeks>
+year:年份
+weeks:周数
+
+获取特定团队周报:get /report/<string:year>/<string:weeks>/<int:team_id>
+year:年份
+weeks:周数
+team_id:团队id
+
+新增周报:post /report
+更新周报:put /report/<int:rid>
+rid:周报id
+参数:
+{
+    score:评分
+    schedule:周工作计划
+    team_id:团队id
+}
+删除周报:delete /report/<int:rid>
+rid:周报id
+
+
+新增待解决的问题:post /report/issue
+更新待解决的问题:put /report/issue/<int:rid>
+rid:待解决问题的id
+
+参数:
+{
+   issue:问题
+   checked:是否已解决(解决:true,未解决false)
+   report_id:周报id
+}
+
+删除待解决的问题:delete /report/<int:rid>
+rid:解决的问题的id
+
+
+
+
+新增团队:post /report/team
+更新团队:put /report/team/<int:rid>
+rid:团队id
+
+参数:
+{
+    name:团队名称
+}
+
+删除团队:delete /report/team/<int:rid>
+rid 团队id
+
+
 文件上传/下载------------------------------------------------
 上传文件:post /upload
 下载文件:get /upload?path=文件路径
