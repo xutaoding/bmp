@@ -691,6 +691,7 @@ rid:周报id
 {
     score:评分
     schedule:周工作计划
+    schedule_next:下周工作计划
     team_id:团队id
 }
 删除周报:delete /report/<int:rid>

@@ -20,6 +20,7 @@ class Report(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     score = db.Column(db.Integer,default=0)
     schedule = db.Column(db.Text)
+    schedule_next = db.Column(db.Text)
     issues = db.relationship("ReportIssue")
     team_id = db.Column(db.Integer,db.ForeignKey("report_team.id"))
     create_time = db.Column(db.DateTime)

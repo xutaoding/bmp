@@ -11,7 +11,7 @@ class ContractApi(BaseApi):
     def get(self, id=0):
         if id:
             return self.succ(Contract.get(id))
-        return self.succ(Contract.select(_orders=Contract.id.desc()))
+        return self.succ(Contract.select(_orders=[Contract.id.desc()]))
 
     def post(self):
         submit = self.request()
@@ -32,4 +32,4 @@ class ContractApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    print Contract.select()

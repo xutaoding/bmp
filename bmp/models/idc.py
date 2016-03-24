@@ -9,7 +9,8 @@ import json
 from bmp import app
 import traceback
 from sqlalchemy import or_
-from bmp import  log
+from bmp import log
+
 
 class Idc_host_disk(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -50,7 +51,7 @@ class Idc_host_ps(BaseModel, db.Model):
         BaseModel.__init__(self, submit)
 
     @classmethod
-    def add(cls,iid):
+    def add(cls, iid):
         idc_host = Idc_host.query.filter(Idc_host.id == iid).one()
 
         client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
@@ -94,7 +95,6 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
     system_time = db.Column(db.DateTime)
     ps_info = db.relationship("Idc_host_ps")
 
-
     @staticmethod
     def _to_dict(self):
         _dict = self.to_dict()
@@ -103,19 +103,19 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         _dict["ps_info"] = [ps.to_dict() for ps in self.ps_info]
         return _dict
 
-
     @staticmethod
     def __update(submit):
         client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+
         def exec_script(path):
             info = client.exec_script(path, submit["ip"], False)
             return json.loads(info.replace("u'", "'").replace("'", "\""))
 
-        if not submit.__contains__("ip"):#更新描述信息
+        if not submit.__contains__("ip"):  # 更新描述信息
             idc_host = Database.to_cls(Idc_host, submit)
             return idc_host
 
-        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")
+        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"]
         submit["system_time"] = datetime.strptime(
             exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
             "%Y-%m-%d %I:%M:%S %p"
@@ -135,15 +135,14 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         idc_host.host_disks = [Database.to_cls(Idc_host_disk, _dict) for _dict in host_disks]
         return idc_host
 
-
     @classmethod
-    def edit(cls,submit):
-        idc_host=Idc_host.__update(submit)
+    def edit(cls, submit):
+        idc_host = Idc_host.__update(submit)
         db.session.commit()
         return True
 
     @classmethod
-    def add(cls,submits):
+    def add(cls, submits):
         results = []
         if not isinstance(submits, list):
             submits = [submits]
@@ -160,7 +159,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
                     result["error"] = "%s 已经存在" % submit["ip"]
                     continue
 
-                idc_host=Idc_host.__update(submit)
+                idc_host = Idc_host.__update(submit)
 
                 db.session.add(idc_host)
 
@@ -174,4 +173,5 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
 if __name__ == "__main__":
     from bmp.models.ref import Ref
-    print Idc_host.add({"ip":"192.168.250.111","type_id":2})
+
+    print Idc_host.add({"ip": "192.168.0.231", "type_id": 2})

@@ -45,8 +45,10 @@ class BaseModel(object):
     @classmethod
     def select(cls, page=None, pre_page=None, _filters=None, _orders=None):
         query = cls.query
-        if not _filters:_filters=[]
-        if not _orders:_orders=[]
+        if _filters is None:
+            _filters=[]
+        if _orders is None:
+            _orders=[]
 
         if not isinstance(_orders, list):
             _orders = [_orders]
