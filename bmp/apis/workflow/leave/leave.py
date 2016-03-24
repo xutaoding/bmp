@@ -23,6 +23,7 @@ class LeaveApi(BaseApi):
 
         leave = Leave.add(submit)
         Mail().to(leave)
+
         return self.succ()
 
     def delete(self, lid):

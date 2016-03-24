@@ -125,6 +125,10 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         host_interfaces = submit.pop("host_interfaces")
         host_disks = submit.pop("host_disks")
 
+        for key in submit:
+            if isinstance(submit[key],list):
+                submit[key]=",".join(submit[key])
+
         idc_host = Database.to_cls(Idc_host, submit)
         idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
                             exec_script("/root/csfscript/host_info/get_ps_info.py")]
