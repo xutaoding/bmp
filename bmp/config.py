@@ -38,6 +38,11 @@ class Config(object):
     SSH_USER = "depops"
     SSH_PASSWORD = "Vulooz5S"
 
+    SSH_IDC_HOST = "192.168.250.254"
+    SSH_IDC_USER = "opsUser"
+    SSH_IDC_PASSWORD = "chin@sc0pe321"
+
+
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
@@ -46,3 +51,7 @@ class Test(Config):
     SSH_HOST = "192.168.250.253"
     SSH_USER = "depops"
     SSH_PASSWORD = "Passwd@!"
+
+    SSH_IDC_HOST = "192.168.250.253"
+    SSH_IDC_USER = "depops"
+    SSH_IDC_PASSWORD = "Passwd@!"

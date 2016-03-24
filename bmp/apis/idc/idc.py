@@ -26,6 +26,5 @@ class IdcApi(BaseApi):
         return self.succ()
 
 
-
 if __name__=="__main__":
     print Idc_host.add(10)

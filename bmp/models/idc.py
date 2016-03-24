@@ -105,7 +105,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
     @staticmethod
     def __update(submit):
-        client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+        client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
 
         def exec_script(path):
             info = client.exec_script(path, submit["ip"], False)
