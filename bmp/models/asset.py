@@ -459,7 +459,7 @@ class Stock(BaseModel, db.Model):
         return Stock._to_dict(Stock.query.filter(Stock.id == id).one(), True)
 
     @classmethod
-    def select(cls, page=None, pre_page=None, _filters=[], _orders=[]):
+    def select(cls, page=None, pre_page=None, _filters=None, _orders=None):
         query = Stock.query.order_by(Stock.stock_in_time.desc())
         if _filters:
             opts = StockOpt.query.filter(StockOpt.status.in_(["", SCRAP.PASS, SCRAP.TYPE])).all()
@@ -470,4 +470,4 @@ class Stock(BaseModel, db.Model):
 
 
 if __name__ == "__main__":
-    pass
+    db.session.add(Category({"name":"test","parent_id":0}))

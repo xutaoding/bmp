@@ -36,7 +36,8 @@ class BaseModel(object):
 
     @classmethod
     def get(cls, _id, _filters=None):
-        if not _filters:_filters=[]
+        if _filters is None:
+            _filters=[]
 
         _filters.append(cls.id == _id)
         result = cls.select(_filters=_filters)
