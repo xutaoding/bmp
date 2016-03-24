@@ -94,14 +94,16 @@ class BaseModel(object):
 
     @classmethod
     def add(cls, _dicts):
+        results=[]
         if not isinstance(_dicts,list):
             _dicts=[_dicts]
 
         for _dict in _dicts:
             result=cls(_dict)
             db.session.add(result)
+            results.append(result)
         db.session.commit()
-        return result
+        return results[0] if len(results)==1 else results
 
     @staticmethod
     def _to_dict(self):
