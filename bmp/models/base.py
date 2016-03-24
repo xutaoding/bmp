@@ -103,6 +103,7 @@ class BaseModel(object):
             db.session.add(result)
             results.append(result)
         db.session.commit()
+
         return results[0] if len(results)==1 else results
 
     @staticmethod

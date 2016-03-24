@@ -48,4 +48,4 @@ class ReportApi(BaseApi):
 
 if __name__ == "__main__":
 
-    report=Report.add({"schedule":"test","create_time":datetime.now()})
+    report=Report.add({"schedule":"test","create_time":datetime.now()-timedelta(days=10)})
