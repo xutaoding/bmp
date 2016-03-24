@@ -16,8 +16,9 @@ class IcpApi(BaseApi):
         Icp.add(submit)
         return self.succ()
 
-    def delete(self, id):
-        Icp.delete(id)
+    def delete(self):
+        submit = self.request()
+        Icp.delete(submit["ids"].split(","))
         return self.succ()
 
     def put(self, id):
@@ -28,4 +29,4 @@ class IcpApi(BaseApi):
 
 
 if __name__ == "__main__":
-    pass
+    Icp.delete(23)

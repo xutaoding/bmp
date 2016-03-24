@@ -98,9 +98,10 @@ class BaseModel(object):
             _dicts=[_dicts]
 
         for _dict in _dicts:
-            db.session.add(cls(_dict))
+            result=cls(_dict)
+            db.session.add(result)
         db.session.commit()
-        return True
+        return result
 
     @staticmethod
     def _to_dict(self):
