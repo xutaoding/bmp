@@ -176,6 +176,8 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
 
 if __name__ == "__main__":
-    from bmp.models.ref import Ref
-
-    print Idc_host.add({"ip": "192.168.0.231", "type_id": 2})
+    from bmp import app
+    client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
+    def exec_script(path):
+            info = client.exec_script(path,"192.168.250.2", False)
+            return json.loads(info.replace("u'", "'").replace("'", "\""))

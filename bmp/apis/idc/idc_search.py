@@ -9,19 +9,15 @@ class Idc_searchApi(BaseApi):
     route = ["/idc/search/<int:page>/<int:pre_page>"]
 
     def get(self, page, pre_page):
-        submit = {}
-
-
+        _filters = []
         for key in request.args.keys():
-            arg_lst=request.args.getlist(key)
+            arg_lst = request.args.getlist(key)
             if 1==len(arg_lst):
-                submit[key]=arg_lst[0]
+                _filters.append(getattr(Idc_host,key)==arg_lst[0])
             else:
-                submit[key]=arg_lst
+                _filters.append(getattr(Idc_host,key).in_(arg_lst))
 
-
-
-        return self.succ(Idc_host.select(page, pre_page, submit))
+        return self.succ(Idc_host.select(page, pre_page,_filters=_filters))
 
 
 if __name__ == "__main__":
