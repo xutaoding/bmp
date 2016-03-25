@@ -115,7 +115,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
             idc_host = Database.to_cls(Idc_host, submit)
             return idc_host
 
-        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"]
+        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"].replace("\n","&#10;").replace(" ","&#160;")
         submit["system_time"] = datetime.strptime(
             exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
             "%Y-%m-%d %I:%M:%S %p"
@@ -182,5 +182,5 @@ if __name__ == "__main__":
             info = client.exec_script(path,"122.144.134.12", False)
             return json.loads(info.replace("u'", "'").replace("'", "\""))
 
-    print exec_script("/root/csfscript/host_info/get_ps_info.py")
+    print exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"]
 
