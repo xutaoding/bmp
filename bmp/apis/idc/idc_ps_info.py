@@ -10,7 +10,8 @@ class Idc_ps_infoApi(BaseApi):
         return self.succ(Idc_host_ps.select(_filters=[Idc_host_ps.idc_host_id==iid]))
 
     def post(self,iid):
-        return self.succ(Idc_host_ps.add(iid))
+        Idc_host_ps.add(iid)
+        return self.succ()
 
 
 if __name__=="__main__":

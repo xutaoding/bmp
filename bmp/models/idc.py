@@ -179,5 +179,8 @@ if __name__ == "__main__":
     from bmp import app
     client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
     def exec_script(path):
-            info = client.exec_script(path,"192.168.250.2", False)
+            info = client.exec_script(path,"122.144.134.12", False)
             return json.loads(info.replace("u'", "'").replace("'", "\""))
+
+    print exec_script("/root/csfscript/host_info/get_ps_info.py")
+
