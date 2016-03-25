@@ -54,7 +54,7 @@ class Idc_host_ps(BaseModel, db.Model):
     def add(cls, iid):
         idc_host = Idc_host.query.filter(Idc_host.id == iid).one()
 
-        client = Client(app.config["SSH_HOST"], app.config["SSH_USER"], app.config["SSH_PASSWORD"])
+        client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
 
         def exec_script(path):
             info = client.exec_script(path, idc_host.ip, False)
