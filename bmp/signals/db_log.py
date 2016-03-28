@@ -6,8 +6,6 @@ import re
 
 
 def log(app, changes):
-    from bmp.models.log import LogSqlalchemy
-    #host="localhost",user="root",passwd="sa",db="mytable",charset="utf8"
     uri=app.config["SQLALCHEMY_DATABASE_URI"]
     user,passwd,host,_db=re.compile("mysql://(.+):(.+)@(.+):[0-9]+/(.+)").findall(uri)[0]
 
@@ -19,13 +17,15 @@ def log(app, changes):
                 (action,
                 obj.__class__.__name__,
                 obj._to_dict(obj).__str__(),
-                "chenglong.yan",
+                session[USER_SESSION]["uid"],
                 datetime.now())
             )
 
 if __name__=="__main__":
     from flask_sqlalchemy import models_committed
     from bmp import app
+
+
     models_committed.connect(log,app)
 
     from bmp.models.asset import Category

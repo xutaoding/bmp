@@ -14,7 +14,7 @@ from apscheduler.executors.pool import ProcessPoolExecutor
 from utils import path
 from database import Database
 
-from flask_sqlalchemy import models_committed
+from flask_sqlalchemy import before_models_committed
 
 
 class _RegexConverter(BaseConverter):
@@ -69,7 +69,7 @@ class Myapp(Flask):
 
     def __init_signals(self):
         from bmp.signals.db_log import log
-        models_committed.connect(log, self)
+        before_models_committed.connect(log, self)
 
 
     def __init__(self, name):

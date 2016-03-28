@@ -12,6 +12,10 @@ class Idc_searchApi(BaseApi):
         _filters = []
         for key in request.args.keys():
             arg_lst = request.args.getlist(key)
+
+            if not hasattr(Idc_host,key):
+                continue
+
             if 1==len(arg_lst):
                 _filters.append(getattr(Idc_host,key)==arg_lst[0])
             else:
