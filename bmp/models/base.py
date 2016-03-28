@@ -7,7 +7,7 @@ import pandas as pd
 
 
 class BaseModel(object):
-    def __init__(self, submit=None, callbacks=None):
+    def __init__(self, submit=None):
         if not submit:
             return
 
@@ -87,7 +87,7 @@ class BaseModel(object):
         return results
 
     @classmethod
-    def add(cls, _dicts,_checks=None):
+    def add(cls, _dicts):
         results=[]
         if not isinstance(_dicts,list):
             _dicts=[_dicts]
