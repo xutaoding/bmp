@@ -690,6 +690,7 @@ rid:周报id
 参数:
 {
     score:评分
+    prog:完成度
     schedule:周工作计划
     schedule_next:下周工作计划
     team_id:团队id
@@ -709,7 +710,7 @@ rid:待解决问题的id
    report_id:周报id
 }
 
-删除待解决的问题:delete /report/<int:rid>
+删除待解决的问题:delete /report/issue/<int:rid>
 rid:解决的问题的id
 
 

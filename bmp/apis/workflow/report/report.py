@@ -5,6 +5,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.report import Report
 from datetime import datetime
 from datetime import timedelta
+from bmp.utils.exception import ExceptionEx
 
 
 class ReportApi(BaseApi):
@@ -32,6 +33,14 @@ class ReportApi(BaseApi):
     def post(self):
         submit = self.request()
         submit["create_time"] = datetime.now()
+
+        beg_time = (submit["create_time"]-timedelta(days=submit["create_time"].weekday())).replace(hour=0,minute=0,second=0)
+        end_time = (submit["create_time"] + timedelta(days=6 - submit["create_time"].weekday())).replace(hour=23, minute=59, second=59)
+
+        if Report.query.filter(Report.create_time.between(beg_time,end_time))\
+                .filter(Report.team_id==submit["team_id"]).count():
+            raise ExceptionEx("本周计划已添加")
+
         Report.add(submit)
         return self.succ()
 
@@ -47,5 +56,4 @@ class ReportApi(BaseApi):
 
 
 if __name__ == "__main__":
-
-    report=Report.add({"schedule":"test","create_time":datetime.now()-timedelta(days=10)})
+    Report.add({"create_time":""})

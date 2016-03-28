@@ -94,7 +94,7 @@ class BaseModel(object):
         return results
 
     @classmethod
-    def add(cls, _dicts):
+    def add(cls, _dicts,_checks=None):
         results=[]
         if not isinstance(_dicts,list):
             _dicts=[_dicts]
