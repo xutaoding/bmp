@@ -53,3 +53,8 @@ class Ref(db.Model):
     @staticmethod
     def get(id):
         return Ref.query.filter(Ref.id == id).one().to_dict()
+
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()

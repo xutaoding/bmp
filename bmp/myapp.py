@@ -14,6 +14,8 @@ from apscheduler.executors.pool import ProcessPoolExecutor
 from utils import path
 from database import Database
 
+from flask_sqlalchemy import models_committed
+
 
 class _RegexConverter(BaseConverter):
     def __init__(self, map, *args):
@@ -65,6 +67,11 @@ class Myapp(Flask):
         if not self.sched.running:
             self.sched.start()
 
+    def __init_signals(self):
+        from bmp.signals.db_log import log
+        models_committed.connect(log, self)
+
+
     def __init__(self, name):
         Flask.__init__(self, name)
         self.__add_apis = False
@@ -77,6 +84,10 @@ class Myapp(Flask):
         self.__init_sched()
         self.db = Database(self)
         self.cache = SimpleCache()
+        self.__init_signals()
+
+
+
 
     def __add_api_rule(self, module):
         self.__add_rule("bmp.apis.%s" % module, "Api",

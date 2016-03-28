@@ -2,6 +2,8 @@
 from datetime import timedelta
 
 
+
+
 class Config(object):
     LDAP_HOST = "ldap://ldap.chinascopefinancial.com"
     LDAP_PORT = "389"

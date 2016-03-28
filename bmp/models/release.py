@@ -20,6 +20,10 @@ class ReleaseLog(db.Model):
     def __init__(self, content):
         self.content = content["content"]
 
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
+
 
 class ReleaseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -29,6 +33,9 @@ class ReleaseTable(db.Model):
     def __init__(self, _dict):
         self.name = _dict["name"]
 
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
 
 class ReleaseDatabase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -121,6 +128,10 @@ class ReleaseApproval(db.Model):
         db.session.add(_approval)
         db.session.commit()
         return True
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
 
 
 class ReleaseAddress(db.Model):

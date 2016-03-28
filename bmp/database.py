@@ -1,14 +1,7 @@
 # coding=utf-8
 from datetime import datetime
-import platform
-
 from flask.ext.sqlalchemy import SQLAlchemy
-
 import bmp.utils.timeutil as time
-from bmp.utils.exception import ExceptionEx
-
-from sqlalchemy.schema import MetaData
-
 
 class Database(SQLAlchemy):
     def __init__(self, app):
@@ -83,15 +76,4 @@ class Database(SQLAlchemy):
 
         return self
 
-    def log(self, fun):
-        def __fun(*args, **kwargs):
-            try:
-                result = fun(*args, **kwargs)
-                self.session.commit()
-                return result
-            except ExceptionEx, ex:
-                raise ex
-            except Exception, e:
-                raise e
-        return __fun
 

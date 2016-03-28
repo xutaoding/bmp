@@ -31,6 +31,10 @@ class ProjectHistory(db.Model):
         ph = ProjectHistory(_dict)
         db.session.add(ph)
 
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
+
 
 class ProjectScheduleMember(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -39,6 +43,10 @@ class ProjectScheduleMember(db.Model):
 
     def __init__(self, _dict):
         self.uid = _dict["uid"]
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
 
 
 class ProjectSchedule(db.Model):
@@ -129,6 +137,10 @@ class ProjectDoc(db.Model):
         doc = ProjectDoc.query.filter(ProjectDoc.id == pid).one()
         db.session.delete(doc)
         db.session.commit()
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
 
 
 class ProjectNotice(db.Model):

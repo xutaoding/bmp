@@ -97,6 +97,10 @@ class PurchaseImg(db.Model):  # 比价图片
         self.desc = _dict["desc"]
         self.path = _dict["path"]
 
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
+
 
 class PurchaseApproval(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -155,6 +159,10 @@ class PurchaseApproval(db.Model):
 
         db.session.commit()
         return purchase
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
 
 
 class Purchase(db.Model):

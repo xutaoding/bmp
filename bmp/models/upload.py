@@ -20,3 +20,8 @@ class Upload(db.Model):
         if not Upload.query.filter(Upload.uuid == uuid).count():
             return ""
         return Upload.query.filter(Upload.uuid == uuid).one().name
+
+
+    @staticmethod
+    def _to_dict(self):
+        return self.to_dict()

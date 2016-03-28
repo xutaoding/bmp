@@ -77,4 +77,4 @@ class PurchaseApi(BaseApi):
 
 
 if __name__ == "__main__":
-    Purchase.delete(94)
+    pass

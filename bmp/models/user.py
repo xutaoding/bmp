@@ -112,6 +112,10 @@ class User(db.Model):
             setattr(self, k, item)
 
     @staticmethod
+    def _to_dict(self):
+        return self.to_dict()
+
+    @staticmethod
     def __add_group(user):
         _user = user.to_dict()
         _user["group"] = [g.name for g in user.groups]

@@ -11,9 +11,6 @@ class BaseModel(object):
         if not submit:
             return
 
-        if not callbacks:
-            callbacks={}
-
         def set_attr(k, v):
             if "time" in k and not isinstance(v, datetime):
                 try:
@@ -28,10 +25,6 @@ class BaseModel(object):
                 setattr(self, k, v)
 
         for k, v in submit.items():
-            for cb in callbacks.keys():
-                if k in cb:
-                    set_attr(k, callbacks[cb]())
-
             set_attr(k, v)
 
     @classmethod

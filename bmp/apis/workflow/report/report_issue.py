@@ -1,10 +1,7 @@
 # coding=utf-8
-from datetime import datetime
 
 from bmp.apis.base import BaseApi
 from bmp.models.report import ReportIssue
-from datetime import datetime
-from datetime import timedelta
 
 
 class Report_issueApi(BaseApi):
