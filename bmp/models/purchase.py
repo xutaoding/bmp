@@ -305,6 +305,7 @@ class Purchase(db.Model):
             .join(PurchaseApproval, PurchaseApproval.purchase_id == Purchase.id) \
             .filter(Purchase.is_finished == True) \
             .filter(PurchaseApproval.status != PURCHASE.FAIL) \
+            .order_by(Purchase.apply_time.desc()) \
             .paginate(page, pre_page, False).to_page(Purchase._to_dict)
 
     @staticmethod
