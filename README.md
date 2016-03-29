@@ -26,49 +26,52 @@ OPS 后台程序
 
 目录结构描述
 -----------------------------------
-###runserver.py 
+### runserver.py 
     程序入口
     
     
-###bmp/apis
+### bmp/apis
     接口程序的根目录,myapp.py中的add_api_rule函数为接口的初始化
     接口定义规则:
         1.每个py文件对应一个接口,文件名与接口类名相同
             例 upload.py  对应类名 UploadApi 类名首字母大写
         2.接口类需要定义变量router(参考现有实现),route规则参见flask文档
         
-###bmp/apis/asset
+### bmp/apis/asset
     资产管理相关接口
-###bmp/apis/user
+### bmp/apis/user
     用户相关接口
-###bmp/apis/workflow
+### bmp/apis/workflow
     流程审批相关接口 
-###bmp/apis/api.txt
+### bmp/apis/api.txt
     接口调用的简要描述
-###bmp/apis/refs.py
+### bmp/apis/refs.py
     一些基础字段定义
-###bmp/apis/upload.py
+### bmp/apis/upload.py
     上传文件的接口
         
-###bmp/models
+### bmp/models
     数据接口实现
     数据接口实现基于 flask-sqlalchemy库
     
-###bmp/tasks
+### bmp/tasks
     同异步任务相关
 
-###bmp/upload
+### bmp/upload
     上传文件的存放目录（正式环境需要链接存储集群)
     
-###templates
+### bmp/signals
+    flask信号相关任务
+    
+### templates
     html模版
     
-###bmp/views
+### bmp/views
     未使用
-###utils:
+### utils:
     杂项
     
-###config.py
+### config.py
     配置文件
         使用方法:
             在runserver.py 同级目录新建.cfg结尾的空文件,文件名与config.py定义的类名相同    
@@ -76,14 +79,14 @@ OPS 后台程序
             Config 类对应 config.cfg
             Test 类对应 test.cfg
         
-###myapp.py
+### myapp.py
     对flask app类的封装，主要用作初始化
-##create_db
+### create_db
     创建数据库表 并添加 refs.py定义的一些字段
-##database.py
+### database.py
     对SQLAlchemy类的封装，主要用作SQLAlchemy的一些扩展操作
-##const.py
+### const.py
     一些常量定义
 
-##ops.sh
+### ops.sh
     没用
