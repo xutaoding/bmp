@@ -92,6 +92,8 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
     processor_vcpus = db.Column(db.Text)
     host_name = db.Column(db.Text)
     ssh_info = db.Column(db.Text)
+    quick_code = db.Column(db.Text)
+    end_date = db.Column(db.DateTime)
     system_time = db.Column(db.DateTime)
     ps_info = db.relationship("Idc_host_ps")
 
