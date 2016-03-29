@@ -42,7 +42,6 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
     try:
         uuid = "%s" % (uuid1())
         print("send %s to %s" % (sub, ";".join(receiver)))
-
         minutes = 1
 
         run_date = datetime.now() + timedelta(minutes=minutes)
@@ -50,8 +49,9 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
 
         sched.add_job(__send,
                       "date",
-                      run_date=run_date,
                       id=uuid,
+                      run_date=run_date,
+                      misfire_grace_time=60*60*24*7,
                       args=(sub, html, receiver, copyto, uuid, priority, minutes),
                       replace_existing=True)
 
