@@ -3,6 +3,8 @@ from werkzeug.datastructures import ImmutableMultiDict
 from bmp.apis.base import BaseApi
 from bmp.models.idc import Idc_host
 from flask import request
+from sqlalchemy import or_
+from bmp.utils.exception import ExceptionEx
 
 
 class Idc_searchApi(BaseApi):
@@ -10,21 +12,16 @@ class Idc_searchApi(BaseApi):
 
     def get(self, page, pre_page):
         _filters = []
-        for key in request.args.keys():
-            arg_lst = request.args.getlist(key)
-
+        for key in [arg for arg in request.args.keys() if arg!="_"]:
             if not hasattr(Idc_host,key):
-                continue
+                raise ExceptionEx("查询字段%s不存在"%key)
 
-            if 1==len(arg_lst):
-                _filters.append(getattr(Idc_host,key)==arg_lst[0])
-            else:
-                _filters.append(getattr(Idc_host,key).in_(arg_lst))
+            _filters.append(or_(*[
+                getattr(Idc_host,key).like("%"+arg+"%") for arg in request.args.getlist(key)
+            ]))
 
         return self.succ(Idc_host.select(page, pre_page,_filters=_filters))
 
 
 if __name__ == "__main__":
-    from bmp.utils.post import test
-
-    test("get", "http://localhost:5000/apis/v1.0/idc/search/1/10?ip=192.168&ip=192.167&dns=192.168", exe=True)
+    pass
