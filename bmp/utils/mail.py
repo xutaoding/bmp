@@ -51,7 +51,7 @@ def send(sub, html, receiver, copyto=[], date=None, priority="3"):
                       "date",
                       id=uuid,
                       run_date=run_date,
-                      misfire_grace_time=60*60*24*7,
+                      misfire_grace_time=60*60*24*365*100,
                       args=(sub, html, receiver, copyto, uuid, priority, minutes),
                       replace_existing=True)
 
