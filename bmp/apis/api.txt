@@ -673,6 +673,10 @@ page:页数 从1开始
 pre_page:每页长度
 
 
+获取ssh信息:get /idc/ssh/<string:ip>
+获取系统时间:get /idc/time/<string:ip>
+ip:服务器ip(例:192.168.100.100)
+
 周报相关------------------------------------------------
 
 获取全部团队周报:get /report/<string:year>/<string:weeks>
