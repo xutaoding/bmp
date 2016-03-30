@@ -2,7 +2,7 @@
 
 import requests
 import xml.dom.minidom as dom
-from xml.dom.minidom import Text, Element
+from xml.dom.minidom import  Element
 from bmp import log, app
 
 
@@ -30,6 +30,7 @@ def send(mobile, content):
 
     except Exception, e:
         log.exception(e)
+        raise e
 
 
 if __name__ == "__main__":
