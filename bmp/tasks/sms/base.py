@@ -15,14 +15,15 @@
 
 import bmp.utils.sms as sms
 from bmp import sched
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from bmp import log
 
+
 class BaseSms:
-    def __send(self, mobile, content, date, _id,minutes):
+    def __send(self, mobile, content, date, _id, minutes):
         try:
-            sms.send(mobile,content)
-        except Exception,e:
+            sms.send(mobile, content)
+        except Exception, e:
             log.exception(e)
             if minutes < 12:
                 minutes += 1
@@ -30,7 +31,7 @@ class BaseSms:
                               "date",
                               id=_id,
                               run_date=datetime.now() + timedelta(minutes=minutes),
-                              args=(mobile, content, date, _id,minutes),
+                              args=(mobile, content, date, _id, minutes),
                               misfire_grace_time=60 * 60 * 24 * 365 * 100,
                               replace_existing=True)
 
@@ -45,5 +46,5 @@ class BaseSms:
                           id=_id,
                           run_date=date,
                           misfire_grace_time=60 * 60 * 24 * 365 * 100,
-                          args=(mobile, content, date, _id,minutes),
+                          args=(mobile, content, date, _id, minutes),
                           replace_existing=True)

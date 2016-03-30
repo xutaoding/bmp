@@ -5,8 +5,8 @@ import re
 from flask import request
 from bmp.tasks.base import BaseTask
 
-class BaseMail(BaseTask):
 
+class BaseMail(BaseTask):
     def send(self, to, sub, url, tpl, cc=[], date=None, **kwargs):
         regx = re.compile(r"^http://([a-z.]+)/")
         host = regx.findall(request.headers["Referer"])[0]
@@ -18,9 +18,10 @@ class BaseMail(BaseTask):
 
         html = render_template(tpl, **kwargs)
 
-        self.add_job(mail.send,(sub, html, list(set(to)), cc,3),date)
+        self.add_job(mail.send, (sub, html, list(set(to)), cc, 3), date)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     from datetime import datetime
-    BaseMail().send(["chenglong.yan@chinascopefinancial.com"],"test","abc.com",tpl="",date=datetime.now())
+
+    BaseMail().send(["chenglong.yan@chinascopefinancial.com"], "test", "abc.com", tpl="", date=datetime.now())
