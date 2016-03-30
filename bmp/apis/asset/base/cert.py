@@ -4,7 +4,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.asset import Cert
 from bmp.tasks.mail.asset.cert import Mail
 
-
+#todo 短信报警
 class CertApi(BaseApi):
     route = ["/cert", "/cert/<int:id>"]
 

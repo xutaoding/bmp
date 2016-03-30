@@ -4,7 +4,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.asset import Domain
 from bmp.tasks.mail.asset.domain import Mail
 
-
+#todo 短信报警
 class DomainApi(BaseApi):
     route = ["/domain", "/domain/<int:id>"]
 

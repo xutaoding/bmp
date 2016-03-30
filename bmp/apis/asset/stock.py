@@ -3,7 +3,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
 from bmp.tasks.mail.asset.stock import Mail
 
-
+#todo 短信报警
 class StockApi(BaseApi):
     route = ["/asset/stock",
              "/asset/stock/<int:sid>",

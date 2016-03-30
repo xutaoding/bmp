@@ -4,7 +4,7 @@ from bmp.apis.base import BaseApi
 from bmp.models.asset import Contract
 from bmp.tasks.mail.asset.contract import Mail
 
-
+#todo 短信报警
 class ContractApi(BaseApi):
     route = ["/contract", "/contract/<int:id>"]
 
