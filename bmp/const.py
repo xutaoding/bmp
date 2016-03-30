@@ -59,6 +59,9 @@ class DEFAULT_GROUP:
         BOSS = "BOSS"  # 老板
         LAW = "LAW"  # 法务
 
+    class SMS:
+        ALERT="SMS_ALERT"
+
 
 # todo 清除unicode定义
 class RELEASE:
