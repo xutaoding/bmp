@@ -3,11 +3,9 @@ from flask import render_template
 import bmp.utils.mail as mail
 import re
 from flask import request
+from bmp.tasks.base import BaseTask
 
-
-class BaseMail:
-    def __init__(self):
-        pass
+class BaseMail(BaseTask):
 
     def send(self, to, sub, url, tpl, cc=[], date=None, **kwargs):
         regx = re.compile(r"^http://([a-z.]+)/")
@@ -20,4 +18,9 @@ class BaseMail:
 
         html = render_template(tpl, **kwargs)
 
-        mail.send(sub, html, list(set(to)), cc, date)
+        self.add_job(mail.send,(sub, html, list(set(to)), cc,3),date)
+
+
+if __name__=="__main__":
+    from datetime import datetime
+    BaseMail().send(["chenglong.yan@chinascopefinancial.com"],"test","abc.com",tpl="",date=datetime.now())
