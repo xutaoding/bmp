@@ -39,15 +39,3 @@ if __name__ == "__main__":
 
 
 
-
-
-
-
-
-class Alert():
-    def __init__(self):
-        pass
-
-
-
-
