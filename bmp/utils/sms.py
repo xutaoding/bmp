@@ -2,7 +2,7 @@
 
 import requests
 import xml.dom.minidom as dom
-from xml.dom.minidom import  Element
+from xml.dom.minidom import Element
 from bmp import log, app
 
 
@@ -26,8 +26,6 @@ def send(mobile, content):
 
         if code != "2":
             raise Exception("短信发送失败 %s %s  手机号%s 内容%s" % (code, msg, mobile, content))
-
-
     except Exception, e:
         log.exception(e)
         raise e
