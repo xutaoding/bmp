@@ -2,8 +2,6 @@
 from datetime import timedelta
 
 
-
-
 class Config(object):
     LDAP_HOST = "ldap://ldap.chinascopefinancial.com"
     LDAP_PORT = "389"
@@ -44,6 +42,9 @@ class Config(object):
     SSH_IDC_USER = "opsUser"
     SSH_IDC_PASSWORD = "chin@sc0pe321"
 
+    SMS_GATEWAY = "http://106.ihuyi.cn/webservice/sms.php?method=Submit"
+    SMS_USER = "cf_chinascope"
+    SMS_PASSWORD = "zKqVjm"
 
 
 class Test(Config):
