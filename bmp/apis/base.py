@@ -51,10 +51,16 @@ class BaseApi(MethodView):
                     return super(BaseApi, self).dispatch_request(*args, **kwargs)
             else:
                 return self.fail("未登录")
-        except ExceptionEx, ex:
+        except ExceptionEx, e:
             traceback.print_exc()
-            log.exception(ex)
-            return self.fail(ex.message)
+            log.exception(e)
+            return self.fail(e.message)
+
+        except KeyError, e:
+            traceback.print_exc()
+            log.exception(e)
+            return self.fail("字段 %s 未提交" % e.message)
+
         except Exception, e:
             traceback.print_exc()
             log.exception(e)
