@@ -9,17 +9,18 @@ def log(app, changes):
     uri=app.config["SQLALCHEMY_DATABASE_URI"]
     user,passwd,host,_db=re.compile("mysql://(.+):(.+)@(.+):[0-9]+/(.+)").findall(uri)[0]
 
-    with MySQLdb.connect(user=user,passwd=passwd,host=host,db=_db,charset="utf8") as cursor:
-        for obj, action in changes:
-            cursor.execute(
-                "insert into log_sqlalchemy "
-                "(`action`,`table`,`object`,`uid`,`create_time`) VALUES (%s,%s,%s,%s,%s)",
-                (action,
-                obj.__class__.__name__,
-                obj._to_dict(obj).__str__(),
-                session[USER_SESSION]["uid"],
-                datetime.now())
-            )
+    if session.__contains__(USER_SESSION):
+        with MySQLdb.connect(user=user,passwd=passwd,host=host,db=_db,charset="utf8") as cursor:
+            for obj, action in changes:
+                cursor.execute(
+                    "insert into log_sqlalchemy "
+                    "(`action`,`table`,`object`,`uid`,`create_time`) VALUES (%s,%s,%s,%s,%s)",
+                    (action,
+                    obj.__class__.__name__,
+                    obj._to_dict(obj).__str__(),
+                    session[USER_SESSION]["uid"],
+                    datetime.now())
+                )
 
 if __name__=="__main__":
     from flask_sqlalchemy import models_committed
