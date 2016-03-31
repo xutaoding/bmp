@@ -30,7 +30,7 @@ class BaseModel(object):
     @classmethod
     def get(cls, _id, _filters=None):
         if _filters is None:
-            _filters=[]
+            _filters = []
 
         _filters.append(cls.id == _id)
         result = cls.select(_filters=_filters)
@@ -40,9 +40,9 @@ class BaseModel(object):
     def select(cls, page=None, pre_page=None, _filters=None, _orders=None):
         query = cls.query
         if _filters is None:
-            _filters=[]
+            _filters = []
         if _orders is None:
-            _orders=[]
+            _orders = []
 
         if not isinstance(_orders, list):
             _orders = [_orders]
@@ -65,40 +65,51 @@ class BaseModel(object):
             return [cls._to_dict(result) for result in query.all()]
 
     @classmethod
-    def delete(cls, _ids):
+    def delete(cls, _ids, auto_commit=True):
+        results = []
         if not isinstance(_ids, list):
             _ids = [_ids]
 
         for _id in _ids:
             result = cls.query.filter(cls.id == _id).one()
-            if hasattr(result,"is_del"):
-                result.is_del=True
+            results.append(result)
+            if hasattr(result, "is_del"):
+                result.is_del = True
             else:
                 db.session.delete(result)
-        db.session.commit()
-        return True
+        if auto_commit:
+            db.session.commit()
+        else:
+            db.session.flush()
+
+        return results[0] if len(results) == 1 else results
 
     @classmethod
-    def edit(cls, _dicts):
+    def edit(cls, _dicts, auto_commit=True):
         if not isinstance(_dicts, list):
             _dicts = [_dicts]
         results = [Database.to_cls(cls, _dict) for _dict in _dicts]
-        db.session.commit()
-        return results
+        if auto_commit:
+            db.session.commit()
+        else:
+            db.session.flush()
+        return results[0] if len(results) == 1 else results
 
     @classmethod
-    def add(cls, _dicts):
-        results=[]
-        if not isinstance(_dicts,list):
-            _dicts=[_dicts]
+    def add(cls, _dicts, auto_commit=True):
+        results = []
+        if not isinstance(_dicts, list):
+            _dicts = [_dicts]
 
         for _dict in _dicts:
-            result=cls(_dict)
+            result = cls(_dict)
             db.session.add(result)
             results.append(result)
-        db.session.commit()
-
-        return results[0] if len(results)==1 else results
+        if auto_commit:
+            db.session.commit()
+        else:
+            db.session.flush()
+        return results[0] if len(results) == 1 else results
 
     @staticmethod
     def _to_dict(self):

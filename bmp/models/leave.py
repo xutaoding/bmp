@@ -42,8 +42,8 @@ class Leave(BaseModel, db.Model):
         return leave
 
     @classmethod
-    def delete(cls, lid):
-        leave = Leave.query.filter(Leave.id == lid).one()
+    def delete(cls, _ids, auto_commit=True):
+        leave = Leave.query.filter(Leave.id == _ids).one()
         if leave.status:
             raise ExceptionEx("申请已审批,无法删除")
 

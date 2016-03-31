@@ -83,19 +83,19 @@ class Category(BaseModel, db.Model):
     is_del = db.Column(db.Boolean, default=False)
 
     @classmethod
-    def add(cls, _dict):
+    def add(cls, _dicts, auto_commit=True):
         query = Category.query \
-            .filter(Category.parent_id == _dict["parent_id"]) \
-            .filter(Category.name == _dict["name"])
+            .filter(Category.parent_id == _dicts["parent_id"]) \
+            .filter(Category.name == _dicts["name"])
 
         if query.filter(Category.is_del == False).count():
-            raise ExceptionEx("分类%s已经存在" % _dict["name"])
+            raise ExceptionEx("分类%s已经存在" % _dicts["name"])
 
         if query.filter(Category.is_del == True).count():
             category = query.one()
             category.is_del = False
         else:
-            db.session.add(Category(_dict))
+            db.session.add(Category(_dicts))
 
         db.session.commit()
         return True
@@ -111,7 +111,7 @@ class Category(BaseModel, db.Model):
         category.is_del = True
 
     @classmethod
-    def delete(cls, id):
+    def delete(cls, _ids, auto_commit=True):
         Category.__delete(id)
 
     @staticmethod
@@ -389,24 +389,24 @@ class Stock(BaseModel, db.Model):
                 setattr(self, k, v)
 
     @classmethod
-    def add(cls, _dict):
+    def add(cls, _dicts, auto_commit=True):
         '''
         固定资产编号 格式固定一下
         部门+年+月+0001
         比如：IT2015050001
-        :param _dict:
+        :param auto_commit:
         :return:
         '''
-        if not _dict.__contains__("no") or Stock.query \
-                .filter(Stock.no == _dict["no"]).count():
+        if not _dicts.__contains__("no") or Stock.query \
+                .filter(Stock.no == _dicts["no"]).count():
             raise ExceptionEx("库存编号已存在")
 
-        if not _dict.__contains__("category_id"):
+        if not _dicts.__contains__("category_id"):
             raise ExceptionEx("名称不能为空")
 
         def create_no():
             businessCategory = session[USER_SESSION]["businessCategory"]
-            today = datetime.strptime(_dict["stock_in_time"], "%Y-%m-%d")
+            today = datetime.strptime(_dicts["stock_in_time"], "%Y-%m-%d")
             year, month = today.year, today.month
             beg = datetime(year, month, 1)
             if month == 12:
@@ -419,19 +419,25 @@ class Stock(BaseModel, db.Model):
             stocks.append(0)
             return "%s%d%02d%04d" % (businessCategory.upper(), year, month, max(stocks) + 1)
 
-        _dict["no"] = create_no()
-        stock = Stock(_dict)
+        _dicts["no"] = create_no()
+        stock = Stock(_dicts)
         db.session.add(stock)
-        db.session.commit()
+
+        if auto_commit:db.session.commit()
+        else:db.session.flush()
+
         return stock
 
     @classmethod
-    def edit(cls, _dict):
-        if Stock.query.filter(Stock.no == _dict["no"]).count():
+    def edit(cls, _dicts, auto_commit=True):
+        if Stock.query.filter(Stock.no == _dicts["no"]).count():
             raise ExceptionEx("库存编号已存在")
 
-        stock = Database.to_cls(Stock, _dict)
-        db.session.commit()
+        stock = Database.to_cls(Stock, _dicts)
+
+        if auto_commit:db.session.commit()
+        else:db.session.flush()
+
         return stock
 
     @staticmethod
@@ -470,4 +476,4 @@ class Stock(BaseModel, db.Model):
 
 
 if __name__ == "__main__":
-    db.session.add(Category({"name":"test","parent_id":0}))
+    db.session.add(Category({"name": "test", "parent_id": 0}))

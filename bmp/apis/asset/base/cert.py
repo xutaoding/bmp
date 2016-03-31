@@ -2,9 +2,11 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Cert
-from bmp.tasks.mail.asset.cert import Mail
+from bmp.tasks.alert import Alert
+from datetime import timedelta
+from bmp import db
 
-#todo 短信报警
+
 class CertApi(BaseApi):
     route = ["/cert", "/cert/<int:id>"]
 
@@ -14,24 +16,31 @@ class CertApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        cert = Cert.add(submit)
-        Mail().to(cert)
+        cert = Cert.add(submit, auto_commit=False)
+        Alert().add("证书", cert, cert.end_time, timedelta(days=20))
+
+        db.session.commit()
         return self.succ()
 
     def delete(self):
         submit = self.request()
-        Cert.delete(submit["ids"].split(","))
+        cert = Cert.delete(submit["ids"].split(","), auto_commit=False)
+        Alert().delete(cert,timedelta(days=20))
+
+        db.session.commit()
         return self.succ()
 
     def put(self):
         submit = self.request()
+        cert = Cert.edit(submit, auto_commit=False)
+        Alert().add("证书", cert, cert.end_time, timedelta(days=20))
 
-        certs = Cert.edit(submit)
-        mail = Mail()
-
-        for cert in certs: mail.to(cert)
+        db.session.commit()
         return self.succ()
 
 
 if __name__ == "__main__":
-    pass
+    c = Cert.get(16)
+
+    r = Cert.edit(c, auto_commit=False)
+    print r

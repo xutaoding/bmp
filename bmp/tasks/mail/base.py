@@ -7,7 +7,7 @@ from bmp.tasks.base import BaseTask
 
 
 class BaseMail(BaseTask):
-    def send(self, to, sub, url, tpl, cc=[], date=None, **kwargs):
+    def send(self, to, sub, url, tpl, cc=[], date=None, _id=None, **kwargs):
         regx = re.compile(r"^http://([a-z.]+)/")
         host = regx.findall(request.headers["Referer"])[0]
 
@@ -18,10 +18,16 @@ class BaseMail(BaseTask):
 
         html = render_template(tpl, **kwargs)
 
-        self.add_job(mail.send, (sub, html, list(set(to)), cc, 3), date)
+        if _id:
+            self.add_job(mail.send, (sub, html, list(set(to)), cc, 3), date, _id="_".join(["mail", _id]))
+        else:
+            self.add_job(mail.send, (sub, html, list(set(to)), cc, 3), date)
 
+    def remove(self,_id):
+        _id="_".join(["mail", _id])
+        self.remove_job(_id)
 
 if __name__ == "__main__":
     from datetime import datetime
+    from bmp import app
 
-    BaseMail().send(["chenglong.yan@chinascopefinancial.com"], "test", "abc.com", tpl="", date=datetime.now())

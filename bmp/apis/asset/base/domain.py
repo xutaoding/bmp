@@ -2,36 +2,49 @@
 
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Domain
-from bmp.tasks.mail.asset.domain import Mail
+from bmp.tasks.alert import Alert
+from datetime import timedelta
+from bmp.utils.exception import ExceptionEx
+from bmp import db
 
-#todo 短信报警
+
 class DomainApi(BaseApi):
     route = ["/domain", "/domain/<int:id>"]
 
     def get(self, id=0):
-        if id:self.succ(Domain.get(id))
+        if id: self.succ(Domain.get(id))
         return self.succ(Domain.select(_orders=Domain.end_time))
 
     def post(self):
         submit = self.request()
-        domain=Domain.add(submit)
-        Mail().to(domain)
+        domain = Domain.add(submit,auto_commit=False)
+        Alert().add("域名", domain, domain.end_time, timedelta(days=30))
+
+        db.session.commit()
         return self.succ()
 
     def delete(self):
         submit = self.request()
-        Domain.delete(submit["ids"].split(","))
+
+        if len(submit["ids"].split(",")) > 1:
+            raise ExceptionEx("批量操作暂时无法使用")
+
+        domain = Domain.delete(submit["ids"].split(","),auto_commit=False)
+        Alert().delete(domain,[timedelta(30), timedelta(60)])
+
+        db.session.commit()
         return self.succ()
 
     def put(self):
-        submit=self.request()
+        submit = self.request()
 
-        domains=Domain.edit(submit)
+        if len(submit) > 1:
+            raise ExceptionEx("批量操作暂时无法使用")
 
-        mail=Mail()
-        for domain in domains:
-            mail.to(domain)
+        domain = Domain.edit(submit,auto_commit=False)
+        Alert().add("域名", domain, domain.end_time, timedelta(days=30))
 
+        db.session.commit()
         return self.succ()
 
 

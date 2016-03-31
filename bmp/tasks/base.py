@@ -41,6 +41,10 @@ class BaseTask:
         if not sched.running:
             sched.start()
 
+    def remove_job(self,_id):
+        if not sched.running:
+            sched.start()
+        sched.remove_job(_id)
 
 if __name__ == "__main__":
     pass

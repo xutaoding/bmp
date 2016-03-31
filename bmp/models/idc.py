@@ -51,8 +51,8 @@ class Idc_host_ps(BaseModel, db.Model):
         BaseModel.__init__(self, submit)
 
     @classmethod
-    def add(cls, iid):
-        idc_host = Idc_host.query.filter(Idc_host.id == iid).one()
+    def add(cls, _dicts, auto_commit=True):
+        idc_host = Idc_host.query.filter(Idc_host.id == _dicts).one()
 
         client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
 
@@ -142,30 +142,30 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         return idc_host
 
     @classmethod
-    def edit(cls, submit):
-        idc_host = Idc_host.__update(submit)
+    def edit(cls, _dicts, auto_commit=True):
+        idc_host = Idc_host.__update(_dicts)
         db.session.commit()
         return True
 
     @classmethod
-    def add(cls, submits):
+    def add(cls, _dicts, auto_commit=True):
         results = []
-        if not isinstance(submits, list):
-            submits = [submits]
+        if not isinstance(_dicts, list):
+            _dicts = [_dicts]
 
-        for submit in submits:
+        for _dict in _dicts:
             try:
-                result = {"ip": submit["ip"], "type_id": submit["type_id"], "success": False, "error": ""}
+                result = {"ip": _dict["ip"], "type_id": _dict["type_id"], "success": False, "error": ""}
                 results.append(result)
 
                 if Idc_host.query \
-                        .filter(Idc_host.ip == submit["ip"]) \
-                        .filter(Idc_host.type_id == submit["type_id"]) \
+                        .filter(Idc_host.ip == _dict["ip"]) \
+                        .filter(Idc_host.type_id == _dict["type_id"]) \
                         .count():
-                    result["error"] = "%s 已经存在" % submit["ip"]
+                    result["error"] = "%s 已经存在" % _dict["ip"]
                     continue
 
-                idc_host = Idc_host.__update(submit)
+                idc_host = Idc_host.__update(_dict)
 
                 db.session.add(idc_host)
 

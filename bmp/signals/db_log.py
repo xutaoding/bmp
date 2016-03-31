@@ -30,4 +30,4 @@ if __name__=="__main__":
 
     from bmp.models.asset import Category
 
-    print Category.edit({"id":51,"name":"441"})
+    print Category.edit({"id": 51, "name": "441"})

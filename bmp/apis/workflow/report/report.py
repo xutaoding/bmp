@@ -56,4 +56,4 @@ class ReportApi(BaseApi):
 
 
 if __name__ == "__main__":
-    Report.add({"create_time":""})
+    Report.add({"create_time": ""})
