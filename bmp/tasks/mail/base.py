@@ -28,6 +28,5 @@ class BaseMail(BaseTask):
         self.remove_job(_id)
 
 if __name__ == "__main__":
-    from datetime import datetime
-    from bmp import app
+    pass
 
