@@ -178,11 +178,5 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
 
 if __name__ == "__main__":
-    from bmp import app
-    client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
-    def exec_script(path):
-            info = client.exec_script(path,"122.144.134.12", False)
-            return json.loads(info.replace("u'", "'").replace("'", "\""))
-
-    print exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"]
+    pass
 
