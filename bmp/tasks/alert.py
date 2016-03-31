@@ -41,7 +41,7 @@ class Alert(BaseSms, BaseMail):
                              content, date=date, _id="_".join([_id, str(lead_time.days)]))
 
                 BaseMail.send(self,
-                              app.config["MAIL_ALERT"],
+                              [app.config["MAIL_ALERT"]],
                               content,
                               "",
                               "mail.alert.tpl.html",
