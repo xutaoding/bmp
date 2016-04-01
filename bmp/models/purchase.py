@@ -45,7 +45,7 @@ class PurchaseGoods(db.Model):  # 采购物品
         from bmp.models.asset import Category
         self.category = Category.query.filter(Category.id == _dict["category_id"]).one()
         self.price = _dict["price"]
-        self.spec = Category.query.filter(Category.id == _dict["spec"]).one()
+        self.spec = Category.query.filter(Category.id == _dict["spec_id"]).one()
         self.amount = _dict["amount"]
 
     @staticmethod
