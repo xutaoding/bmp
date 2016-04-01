@@ -17,7 +17,7 @@ def log(app, changes):
                     "(`action`,`table`,`object`,`uid`,`create_time`) VALUES (%s,%s,%s,%s,%s)",
                     (action,
                     obj.__class__.__name__,
-                    obj._to_dict(obj).__str__(),
+                    obj.to_dict().__str__(),
                     session[USER_SESSION]["uid"],
                     datetime.now())
                 )
