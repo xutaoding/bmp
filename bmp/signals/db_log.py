@@ -3,7 +3,7 @@ from flask import session
 from datetime import datetime
 import MySQLdb
 import re
-from bmp import log as _log
+import traceback
 
 
 def log(app, changes):
@@ -19,12 +19,13 @@ def log(app, changes):
                         "(`action`,`table`,`object`,`uid`,`create_time`) VALUES (%s,%s,%s,%s,%s)",
                         (action,
                          obj.__class__.__name__,
-                         obj.to_dict().__str__(),
+                         obj._to_dict(obj).__str__(),
                          session[USER_SESSION]["uid"],
                          datetime.now())
                     )
     except Exception, e:
-        _log.exception(e)
+        app.logger.exception(e)
+        traceback.print_exc()
 
 
 if __name__ == "__main__":

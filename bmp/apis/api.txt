@@ -51,6 +51,7 @@ rid:申请id
     project:项目名称,
     service:#服务结构
         {
+            id:service编号,
             name:服务,
             type:类型,
             database:数据库,
