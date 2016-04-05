@@ -31,7 +31,8 @@ class Mail(BaseMail):
                 "/templates/leave/approval.html",
                 "mail.leave.tpl.html",
                 leave=l,
-                ref=Ref.map(LEAVE.TYPE))
+                leave_type=Ref.map(LEAVE.TYPE)[int(l.type_id)])
 
-        except:
+        except Exception,e:
+            log.exception(e)
             raise ExceptionEx("邮件发送失败,请重试!")

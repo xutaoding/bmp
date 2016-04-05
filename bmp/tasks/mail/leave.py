@@ -22,9 +22,12 @@ class Mail(BaseMail):
                 "/templates/leave/approval.html",
                 "mail.leave.tpl.html",
                 leave=l,
-                ref=Ref.map(LEAVE.TYPE))
-        except:
+                leave_type=Ref.map(LEAVE.TYPE)[int(l.type_id)])
+        except Exception,e:
+            log.exception(e)
             raise ExceptionEx("邮件发送失败,请重试!")
 
 
 
+if __name__=="__main__":
+    print Ref.map(LEAVE.TYPE)[77]
