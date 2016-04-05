@@ -34,13 +34,6 @@ class Leave(BaseModel, db.Model):
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     approval_time = db.Column(db.DateTime)
 
-    @staticmethod
-    def approval(submit):
-        submit["approval_time"] = datetime.now().strftime("%Y-%m-%d")
-        leave = Database.to_cls(Leave, submit)
-        db.session.commit()
-        return leave
-
     @classmethod
     def delete(cls, _ids, auto_commit=True):
         leave = Leave.query.filter(Leave.id == _ids).one()
