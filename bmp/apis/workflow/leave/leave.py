@@ -9,6 +9,8 @@ from flask import session
 from bmp.const import USER_SESSION
 from datetime import timedelta
 
+from bmp import db
+
 
 class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
@@ -21,9 +23,10 @@ class LeaveApi(BaseApi):
         submit["uid"] = session[USER_SESSION]["uid"]
         submit["apply_time"] = datetime.now()
 
-        leave = Leave.add(submit)
+        leave = Leave.add(submit,auto_commit=False)
         Mail().to(leave)
 
+        db.session.commit()
         return self.succ()
 
     def delete(self, lid):
