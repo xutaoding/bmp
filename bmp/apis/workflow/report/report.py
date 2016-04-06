@@ -32,7 +32,9 @@ class ReportApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        submit["create_time"] = datetime.now()
+
+        if not submit.__contains__("create_time"):
+            submit["create_time"] = datetime.now()
 
         beg_time = (submit["create_time"]-timedelta(days=submit["create_time"].weekday())).replace(hour=0,minute=0,second=0)
         end_time = (submit["create_time"] + timedelta(days=6 - submit["create_time"].weekday())).replace(hour=23, minute=59, second=59)
