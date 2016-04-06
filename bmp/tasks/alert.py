@@ -29,7 +29,7 @@ class Alert(BaseSms, BaseMail):
             if not isinstance(lead_times, list):
                 lead_times = [lead_times]
 
-            content = "前方英雄【%s 编号:%s】即将在【%s】过期，请及时充能！！" % (
+            content = "神盾局OPS系统：前方英雄【%s 编号:%s】即将在【%s】过期，请及时充能！！" % (
                 name, str(obj.id), expire_time.strftime("%Y-%m-%d")
             )
 
