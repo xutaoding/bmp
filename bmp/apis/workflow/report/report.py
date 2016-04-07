@@ -6,6 +6,7 @@ from bmp.models.report import Report
 from datetime import datetime
 from datetime import timedelta
 from bmp.utils.exception import ExceptionEx
+from bmp.models.report import ReportTeam
 
 
 class ReportApi(BaseApi):
@@ -25,7 +26,7 @@ class ReportApi(BaseApi):
                 _filters=[Report.create_time.between(beg_time, end_time), Report.team_id == team_id])
         else:
             result = Report.select(
-                _filters=[Report.create_time.between(beg_time, end_time)])
+                _filters=[Report.create_time.between(beg_time, end_time),ReportTeam.is_del!=True],_joins=ReportTeam)
 
         return self.succ(result)
 
