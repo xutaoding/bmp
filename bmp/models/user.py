@@ -99,6 +99,7 @@ class User(db.Model):
     mobile = db.Column(db.String(128))
     title = db.Column(db.String(128))
     businessCategory = db.Column(db.String(128))
+    onboardDate = db.Column(db.DateTime)
     is_admin = db.Column(db.Boolean)
     create_time = db.Column(db.DateTime)
     last_time = db.Column(db.DateTime)
@@ -183,25 +184,31 @@ class User(db.Model):
     def update(_ldaps):
         users = User.query.all()
         user_dict = {}
+        _ldap_dict = {}
         for user in users:
-            user_dict[user.uid] = user
+            user_dict[user.uid.lower()] = user
+
+        for _ldap in _ldaps:
+            _ldap_dict[_ldap.lower()] = _ldaps[_ldap]
 
         # 删除离职的
-        for uid in set(user_dict.keys()).difference(_ldaps.keys()):
+        for uid in set(user_dict.keys()).difference(_ldap_dict.keys()):
             user_dict[uid].is_dimiss = True
 
         # 修改存在的
-        for uid in set(user_dict.keys()).intersection(_ldaps.keys()):
-            u, ldap = user_dict[uid], _ldaps[uid]
+        for uid in set(user_dict.keys()).intersection(_ldap_dict.keys()):
+            u, ldap = user_dict[uid], _ldap_dict[uid]
             u.is_dimiss = False
             for field in ldap.keys():
                 setattr(u, field, ldap[field])
 
         # 添加新增的
-        for uid in set(_ldaps.keys()).difference(user_dict.keys()):
-            user = User(_ldaps[uid])
+        for uid in set(_ldap_dict.keys()).difference(user_dict.keys()):
+            _user = _ldap_dict[uid]
+            user = User(_user)
             user.create_time = datetime.now()
             user.last_time = datetime.now()
+            user.onboardDate = datetime.strptime(_user["x-csf-emp-onboardDate"],"%Y%m%d")
             user.is_admin = False
             db.session.add(user)
 

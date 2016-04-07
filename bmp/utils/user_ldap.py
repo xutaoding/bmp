@@ -44,7 +44,8 @@ def search(uid="*"):
             "title",
             "x-csf-emp-1stManager",
             "x-csf-emp-2ndManager",  # 审批人
-            "cn"
+            "cn",
+            "x-csf-emp-onboardDate"
         ]
     )
 
@@ -115,4 +116,4 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__ == "__main__":
-    print(search("ryan.wang"))
+    print search("chenglong.yan")
