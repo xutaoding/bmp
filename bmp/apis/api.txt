@@ -371,6 +371,7 @@ id:合同id
 {
     name:www.baidu.com,#域名
     sp:万网,#服务商
+    instance_amount:1,#实例数量
     end_time:2000-01-01,#到期时间
 }
 

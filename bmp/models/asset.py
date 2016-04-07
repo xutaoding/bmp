@@ -17,6 +17,7 @@ class Domain(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     sp = db.Column(db.String(128))
+    instance_amount = db.Column(db.Integer,default=1)
     end_time = db.Column(db.DateTime)
 
 
