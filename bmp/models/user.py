@@ -200,7 +200,10 @@ class User(db.Model):
             u, ldap = user_dict[uid], _ldap_dict[uid]
             u.is_dimiss = False
             for field in ldap.keys():
-                setattr(u, field, ldap[field])
+                if field == "x-csf-emp-onboardDate":
+                    u.onboardDate=ldap[field]
+                else:
+                    setattr(u, field, ldap[field])
 
         # 添加新增的
         for uid in set(_ldap_dict.keys()).difference(user_dict.keys()):
@@ -221,4 +224,5 @@ class User(db.Model):
 
 
 if __name__ == "__main__":
-    pass
+    import bmp.utils.user_ldap as ldap
+    User.update(ldap.all())
