@@ -5,6 +5,8 @@ from bmp.apis.base import BaseApi
 from bmp.models.report import Report,ReportTeam
 from datetime import datetime
 from datetime import timedelta
+from flask import session
+from bmp.const import USER_SESSION
 
 
 class Report_teamApi(BaseApi):
@@ -15,6 +17,7 @@ class Report_teamApi(BaseApi):
 
     def post(self):
         submit=self.request()
+        submit["create_uid"]=session[USER_SESSION]["uid"]
         ReportTeam.add(submit)
         return self.succ()
 
