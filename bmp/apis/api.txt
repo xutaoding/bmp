@@ -694,6 +694,7 @@ team_id:团队id
 rid:周报id
 参数:
 {
+    create_time:创建时间 格式:%Y-%m-%d
     score:评分
     prog:完成度
     schedule:周工作计划

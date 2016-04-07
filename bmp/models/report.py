@@ -18,6 +18,7 @@ class ReportTeam(BaseModel,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     is_del = db.Column(db.Boolean,default=False)
+    create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
 
 
 class Report(BaseModel, db.Model):

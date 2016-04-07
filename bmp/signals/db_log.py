@@ -29,11 +29,4 @@ def log(app, changes):
 
 
 if __name__ == "__main__":
-    from flask_sqlalchemy import models_committed
-    from bmp import app
-
-    models_committed.connect(log, app)
-
-    from bmp.models.asset import Category
-
-    print Category.edit({"id": 51, "name": "441"})
+    pass

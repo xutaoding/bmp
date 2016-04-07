@@ -27,5 +27,4 @@ class IdcApi(BaseApi):
 
 
 if __name__=="__main__":
-    from bmp.models.ref import Ref
-    #print Idc_host.add({"ip":"192.168.250.2","type_id":"2"})
+    pass

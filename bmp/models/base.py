@@ -37,18 +37,26 @@ class BaseModel(object):
         return result[0] if result else result
 
     @classmethod
-    def select(cls, page=None, pre_page=None, _filters=None, _orders=None):
+    def select(cls, page=None, pre_page=None, _filters=None, _orders=None, _joins=None):
         query = cls.query
         if _filters is None:
             _filters = []
         if _orders is None:
             _orders = []
+        if _joins is None:
+            _joins = []
+
+        if not isinstance(_joins, list):
+            _joins = [_joins]
 
         if not isinstance(_orders, list):
             _orders = [_orders]
 
         if not isinstance(_filters, list):
             _filters = [_filters]
+
+        for _join in _joins:
+            query = query.join(_join)
 
         for _filter in _filters:
             query = query.filter(_filter)
