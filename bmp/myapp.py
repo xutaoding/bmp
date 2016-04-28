@@ -1,20 +1,19 @@
 # coding=utf-8
 import logging
-import sys
-import re
 import os
+import re
+import sys
 
-from flask import Flask
-from werkzeug.routing import BaseConverter
-from werkzeug.contrib.cache import SimpleCache
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ProcessPoolExecutor
-
-from utils import path
-from database import Database
-
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask
 from flask_sqlalchemy import before_models_committed
+from werkzeug.contrib.cache import SimpleCache
+from werkzeug.routing import BaseConverter
+
+from database import Database
+from utils import path
 
 
 class _RegexConverter(BaseConverter):
@@ -71,7 +70,6 @@ class Myapp(Flask):
         from bmp.signals.db_log import log
         before_models_committed.connect(log, self)
 
-
     def __init__(self, name):
         Flask.__init__(self, name)
         self.__add_apis = False
@@ -85,9 +83,6 @@ class Myapp(Flask):
         self.db = Database(self)
         self.cache = SimpleCache()
         self.__init_signals()
-
-
-
 
     def __add_api_rule(self, module):
         self.__add_rule("bmp.apis.%s" % module, "Api",

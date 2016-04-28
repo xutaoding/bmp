@@ -1,15 +1,13 @@
 # coding=utf-8
-from bmp import db
-from bmp.models.base import BaseModel
-from bmp.database import Database
-from datetime import datetime
-from bmp.utils.exception import ExceptionEx
-from bmp.utils.ssh import Client
 import json
+from datetime import datetime
+
 from bmp import app
-import traceback
-from sqlalchemy import or_
+from bmp import db
 from bmp import log
+from bmp.database import Database
+from bmp.models.base import BaseModel
+from bmp.utils.ssh import Client
 
 
 class Idc_host_disk(BaseModel, db.Model):
@@ -117,7 +115,9 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
             idc_host = Database.to_cls(Idc_host, submit)
             return idc_host
 
-        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"].replace("\n","&#10;").replace(" ","&#160;")
+        submit["ssh_info"] = exec_script("/root/csfscript/host_info/get_ssh_info.py")["host_ssh_info"].replace("\n",
+                                                                                                               "&#10;").replace(
+            " ", "&#160;")
         submit["system_time"] = datetime.strptime(
             exec_script("/root/csfscript/host_info/get_system_time.py")["system_time"],
             "%Y-%m-%d %I:%M:%S %p"
@@ -128,8 +128,8 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
         host_disks = submit.pop("host_disks")
 
         for key in submit:
-            if isinstance(submit[key],list):
-                submit[key]=",".join(submit[key])
+            if isinstance(submit[key], list):
+                submit[key] = ",".join(submit[key])
 
         idc_host = Database.to_cls(Idc_host, submit)
         idc_host.ps_info = [Database.to_cls(Idc_host_ps, _dict) for _dict in
@@ -179,4 +179,3 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
 if __name__ == "__main__":
     pass
-
