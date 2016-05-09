@@ -10,6 +10,9 @@ from bmp.const import USER_SESSION
 from datetime import timedelta
 
 from bmp import db
+import pandas as pd
+
+from bmp.utils.exception import ExceptionEx
 
 
 class LeaveApi(BaseApi):
@@ -22,6 +25,9 @@ class LeaveApi(BaseApi):
         submit = self.request()
         submit["uid"] = session[USER_SESSION]["uid"]
         submit["apply_time"] = datetime.now()
+        if Leave.check_overlap(submit):
+            raise ExceptionEx("起止时间不能与已提交申请重叠,"
+                              "可在请假审批中修改已提交的申请")
 
         leave = Leave.add(submit,auto_commit=False)
         Mail().to(leave)

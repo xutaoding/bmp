@@ -1,17 +1,12 @@
 # coding=utf-8
 
-from flask import session
 from sqlalchemy import or_, and_
-
-from bmp import db
-from bmp.database import Database
-from bmp.const import USER_SESSION
-from bmp.utils.exception import ExceptionEx
-from bmp.utils import user_ldap
-from bmp.const import LEAVE
-from datetime import datetime
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from base import BaseModel
+from bmp import db
+from bmp.const import LEAVE
+from bmp.utils.exception import ExceptionEx
 
 
 class Leave(BaseModel, db.Model):
@@ -43,6 +38,21 @@ class Leave(BaseModel, db.Model):
         db.session.delete(leave)
         db.session.commit()
         return True
+
+    @staticmethod
+    def check_overlap(submit):
+        try:
+            leave = Leave(submit)
+            beg, end = leave.begin_time, leave.end_time
+
+            return True if Leave.query.filter(or_(
+                and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
+                and_(Leave.begin_time <= beg, Leave.end_time >= beg),
+                and_(Leave.begin_time <= end, Leave.end_time >= end))).one() else False
+        except NoResultFound:
+            return False
+        except MultipleResultsFound:
+            return True
 
     @staticmethod
     def unapprovaled(page=0, pre_page=None):
@@ -105,4 +115,4 @@ class LeaveEvent(BaseModel, db.Model):
 if __name__ == "__main__":
     from datetime import datetime
 
-    LeaveEvent.between(datetime(2016, 1, 15), datetime(2016, 1, 15))
+    print Leave.check_overlap(datetime(2016, 5, 4), datetime(2016, 5, 5))
