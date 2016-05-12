@@ -463,7 +463,7 @@ class Stock(BaseModel, db.Model):
 
     @classmethod
     def get(cls, _id, _filters=None):
-        return Stock._to_dict(Stock.query.filter(Stock.id == id).one(), True)
+        return Stock._to_dict(Stock.query.filter(Stock.id == _id).one(), True)
 
     @classmethod
     def select(cls, page=None, pre_page=None, _filters=None, _orders=None):
