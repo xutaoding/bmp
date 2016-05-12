@@ -21,7 +21,7 @@ class Idc_searchApi(BaseApi):
 
                 if is_fuzzy:
                     _filters.append(or_(*[
-                         getattr(_cls, key).like(arg) for arg in request.args.getlist(key)
+                         getattr(_cls, key).like("%"+arg+"%") for arg in request.args.getlist(key)
                         ]))
                 else:
                     _filters.append(or_(*[
@@ -43,5 +43,5 @@ class Idc_searchApi(BaseApi):
 
 
 if __name__ == "__main__":
-    for host in Idc_host.select(1,10,_joins=[Idc_host_disk, Idc_host_interface, Idc_host_ps],_filters=Idc_host_interface.ip_address.like("122.144.134.95"))["items"]:
+    for host in Idc_host.select(1,10,_joins=[Idc_host_disk, Idc_host_interface, Idc_host_ps],_filters=Idc_host_interface.ip_address.like("122.144.134.9"))["items"]:
         print host
