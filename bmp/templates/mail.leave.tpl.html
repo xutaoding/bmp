@@ -16,10 +16,11 @@
 <div class='content'>
     <p>类型:{{ leave_type }}</p>
     <p>申请人:{{ leave.uid }}</p>
-    <p>理由:{{ leave.reson}}</p>
     <P>起止时间:{{ leave.begin_time.strftime("%Y-%m-%d")}}/{{ leave.end_time.strftime("%Y-%m-%d")}}</P>
     <p>天数:{{ leave.days }}</p>
     <p>电话:{{ leave.tel }}</p>
+    <p>理由:{{ leave.reson}}</p>
+    <p>反馈:{{ leave.feedback }}</p>
 </div>
 
 </body>

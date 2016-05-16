@@ -45,7 +45,9 @@ class Leave(BaseModel, db.Model):
             leave = Leave(submit)
             beg, end = leave.begin_time, leave.end_time
 
-            return True if Leave.query.filter(or_(
+            return True if Leave.query\
+                .filter(~Leave.status.like(LEAVE.FAIL))\
+                .filter(Leave.uid.like(leave.uid)).filter(or_(
                 and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
                 and_(Leave.begin_time <= beg, Leave.end_time >= beg),
                 and_(Leave.begin_time <= end, Leave.end_time >= end))).one() else False
