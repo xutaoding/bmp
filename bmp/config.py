@@ -38,7 +38,7 @@ class Config(object):
     SSH_USER = "depops"
     SSH_PASSWORD = "Vulooz5S"
 
-    SSH_IDC_HOST = "192.168.250.254"
+    SSH_IDC_HOST = "122.144.134.95"
     SSH_IDC_USER = "opsUser"
     SSH_IDC_PASSWORD = "chin@sc0pe321"
 

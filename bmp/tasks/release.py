@@ -1,10 +1,10 @@
 # coding=utf-8
-from datetime import datetime
 import threading
+from datetime import datetime
 
+from bmp import app, db, log
 from bmp.models.release import Release
 from bmp.utils.ssh import Client
-from bmp import app, db, log
 
 """
 122.144.134.3	122.144.134.3
@@ -19,7 +19,11 @@ from bmp import app, db, log
 
 ip_dict = {
     "sg-com-csf-web-db.cwiif0vzcyt6.ap-southeast-1.rds.amazonaws.com": "54.251.56.179",
-    "mysqldb-01.csilcsoh66yg.rds.cn-north-1.amazonaws.com.cn": "54.223.37.5"
+    "mysqldb-01.csilcsoh66yg.rds.cn-north-1.amazonaws.com.cn": "54.223.37.5",
+    "122.144.134.3": "192.168.251.3",
+    "122.144.134.6": "192.168.251.6",
+    "122.144.134.95": "192.168.251.95",
+    "122.144.134.21": "192.168.251.21"
 }
 
 
@@ -64,7 +68,7 @@ def deploy_database(rid):
     r.is_deploying = True
 
     dbtype = r.service.type
-    data = {"dbs":[]}
+    data = {"dbs": []}
     for d in r.service.databases:
         dbs = {"dbtype": dbtype}
         dbs["dbname"] = d.name
