@@ -16,7 +16,7 @@
 <div class='content'>
     <p>类型:{{ leave_type }}</p>
     <p>申请人:{{ leave.uid }}</p>
-    <P>起止时间:{{ leave.begin_time.strftime("%Y-%m-%d")}}/{{ leave.end_time.strftime("%Y-%m-%d")}}</P>
+    <P>起止时间:{{ leave.begin_time.strftime("%Y-%m-%d %H:%M:%S")}}/{{ leave.end_time.strftime("%Y-%m-%d %H:%M:%S")}}</P>
     <p>天数:{{ leave.days }}</p>
     <p>电话:{{ leave.tel }}</p>
     <p>理由:{{ leave.reson}}</p>
