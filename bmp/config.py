@@ -33,12 +33,11 @@ class Config(object):
     PORT = 5000
     MAX_CONTENT_LENGTH = 1 * 1023 * 1024 * 1024
     DOMAIN = "http://ops.chinascope.net/"
-
-    SSH_HOST = "192.168.250.200"
+    SSH_HOST="122.144.134.95"
     SSH_USER = "depops"
     SSH_PASSWORD = "Vulooz5S"
 
-    SSH_IDC_HOST = "122.144.134.95"
+    SSH_IDC_HOST="192.168.250.254"
     SSH_IDC_USER = "opsUser"
     SSH_IDC_PASSWORD = "chin@sc0pe321"
 
