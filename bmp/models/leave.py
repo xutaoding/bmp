@@ -89,7 +89,7 @@ class Leave(BaseModel, db.Model):
     @staticmethod
     def search(begin_time, end_time, name):
         query = Leave.between(begin_time, end_time, query_type=True) \
-            .filter(Leave.approval_uid.ilike("%" + name + "%"))
+            .filter(Leave.uid.ilike("%" + name + "%"))
 
         return [Leave._to_dict(l) for l in query.all()]
 
