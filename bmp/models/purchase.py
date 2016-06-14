@@ -1,17 +1,17 @@
 # coding=utf-8
-from datetime import datetime
 import collections
+from datetime import datetime
 
 from flask import session
 from sqlalchemy import or_
 
-from bmp import db
-from bmp.const import USER_SESSION
-from bmp.const import PURCHASE
+import bmp.utils.timeutil as time
 import bmp.utils.user_ldap as ldap
+from bmp import db
+from bmp.const import PURCHASE
+from bmp.const import USER_SESSION
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-import bmp.utils.timeutil as time
 
 purchase_supplier = db.Table("purchase_supplier",
                              db.Column("purchase_id", db.Integer, db.ForeignKey("purchase.id")),
@@ -49,7 +49,7 @@ class PurchaseGoods(db.Model):  # 采购物品
         self.amount = _dict["amount"]
 
     @staticmethod
-    def _to_dict(self,inc_purchase=False):
+    def _to_dict(self, inc_purchase=False):
         _dict = self.to_dict()
         category = self.category
         spec = self.spec
@@ -61,25 +61,24 @@ class PurchaseGoods(db.Model):  # 采购物品
         if spec:
             _dict["spec"] = spec.to_dict()
 
-        for k,v in purchase.to_dict().items():
+        for k, v in purchase.to_dict().items():
             if not _dict.__contains__(k):
-                _dict[k]=v
+                _dict[k] = v
         return _dict
 
     @staticmethod
     def between(beg, end):
         return [
-            PurchaseGoods._to_dict(p,True)
+            PurchaseGoods._to_dict(p, True)
             for p in PurchaseGoods.query
                 .join(Purchase)
-                .join(PurchaseApproval,PurchaseApproval.purchase_id==PurchaseGoods.purchase_id)
-                .filter(PurchaseApproval.status!=PURCHASE.FAIL)
-                .filter(Purchase.is_finished==True)
-                .filter(Purchase.is_draft==False)
-                .filter(Purchase.apply_time>=beg)
-                .filter(Purchase.apply_time<=end).all()
-        ]
-
+                .join(PurchaseApproval, PurchaseApproval.purchase_id == PurchaseGoods.purchase_id)
+                .filter(PurchaseApproval.status != PURCHASE.FAIL)
+                .filter(Purchase.is_finished == True)
+                .filter(Purchase.is_draft == False)
+                .filter(Purchase.apply_time >= beg)
+                .filter(Purchase.apply_time <= end).all()
+            ]
 
 
 class PurchaseImg(db.Model):  # 比价图片
@@ -170,7 +169,7 @@ class Purchase(db.Model):
     approvals = db.relationship("PurchaseApproval")
     contract = db.relationship("Contract", uselist=False, backref=db.backref("purchase"))
     imgs = db.relationship("PurchaseImg")
-    goods = db.relationship("PurchaseGoods",backref=db.backref("purchase"))
+    goods = db.relationship("PurchaseGoods", backref=db.backref("purchase"))
     supplier = db.relationship("Supplier",
                                secondary=purchase_supplier,
                                backref=db.backref("purchases"),
@@ -198,7 +197,7 @@ class Purchase(db.Model):
 
         self.goods = [Database.to_cls(PurchaseGoods, g) for g in goods]
         self.supplier = supplier
-        if isinstance(imgs,list): self.imgs = [Database.to_cls(PurchaseImg, img) for img in imgs]
+        if isinstance(imgs, list): self.imgs = [Database.to_cls(PurchaseImg, img) for img in imgs]
         if contract: self.contract = contract
         self.use = submit["use"]
         if submit.__contains__("reson"):
@@ -396,21 +395,16 @@ class Purchase(db.Model):
                 _export.append(_dict)
         return _export
 
-
     @staticmethod
     def between(beg, end):
         return [
             Purchase._to_dict(p)
             for p in Purchase.query
-                .filter(Purchase.is_finished==True)\
-                .filter(Purchase.is_draft==False)\
-                .filter(Purchase.apply_time>=beg)\
-                .filter(Purchase.apply_time<=end).all()
-        ]
-
-
-
-
+                .filter(Purchase.is_finished == True) \
+                .filter(Purchase.is_draft == False) \
+                .filter(Purchase.apply_time >= beg) \
+                .filter(Purchase.apply_time <= end).all()
+            ]
 
 
 if __name__ == "__main__":
