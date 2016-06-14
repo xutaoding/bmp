@@ -45,6 +45,9 @@ class Config(object):
     SMS_USER = "cf_chinascope"
     SMS_PASSWORD = "zKqVjm"
 
+    MONGO_HR_HOST = "192.168.100.40"
+    MONGO_HR_DATABASE = "ichinascope"
+
 
 class Test(Config):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp_test"
