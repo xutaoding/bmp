@@ -9,7 +9,7 @@ from bmp.tasks.base import BaseTask
 class BaseMail(BaseTask):
     def send(self, to, sub, url, tpl, cc=[], date=None, _id=None, **kwargs):
         regx = re.compile(r"^http://([a-z.]+)/")
-        host = regx.findall(request.headers["Referer"])[0]
+        host = regx.findall(request.headers["Referer"])[0] if request.headers.__contains__("Referer") else ""
 
         if "dev" in host: sub = u"【测试】 %s" % sub
 
