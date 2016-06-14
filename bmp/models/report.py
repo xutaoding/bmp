@@ -1,10 +1,6 @@
 # coding:utf8
 from bmp import db
 from bmp.models.base import BaseModel
-from sqlalchemy.orm import validates
-from datetime import datetime
-from datetime import timedelta
-from bmp.utils.exception import ExceptionEx
 
 
 class ReportIssue(BaseModel, db.Model):
@@ -14,11 +10,24 @@ class ReportIssue(BaseModel, db.Model):
     report_id = db.Column(db.Integer, db.ForeignKey("report.id"))
 
 
+class ReportEditor(BaseModel, db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    editor_uid = db.Column(db.String(128),db.ForeignKey("user.uid"))
+    team_id = db.Column(db.Integer, db.ForeignKey("report_team.id"))
+
+
 class ReportTeam(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     is_del = db.Column(db.Boolean, default=False)
     create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+    editors = db.relationship("ReportEditor")
+
+    @staticmethod
+    def _to_dict(self):
+        _dict=self.to_dict()
+        _dict["editors"] = [ReportEditor._to_dict(editor) for editor in self.editors]
+        return _dict
 
 
 class Report(BaseModel, db.Model):

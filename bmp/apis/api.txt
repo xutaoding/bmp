@@ -734,6 +734,19 @@ rid:团队id
 rid 团队id
 
 
+新增编辑权限:post /report/editor/<int:tid>
+tid:团队id
+
+参数:
+{
+    editor_uid:编辑人
+}
+
+删除编辑权限:delete /report/editor/<int:tid>/<int:eid>
+tid:团队id
+eid:编辑人
+
+
 文件上传/下载------------------------------------------------
 上传文件:post /upload
 下载文件:get /upload?path=文件路径
