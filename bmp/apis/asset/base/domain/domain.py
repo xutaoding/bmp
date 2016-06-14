@@ -1,11 +1,12 @@
 # coding: utf-8
 
+from datetime import timedelta
+
+from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Domain
 from bmp.tasks.alert import Alert
-from datetime import timedelta
 from bmp.utils.exception import ExceptionEx
-from bmp import db
 
 
 class DomainApi(BaseApi):
@@ -17,7 +18,7 @@ class DomainApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        domain = Domain.add(submit,auto_commit=False)
+        domain = Domain.add(submit, auto_commit=False)
         Alert().add("域名", domain, domain.end_time, timedelta(days=30))
 
         db.session.commit()
@@ -29,8 +30,8 @@ class DomainApi(BaseApi):
         if len(submit["ids"].split(",")) > 1:
             raise ExceptionEx("批量操作暂时无法使用")
 
-        domain = Domain.delete(submit["ids"].split(","),auto_commit=False)
-        Alert().delete(domain,[timedelta(30), timedelta(60)])
+        domain = Domain.delete(submit["ids"].split(","), auto_commit=False)
+        Alert().delete(domain, [timedelta(30), timedelta(60)])
 
         db.session.commit()
         return self.succ()
@@ -41,12 +42,8 @@ class DomainApi(BaseApi):
         if len(submit) > 1:
             raise ExceptionEx("批量操作暂时无法使用")
 
-        domain = Domain.edit(submit,auto_commit=False)
+        domain = Domain.edit(submit, auto_commit=False)
         Alert().add("域名", domain, domain.end_time, timedelta(days=30))
 
         db.session.commit()
         return self.succ()
-
-
-if __name__ == "__main__":
-    pass
