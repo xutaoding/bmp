@@ -101,7 +101,7 @@ class Myapp(Flask):
         app.add_url_rule("/",view_func=IndexView.as_view("index"))
         '''
         cls_name = module.split(".")[-1]
-
+        print "import %s" %module
         exec ("import %s" % (module))
 
         cls_name = cls_name.capitalize() + suffix

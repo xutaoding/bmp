@@ -1,6 +1,6 @@
 # coding=utf-8
 from datetime import datetime
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 import bmp.utils.timeutil as time
 
 class Database(SQLAlchemy):

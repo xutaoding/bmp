@@ -5,6 +5,10 @@
 <string:*>:字符串参数
 <int:*>:整型参数
 
+
+获取密钥:get /login/pubkey
+
+
 登录:get  /login/<string:uid>/<string:pwd>
 uid:用户名
 pwd:密码

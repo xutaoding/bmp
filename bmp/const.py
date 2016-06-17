@@ -1,5 +1,6 @@
 # coding: utf-8
 USER_SESSION = "user"
+KEY_SESSION = "key"
 
 REFS = {
     "项目名称": ["ichinascope", "chinascopefinancial", "基金", "智投", "数库云", "数库港", "后台系统"],
