@@ -26,13 +26,13 @@ class LoginApi(BaseApi):
 
         pkey = session[KEY_SESSION]
         prikey = rsa.PrivateKey(pkey["n"], pkey["e"], pkey["d"], pkey["p"], pkey["q"])
-        uid,pwd = rsa.decrypt(uid,prikey),rsa.decrypt(pwd,prikey)
+        uid = rsa.decrypt(bytearray.fromhex(uid), prikey)
+        pwd = rsa.decrypt(bytearray.fromhex(pwd), prikey)
 
-        result, _user = user_ldap.auth(uid,pwd)
+        result, _user = user_ldap.auth(uid, pwd)
         if not result:
             return self.fail("用户名或密码错误")
 
-        
         User.add(_user)
         session[USER_SESSION] = _user
         return self.succ(session[USER_SESSION])

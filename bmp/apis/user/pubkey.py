@@ -1,4 +1,5 @@
 # coding: utf-8
+
 import rsa
 from flask import session
 
@@ -15,14 +16,17 @@ class PubkeyApi(BaseApi):
     def get(self):
         pub, pri = rsa.newkeys(1024)
         session[KEY_SESSION] = {
-                "d": pri.d,
-                "e": pri.e,
-                "n": pri.n,
-                "p": pri.p,
-                "q": pri.q
+            "n": pri.n,
+            "e": pri.e,
+            "d": pri.d,
+            "p": pri.p,
+            "q": pri.q
         }
-
         return self.succ({
-            "n": hex(pub.n)[2:],
-            "e": hex(pub.e)[2:]
+            "n": hex(pub.n)[2:-1],
+            "e": hex(pub.e)[2:],
+            "pri": {
+                "n": str(pri.n),
+                "e": str(pri.e)
+            }
         })
