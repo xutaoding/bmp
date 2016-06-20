@@ -24,9 +24,5 @@ class PubkeyApi(BaseApi):
         }
         return self.succ({
             "n": hex(pub.n)[2:-1],
-            "e": hex(pub.e)[2:],
-            "pri": {
-                "n": str(pri.n),
-                "e": str(pri.e)
-            }
+            "e": hex(pub.e)[2:]
         })
