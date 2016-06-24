@@ -1,4 +1,5 @@
 # coding: utf-8
+from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Category
 
@@ -15,16 +16,20 @@ class CategoryApi(BaseApi):
         return self.succ()
 
     def delete(self, id):
-        Category.delete(id)
+        Category.delete(id, auto_commit=False)
+
+        db.session.commit()
         return self.succ()
 
     def put(self, id):
         submit = self.request()
-        submit["id"]=id
+        submit["id"] = id
 
         Category.edit(submit)
         return self.succ()
 
 
 if __name__ == "__main__":
-    pass
+    Category.delete(93,auto_commit=False)
+
+    db.session.commit()

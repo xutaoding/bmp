@@ -106,14 +106,14 @@ class Category(BaseModel, db.Model):
         category = Category.query.filter(Category.parent_id == id)
 
         for child in category.all():
-            Category.__delete(child.to_dict())
+            Category.__delete(child.id)
 
         category = Category.query.filter(Category.id == id).one()
         category.is_del = True
 
     @classmethod
     def delete(cls, _ids, auto_commit=True):
-        Category.__delete(id)
+        Category.__delete(_ids)
 
     @staticmethod
     def __select_sub(parent_id):
