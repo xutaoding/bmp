@@ -34,14 +34,12 @@ class Myapp(Flask):
 
     def __init_log(self):
         log_fmt = logging.Formatter("%(asctime)s %(message)s")
-        fileHandler = logging.FileHandler("%s/bmp.log" % self.root_path)
-        fileHandler.setLevel(logging.DEBUG)
-        fileHandler.setFormatter(log_fmt)
+
         streamHandler = logging.StreamHandler()
-        streamHandler.setLevel(logging.DEBUG)
+        streamHandler.setLevel(logging.NOTSET)
         streamHandler.setFormatter(log_fmt)
+
         self.logger.addHandler(streamHandler)
-        self.logger.addHandler(fileHandler)
 
     def __init_config(self):
         r = re.compile("(.+)\.cfg")
@@ -58,7 +56,7 @@ class Myapp(Flask):
                 "default": SQLAlchemyJobStore(url=self.config["SQLALCHEMY_DATABASE_URI"])
             },
             executors={
-                "default": ProcessPoolExecutor(1)
+                "default": ProcessPoolExecutor(10)
             },
             job_defaults={"coalesce": False, "max_instances": 1}
         )
@@ -101,7 +99,7 @@ class Myapp(Flask):
         app.add_url_rule("/",view_func=IndexView.as_view("index"))
         '''
         cls_name = module.split(".")[-1]
-        print "import %s" %module
+        print "import %s" % module
         exec ("import %s" % (module))
 
         cls_name = cls_name.capitalize() + suffix

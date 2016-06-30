@@ -1,8 +1,11 @@
 # coding: utf-8
-from flask import render_template
-import bmp.utils.mail as mail
 import re
+
+from flask import render_template
 from flask import request
+
+import bmp.utils.mail as mail
+from bmp import log
 from bmp.tasks.base import BaseTask
 
 
@@ -18,15 +21,19 @@ class BaseMail(BaseTask):
 
         html = render_template(tpl, **kwargs)
 
-        if _id:
-            self.add_job(mail.send, (sub, html, list(set(to)), cc, 3), date, _id="_".join(["mail", _id]))
-        else:
-            self.add_job(mail.send, (sub, html, list(set(to)), cc, 3), date)
+        to = list(set(to))
 
-    def remove(self,_id):
-        _id="_".join(["mail", _id])
+        if _id:
+            log.info("mailto %s %s _id" % (";".join(to), sub))
+            self.add_job(mail.send, (sub, html, to, cc, 3), date, _id="_".join(["mail", _id]))
+        else:
+            log.info("mailto %s %s" % (";".join(to), sub))
+            self.add_job(mail.send, (sub, html, to, cc, 3), date)
+
+    def remove(self, _id):
+        _id = "_".join(["mail", _id])
         self.remove_job(_id)
+
 
 if __name__ == "__main__":
     pass
-
