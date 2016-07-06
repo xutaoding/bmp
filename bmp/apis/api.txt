@@ -751,6 +751,87 @@ tid:团队id
 eid:编辑人
 
 
+
+权限申请相关------------------------------------------------
+获取权限申请列表:get /access
+
+新增权限申请:post /access
+修改权限申请:put /access/<int:aid>
+aid:申请id
+
+参数:
+{
+    content:权限申请内容 详见权限申请内容段
+    approval_uid:审批人
+    copy_to_uid:抄送人
+    apply_reson:申请理由
+}
+权限申请内容:
+{
+    name:"端口规则",
+    args:{
+        server_addr:服务器地址,
+        server_type:服务器类型
+    }
+}
+{
+    name:"vpn",
+    args:{}
+}
+{
+    name:"svn",
+    args:{
+        path:路径,
+        mode:权限
+    }
+}
+{
+    name:"上网规则",
+    args:{
+        rule:["规则内容1","规则内容2"]
+    }
+}
+{
+    name:"wifi",
+    args:{
+        mac:"mac地址"
+    }
+}
+{
+    name:"服务器",
+    args:{
+        src:"源服务器",
+        dst:"靶服务器",
+        type:"类型",
+        port:"端口"
+    }
+}
+{
+    name:"数据库",
+    args:{
+        type:"类型",
+        db:"数据库",
+        table:"表名",
+        server:"服务器",
+        mode:"权限"
+    }
+}
+
+删除权限申请:delete /access/<int:aid>
+aid:申请id
+
+获取权限申请历史记录:get /access/history
+
+审批权限申请:/access/approval/<int:aid>
+aid:申请id
+参数:
+{
+    status:当前状态 #已确认,退回
+    approval_reson:审批理由
+}
+
+
+
 文件上传/下载------------------------------------------------
 上传文件:post /upload
 下载文件:get /upload?path=文件路径

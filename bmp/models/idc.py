@@ -179,4 +179,4 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
 if __name__ == "__main__":
     client = Client(app.config["SSH_IDC_HOST"], app.config["SSH_IDC_USER"], app.config["SSH_IDC_PASSWORD"])
-    client.exec_script("/root/csfscript/host_info/get_host_info.py","122.144.134.170", False)
+    client.exec_script("/root/csfscript/host_info/get_host_info.py", "122.144.134.170", False)

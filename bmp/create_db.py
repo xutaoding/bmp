@@ -12,6 +12,7 @@ from bmp.models.leave import *
 from bmp.models.idc import *
 from bmp.models.report import *
 from bmp.models.log import LogSqlalchemy
+from bmp.models.access import *
 
 from bmp import db
 

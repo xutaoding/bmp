@@ -2,14 +2,14 @@
 from datetime import datetime
 
 from flask import session
+from sqlalchemy import or_
 
 from bmp import db
-from bmp.const import USER_SESSION
 from bmp.const import DEFAULT_GROUP
-from bmp.utils.exception import ExceptionEx
 from bmp.const import RELEASE, RELEASE_SERVICE
+from bmp.const import USER_SESSION
 from bmp.database import Database
-from sqlalchemy import or_
+from bmp.utils.exception import ExceptionEx
 
 
 class ReleaseLog(db.Model):
@@ -36,6 +36,7 @@ class ReleaseTable(db.Model):
     @staticmethod
     def _to_dict(self):
         return self.to_dict()
+
 
 class ReleaseDatabase(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -195,7 +196,7 @@ class Release(db.Model):
             if "release_time" == k:
                 setattr(self, k, datetime.strptime(v, "%Y-%m-%d  %H:%M"))
             elif "service" == k:
-                self.service=Database.to_cls(ReleaseService,v)
+                self.service = Database.to_cls(ReleaseService, v)
             else:
                 setattr(self, k, v)
 
@@ -310,7 +311,7 @@ class Release(db.Model):
         from bmp.models.user import User
         user = User.query.filter(User.uid == session[USER_SESSION]["uid"]).one()
 
-        release = Database.to_cls(Release,submit)
+        release = Database.to_cls(Release, submit)
         release.approvals = []
         release.apply_uid = user.uid
         if user.groups:
@@ -358,11 +359,9 @@ class Release(db.Model):
         db.session.commit()
         return True
 
-
-
     @staticmethod
     def delete(pid):
-        release=Release.query.filter(Release.id == pid).one()
+        release = Release.query.filter(Release.id == pid).one()
         if not release.is_draft:
             raise ExceptionEx("该申请已提交,无法删除")
 

@@ -1,6 +1,6 @@
 # coding=utf-8
-from datetime import datetime
 import json
+from datetime import datetime
 
 from flask import session
 
@@ -8,7 +8,6 @@ from bmp import db
 from bmp.const import USER_SESSION, PROJECT
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-
 
 
 class ProjectHistory(db.Model):
@@ -221,15 +220,13 @@ class Project(db.Model):
     def add(_dict):
         from bmp.models.user import User
 
-
         if Project.query.filter(Project.name == _dict["name"]).count():
             raise ExceptionEx("项目名 %s 已存在" % _dict["name"])
 
-
-        uids=User.uids()
+        uids = User.uids()
         for uid in [_dict[u] for u in _dict if "_uid" in u]:
             if uid not in uids:
-                raise ExceptionEx("用户 %s 不存在"%uid)
+                raise ExceptionEx("用户 %s 不存在" % uid)
 
         proj = Project(_dict)
         db.session.add(proj)
@@ -327,7 +324,3 @@ class Project(db.Model):
             query = query.filter(~Project.id.in_(proj_ids))
 
         return query.paginate(page, pre_page, False).to_page(Project._to_dict)
-
-
-
-

@@ -107,6 +107,10 @@ class SCRAP:
 class STOCK:
     TYPE = u"库存"
 
+class ACCESS:
+    PASS = u"已确认"
+    FAIL = u"退回"
+    NEW = None
 
 class PROJECT:
     EDIT_PROJ = "edit_proj"
