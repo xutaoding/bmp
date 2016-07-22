@@ -1,17 +1,14 @@
-根路径：/apis/v1.0
-格式：
-描述:方法 相对路径
-
-<string:*>:字符串参数
-<int:*>:整型参数
-
-
-获取密钥:get /login/pubkey
-
-
-登录:get  /login/<string:uid>/<string:pwd>
-uid:用户名
-pwd:密码
+[
+{
+    "获取密钥":"get /login/pubkey"
+},
+{
+    "登录":"get  /login/<string:uid>/<string:pwd>"
+    "参数":{
+        "uid":"用户名"
+        "pwd":"密码"
+    }
+},
 
 登出:get /logout
 
@@ -156,7 +153,42 @@ groups:用户组
 删除用户:delete /users/<string:uid>
 uid:用户名
 
-更新ldap用户:update /users
+更新ops用户信息:update /users
+
+获取全部ldap用户信息:get /users/ldap
+
+获取特定ldap用户信息:get /users/ldap/<string:uid>
+
+删除ldap用户:delete /users/ldap/<string:uid>
+
+新增ldap用户:post /users/ldap/<string:uid>
+修改ldap用户信息:put /users/ldap/<string:uid>
+uid:用户名
+参考:
+{
+      "sn": "Famil name",
+      "employeeNumber": "Employee Number",
+      "givenName": "Given Name",
+      "title": "Title",
+      "l": "Locality",
+      "st": "state or Province",
+      "mail": "Email",
+      "displayName": "Display Name",
+      "employeeType": "Employee Type",
+      "x-csf-emp-onboardDate": "Entry Date",
+      "preferredLanguage": "Preferred Language",
+      "businessCategory": "Department",
+      "mobile": "Mobile",
+      "x-csf-emp-1stManager":"1st Manager",
+      "x-csf-emp-2ndManager":"2nd Manager"
+      "x-csf-emp-gender":"Gender",
+      "x-csf-emp-grade":"Grade",
+      "x-csf-emp-nationality":"Nationnality"
+}
+
+重置ldap用户密码:put /users/passwd/<string:uid> # 管理员用户生成随机密码
+                 put /users/passwd/<string:uid>/<string:oldpass>/<string:newpass> # 用户修改密码
+                 put /users/passwd/<string:uid>/<string:oldpass> # 用户生成随机密码
 
 
 采购相关------------------------------------------------
@@ -753,7 +785,9 @@ eid:编辑人
 
 
 权限申请相关------------------------------------------------
-获取权限申请列表:get /access
+获取权限申请列表:get /access/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
 
 新增权限申请:post /access
 修改权限申请:put /access/<int:aid>
@@ -761,68 +795,56 @@ aid:申请id
 
 参数:
 {
+    type:申请权限类型 #"端口规则","vpn" ,"服务器登录" 等
     content:权限申请内容 详见权限申请内容段
     approval_uid:审批人
+    dept:部门
     copy_to_uid:抄送人
     apply_reson:申请理由
 }
 权限申请内容:
-{
-    name:"端口规则",
-    args:{
-        server_addr:服务器地址,
-        server_type:服务器类型
-    }
+{#"端口规则"
+    server_addr:服务器地址,
+    server_type:服务器类型
 }
-{
-    name:"vpn",
-    args:{}
+{#"vpn"
 }
-{
-    name:"svn",
-    args:{
-        path:路径,
-        mode:权限
-    }
+{#"svn"
+    path:路径,
+    mode:权限
 }
-{
-    name:"上网规则",
-    args:{
-        rule:["规则内容1","规则内容2"]
-    }
+{#"上网规则",
+    rule:["规则内容1","规则内容2"]
 }
-{
-    name:"wifi",
-    args:{
-        mac:"mac地址"
-    }
+{#"wifi"
+    mac:"mac地址"
 }
-{
-    name:"服务器",
-    args:{
-        src:"源服务器",
-        dst:"靶服务器",
-        type:"类型",
-        port:"端口"
-    }
+{#"服务器登录"
+    hosts:"服务器地址1,服务器地址2",
+    user_name:"uid",
+    gen_key:"是否生成key"# 1:是 0:不是,
+    role:"角色"#root或guest
 }
-{
-    name:"数据库",
-    args:{
-        type:"类型",
-        db:"数据库",
-        table:"表名",
-        server:"服务器",
-        mode:"权限"
-    }
+{#"数据库"
+    type:"类型",
+    db:"数据库",
+    table:"表名",
+    server:"服务器",
+    mode:"权限"
 }
 
 删除权限申请:delete /access/<int:aid>
 aid:申请id
 
-获取权限申请历史记录:get /access/history
+获取权限申请历史记录:get /access/history/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
 
-审批权限申请:/access/approval/<int:aid>
+获取审批中的申请记录:get /access/approval/<int:page>/<int:pre_page>
+page:页数 从1开始
+pre_page:每页长度
+
+审批权限申请:put /access/approval/<int:aid>
 aid:申请id
 参数:
 {
@@ -830,6 +852,63 @@ aid:申请id
     approval_reson:审批理由
 }
 
+提交权限申请:put /access/<int:aid>
+aid:申请id
+参数:
+{
+    status:"审批"
+}
+
+权限部署:post /access/<int:aid>
+
+
+
+数据库表文档------------------------------------------------
+
+获取表信息:get /doc
+           get /doc/<int:page>/<int:pre_page>
+           get /doc/<int:did>
+page:页数 从1开始
+pre_page:每页长度
+did:表id
+
+新增表:post /doc
+参数:
+{
+    database:"库名称"
+    table:"表名称"
+    env:"环境"
+    pkey:"主键"
+    init_len:"数据初始化量"
+    max_len:"数据每年增长数量"
+    mainten_uid:"维护人"
+    opt_uid:"业务人"
+    indexs:[
+        {
+            no:"索引序号1"
+            name:"索引名称1"
+            desc:"备注1"
+        }
+    ],
+    fields:[
+
+    ]
+}
+
+
+获取表索引:get /doc/index
+           get /doc/index/<int:page>/<int:pre_page>
+           get /doc/index/<int:iid>
+page:页数 从1开始
+pre_page:每页长度
+iid:索引id
+
+获取表字段:get /doc/field
+           get /doc/field/<int:page>/<int:pre_page>
+           get /doc/field/<int:iid>
+page:页数 从1开始
+pre_page:每页长度
+fid：字段id
 
 
 文件上传/下载------------------------------------------------
@@ -871,3 +950,6 @@ aid:申请id
 参考:
     /stats/release/status/2015-01-01/2015-12-12
     /stats/release/app/2015-01-01/2015-12-12
+
+
+]
