@@ -35,7 +35,8 @@ class AccessApi(BaseApi):
     def put(self, aid):
         submit = self.request()
         submit["id"] = aid
-        submit["content"] = json.dumps(submit["content"])
+        if submit.__contains__("content"):
+            submit["content"] = json.dumps(submit["content"])
 
         Access.edit(submit)
         return self.succ()

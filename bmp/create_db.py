@@ -1,6 +1,7 @@
 # coding: utf-8
 import MySQLdb
 
+from bmp.models.doc import *
 from bmp.models.asset import *
 from bmp.models.project import *
 from bmp.models.purchase import *
@@ -13,6 +14,7 @@ from bmp.models.idc import *
 from bmp.models.report import *
 from bmp.models.log import LogSqlalchemy
 from bmp.models.access import *
+
 
 from bmp import db
 

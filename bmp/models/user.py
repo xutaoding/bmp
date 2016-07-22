@@ -1,11 +1,11 @@
 # coding: utf-8
 from datetime import datetime
 
-from flask import session
-
 from bmp import db
 from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
+from flask import session
+from bmp.utils.user_ldap import Ldap
 
 user_group = db.Table("user_group",
                       db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
@@ -181,15 +181,18 @@ class User(db.Model):
         return True
 
     @staticmethod
-    def update(_ldaps):
+    def update():
+        _ldap_dict = {}
+        ldap = Ldap()
+        _ldap_users = ldap.search().all()
+
+        for dn, user in _ldap_users:
+            _ldap_dict[user["uid"].lower()] = user
+
         users = User.query.all()
         user_dict = {}
-        _ldap_dict = {}
         for user in users:
             user_dict[user.uid.lower()] = user
-
-        for _ldap in _ldaps:
-            _ldap_dict[_ldap.lower()] = _ldaps[_ldap]
 
         # 删除离职的
         for uid in set(user_dict.keys()).difference(_ldap_dict.keys()):
@@ -201,7 +204,7 @@ class User(db.Model):
             u.is_dimiss = False
             for field in ldap.keys():
                 if field == "x-csf-emp-onboardDate":
-                    u.onboardDate=ldap[field]
+                    u.onboardDate = ldap[field]
                 else:
                     setattr(u, field, ldap[field])
 
@@ -211,7 +214,7 @@ class User(db.Model):
             user = User(_user)
             user.create_time = datetime.now()
             user.last_time = datetime.now()
-            user.onboardDate = datetime.strptime(_user["x-csf-emp-onboardDate"],"%Y%m%d")
+            user.onboardDate = datetime.strptime(_user["x-csf-emp-onboardDate"], "%Y%m%d")
             user.is_admin = False
             db.session.add(user)
 
@@ -223,6 +226,5 @@ class User(db.Model):
         return User.query.filter(User.is_dimiss == False).filter(User.businessCategory == bc).all()
 
 
-if __name__ == "__main__":
-    import bmp.utils.user_ldap as ldap
-    User.update(ldap.all())
+if __name__=="__main__":
+    print User.update()

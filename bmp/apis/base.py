@@ -64,12 +64,13 @@ class BaseApi(MethodView):
         except Exception, e:
             traceback.print_exc()
             log.exception(e)
-            return self.fail("接口异常")
+            return self.fail("接口异常",e.__str__())
 
-    def fail(self, error=""):
+    def fail(self, error="",msg=""):
         return jsonify({
             "success": False,
             "error": error,
+            "message":msg,
             "content": {}
         })
 
@@ -101,6 +102,7 @@ class BaseApi(MethodView):
         return jsonify({
             "success": True,
             "error": "",
+            "message":"",
             "content": data,
             "file": fdata
         })

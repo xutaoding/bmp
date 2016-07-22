@@ -3,7 +3,7 @@
 from bmp import log
 import traceback
 from bmp.models.user import Group, User
-from bmp.utils import user_ldap
+from bmp.utils.user_ldap import Ldap
 from bmp.const import PURCHASE,DEFAULT_GROUP
 from base import BaseMail
 
@@ -13,7 +13,8 @@ class Mail(BaseMail):
         to = []
         if not p.is_finished:
             if p.cur_approval_type == PURCHASE.FLOW_ONE:
-                suser = User.get(user_ldap.get_superior(p.apply_uid))
+                ldap=Ldap()
+                suser = User.get(ldap.get_superior(p.apply_uid))
                 to.append(suser["mail"])
             else:
                 to.extend([u.mail for u in Group.get_users(p.cur_approval_type)])

@@ -11,13 +11,14 @@ class Access(BaseModel, db.Model):
     status = db.Column(db.String(128))
     content = db.Column(db.Text)
 
-    copy_to_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+    copy_to_uid = db.Column(db.Text, default="")
 
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     approval_time = db.Column(db.DateTime)
     approval_reson = db.Column(db.String(256))
 
     apply_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+    dept = db.Column(db.String(128), default="")
     apply_time = db.Column(db.DateTime)
     apply_reson = db.Column(db.String(256))
 

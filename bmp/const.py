@@ -64,7 +64,6 @@ class DEFAULT_GROUP:
         ALERT="SMS_ALERT"
 
 
-# todo 清除unicode定义
 class RELEASE:
     PASS = u"已确认"
     FAIL = u"退回"
@@ -84,7 +83,6 @@ class LEAVE:
     TYPE = u"请假类型"
 
 
-# todo 清除unicode定义
 class PURCHASE:
     PASS = u"已确认"
     FAIL = u"退回"
@@ -97,7 +95,6 @@ class PURCHASE:
     PRICE_LIMIT = 10000
 
 
-# todo 清除unicode定义
 class SCRAP:
     PASS = u"已确认"
     FAIL = u"退回"
@@ -108,9 +105,12 @@ class STOCK:
     TYPE = u"库存"
 
 class ACCESS:
+    DEPLOY = u"已部署"
     PASS = u"已确认"
     FAIL = u"退回"
     NEW = None
+    APPROVAL = u"审批"
+    SSH_TYP = u"服务器登录"
 
 class PROJECT:
     EDIT_PROJ = "edit_proj"
@@ -129,6 +129,10 @@ class PROJECT:
     def EDIT_SCHEDULE(type):
         return "edit_sched_%s" % type
 
+class DOC:
+    PUT = "PUT"
+    DELETE = "DELETE"
+    NEW = "NEW"
 
 if __name__ == "__main__":
     pass

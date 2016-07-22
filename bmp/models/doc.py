@@ -28,7 +28,7 @@ class DocHistory(BaseModel, db.Model):
     type = db.Column(db.String(128))
 
     content = db.Column(db.Text)
-    create_uid = db.Column(db.String(128), db.ForeignKey("user.id"))
+    create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     create_time = db.Column(db.DateTime)
 
     doc_id = db.Column(db.Integer, db.ForeignKey("doc.id"))
@@ -44,9 +44,9 @@ class Doc(BaseModel, db.Model):
     max_len = db.Column(db.Integer)
     desc = db.Column(db.Text)
 
-    mainten_uid = db.Column(db.String(128), db.ForeignKey("user.id"))
-    opt_uid = db.Column(db.String(128), db.ForeignKey("user.id"))
-    create_uid = db.Column(db.String(128), db.ForeignKey("user.id"))
+    mainten_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default=None)
+    opt_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default=None)
+    create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     create_time = db.Column(db.DateTime)
 
     is_del = db.Column(db.Boolean, default=False)

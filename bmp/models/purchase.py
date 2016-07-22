@@ -6,7 +6,7 @@ from flask import session
 from sqlalchemy import or_
 
 import bmp.utils.timeutil as time
-import bmp.utils.user_ldap as ldap
+from bmp.utils.user_ldap import Ldap
 from bmp import db
 from bmp.const import PURCHASE
 from bmp.const import USER_SESSION
@@ -233,6 +233,7 @@ class Purchase(db.Model):
 
     @staticmethod
     def __is_superior(uid, apply_uid):
+        ldap = Ldap()
         if uid == ldap.get_superior(apply_uid):
             return True
         return False

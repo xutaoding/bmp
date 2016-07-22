@@ -3,108 +3,113 @@ import ldap
 from ldap import modlist
 
 from bmp import app
+from bmp.utils.exception import ExceptionEx
 
 
-def __bind(account, pwd, is_auth=False):
-    try:
-        init = ldap.initialize(app.config["LDAP_HOST"])
-        if not is_auth:
-            init.simple_bind(account, pwd)
-        else:
-            init.simple_bind_s(account, pwd)
+class Ldap:
+    def __init__(self):
+        self.account = app.config["LDAP_ACCOUNT"]
+        self.password = app.config["LDAP_PASSWORD"]
+        self.init = ldap.initialize(app.config["LDAP_HOST"])
+        self.init.simple_bind_s(self.account, self.password)
+        self.search_result = None
+
+    def __del__(self):
+        self.init.unbind_s()
+
+    def auth(self, uid, pwd):
+        try:
+            dn, user = self.search(uid).first()
+
+            init = ldap.initialize(app.config["LDAP_HOST"])
+            init.simple_bind_s(dn, pwd)
             init.unbind_s()
-        return init
-    except:
-        return None
+            return True
+        except:
+            return False
 
+    def all(self):
+        return self.to_dict()
 
-def all():
-    users = {}
-    for _user in search():
-        dn, user = __user_dict([_user])
-        users[user["uid"]] = user
-    return users
+    def first(self):
+        return self.to_dict()[0]
 
+    def to_dict(self):
+        result = []
+        for dn, user in self.search_result:
+            for k in user:
+                user[k] = user[k][0]
+            result.append((dn, user))
+        return result
 
-def search(uid="*"):
-    init = __bind(app.config["LDAP_ACCOUNT"], app.config["LDAP_PASSWORD"])
-    if not init:
-        return []
+    def get_superior(self, uid):
+        try:
+            dn, user = self.search(uid).first()
+            return user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip()
+        except:
+            return None
 
-    result = init.search_s(
-        app.config["LDAP_BASE_DN"],
-        ldap.SCOPE_SUBTREE,
-        "(uid=%s)" % (uid),
-        [
-            "uid",
-            "displayName",
-            "businessCategory",
-            "mail",
-            "mobile",
-            "title",
-            "x-csf-emp-1stManager",
-            "x-csf-emp-2ndManager",  # 审批人
-            "cn",
-            "x-csf-emp-onboardDate"
-        ]
-    )
+    def search(self, value="*", field="uid", attrlist=None):
+        attr_lst = ["uid",
+                    "displayName",
+                    "businessCategory",
+                    "mail",
+                    "mobile",
+                    "title",
+                    "x-csf-emp-1stManager",
+                    "x-csf-emp-2ndManager",
+                    "cn",
+                    "x-csf-emp-onboardDate"] if not attrlist else attrlist
+        if attrlist == "*":
+            attr_lst = None
 
-    init.unbind_s()
-    return result
+        self.search_result = self.init.search_s(
+            app.config["LDAP_BASE_DN"],
+            ldap.SCOPE_SUBTREE,
+            "(%s=%s)" % (field, value),
+            attr_lst
+        )
+        return self
 
+    def modify(self, uid, _new, password=None):
+        dn, _old = self.search(uid, attrlist=_new.keys()).first()
+        if password and not self.auth(uid, password):
+            return False
+        self.init.modify_s(dn, modlist=modlist.modifyModlist(_old, _new))
 
-def __user_dict(_lst,use_list=False):
-    result=[]
-    for dn,user in _lst:
-        for k in user:
-            user[k] = user[k][0]
-        result.append((dn,user))
-    if not use_list:
-        return result[0]
-    return result
+        return True
 
+    def delete(self, uid):
+        dn, user = self.search(uid).first()
+        self.init.delete_s(dn)
 
-def auth(uid, pwd):
-    result = search(uid)
-    if not result:
-        return False, None
+        return True
 
-    dn, user = __user_dict(result)
+    def add(self, uid, submit):
+        dn = "uid=%s,dc=employees,dc=people,dc=chinascopefinancial,dc=com" % uid
+        try:
+            self.init.add_s(dn, modlist.addModlist(submit))
+        except ldap.LDAPError as e:
+            raise ExceptionEx(e.message)
 
-    if not __bind(dn, pwd, True):
-        return False, None
-    return True, user
+    def export(self, cols):
+        def to_result_dict(u):
+            _dict = {}
+            for k in u:
+                if k in cols:
+                    _dict[k] = u[k]
+            return _dict
 
+        for dn, u in self.search().all():
+            yield to_result_dict(u)
 
-def get_superior(uid):
-    try:
-        dn, user = __user_dict(search(uid))
-        return user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip()
-    except:
-        return None
-
-
-def modify(uid, password, _old, _new):
-    dn, u = __user_dict(search(uid))
-    conn = __bind(dn, password)
-    try:
-        conn.modify_s(dn, modlist.modifyModlist(_old, _new))
-    finally:
-        conn.unbind_s()
-
-
-
-def export(cols):
-    def to_result_dict(u):
-        _dict={}
-        for k in u:
-            if k in cols:
-                _dict[k]=u[k]
-        return _dict
-
-    for dn,u in __user_dict(search(),True):
-        yield to_result_dict(u)
-
+    def reset_pwd(self, uid, newpass=None, oldpass=None):
+        try:
+            dn, user = self.search(uid).first()
+            self.init.passwd_s(dn, oldpass, newpass)
+            return True
+        except:
+            return False
 
 
 '''
@@ -116,4 +121,6 @@ base DN :dc=chinascopefinancial,dc=com
 '''
 
 if __name__ == "__main__":
-    print search("chenglong.yan")
+    _ldap = Ldap()
+    for item in _ldap.search("FIN.TEST").all():
+        print item

@@ -5,9 +5,12 @@ from bmp.models.access import Access
 
 
 class Access_historyApi(BaseApi):
-    route = ["/access/history"]
+    route = ["/access/history/<int:page>/<int:pre_page>"]
 
-    def get(self):
+    # 申请人 申请时间 类型 理由 内容 操作
+    def get(self, page=0, pre_page=None):
         return self.succ(Access.select(
-            _filters=Access.status.in_([ACCESS.FAIL, ACCESS.PASS]))
-        )
+            page=page,
+            pre_page=pre_page,
+            _filters=Access.status.in_([ACCESS.FAIL, ACCESS.DEPLOY])
+        ))

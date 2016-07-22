@@ -1,7 +1,7 @@
 # coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.user import User
-import bmp.utils.user_ldap as ldap
+from bmp.utils.user_ldap import Ldap
 
 
 class UsersApi(BaseApi):
@@ -25,11 +25,6 @@ class UsersApi(BaseApi):
         return self.succ()
 
     def update(self):
-        if not User.update(ldap.all()):
+        if not User.update():
             return self.fail()
         return self.succ()
-
-
-if __name__ == "__main__":
-    import requests
-    requests.post("http://192.168.0.227",data={"data":"5"}.__str__())

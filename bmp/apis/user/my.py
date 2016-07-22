@@ -4,7 +4,7 @@ from flask import session
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION
 from bmp.models.user import User
-from bmp.utils import user_ldap
+from bmp.utils.user_ldap import Ldap
 
 
 class MyApi(BaseApi):
@@ -16,10 +16,8 @@ class MyApi(BaseApi):
     def put(self):
         submit = self.request()
         if submit.__contains__("mobile"):
-            user_ldap.modify(session[USER_SESSION]["uid"],
-                             submit["password"],
-                             {"mobile": submit["mobile"]},
-                             {"mobile": submit["mobile"]})
+            ldap = Ldap()
+            ldap.modify(session[USER_SESSION]["uid"], {"mobile": submit["mobile"]}, submit["password"])
         User.edit(submit)
         return self.succ()
 

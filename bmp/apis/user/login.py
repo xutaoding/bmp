@@ -1,12 +1,12 @@
 # coding: utf-8
-import rsa
 from flask import session
 
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION, KEY_SESSION
 from bmp.models.user import User
-from bmp.utils import user_ldap
+from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
+from bmp.utils.user_ldap import Ldap
 
 
 class LoginApi(BaseApi):
@@ -24,14 +24,14 @@ class LoginApi(BaseApi):
         if not session.__contains__(KEY_SESSION):
             raise ExceptionEx("未申请密钥")
 
-        pkey = session[KEY_SESSION]
-        prikey = rsa.PrivateKey(pkey["n"], pkey["e"], pkey["d"], pkey["p"], pkey["q"])
-        uid = rsa.decrypt(bytearray.fromhex(uid), prikey)
-        pwd = rsa.decrypt(bytearray.fromhex(pwd), prikey)
+        uid = crypt.desc(uid)
+        pwd = crypt.desc(pwd)
 
-        result, _user = user_ldap.auth(uid, pwd)
-        if not result:
+        ldap = Ldap()
+        if not ldap.auth(uid, pwd):
             return self.fail("用户名或密码错误")
+
+        dn, _user = ldap.search(uid).first()
 
         User.add(_user)
         session[USER_SESSION] = _user

@@ -1,14 +1,22 @@
-[
+根路径：/apis/v1.0
+格式：
+描述:方法 相对路径
+
+<string:*>:字符串参数
+<int:*>:整型参数
+
+请求参数:
 {
-    "获取密钥":"get /login/pubkey"
-},
-{
-    "登录":"get  /login/<string:uid>/<string:pwd>"
-    "参数":{
-        "uid":"用户名"
-        "pwd":"密码"
-    }
-},
+    参数名:描述
+}
+
+
+获取密钥:get /login/pubkey
+
+
+登录:get  /login/<string:uid>/<string:pwd>
+uid:用户名
+pwd:密码
 
 登出:get /logout
 
@@ -166,24 +174,25 @@ uid:用户名
 uid:用户名
 参考:
 {
-      "sn": "Famil name",
-      "employeeNumber": "Employee Number",
-      "givenName": "Given Name",
-      "title": "Title",
-      "l": "Locality",
-      "st": "state or Province",
-      "mail": "Email",
-      "displayName": "Display Name",
-      "employeeType": "Employee Type",
-      "x-csf-emp-onboardDate": "Entry Date",
-      "preferredLanguage": "Preferred Language",
-      "businessCategory": "Department",
-      "mobile": "Mobile",
-      "x-csf-emp-1stManager":"1st Manager",
-      "x-csf-emp-2ndManager":"2nd Manager"
-      "x-csf-emp-gender":"Gender",
-      "x-csf-emp-grade":"Grade",
-      "x-csf-emp-nationality":"Nationnality"
+  "cn": "Common name",
+  "sn": "Famil name",
+  "employeeNumber": "Employee Number",
+  "givenName": "Given Name",
+  "title": "Title",
+  "l": "Locality",
+  "st": "state or Province",
+  "mail": "Email",
+  "displayName": "Display Name",
+  "employeeType": "Employee Type",
+  "x-csf-emp-onboardDate": "Entry Date",
+  "preferredLanguage": "Preferred Language",
+  "businessCategory": "Department",
+  "mobile": "Mobile",
+  "x-csf-emp-1stManager":"1st Manager",
+  "x-csf-emp-2ndManager":"2nd Manager"
+  "x-csf-emp-gender":"Gender",
+  "x-csf-emp-grade":"Grade",
+  "x-csf-emp-nationality":"Nationnality"
 }
 
 重置ldap用户密码:put /users/passwd/<string:uid> # 管理员用户生成随机密码
@@ -873,6 +882,9 @@ pre_page:每页长度
 did:表id
 
 新增表:post /doc
+修改表:put /doc/<int:did>
+did:表id
+
 参数:
 {
     database:"库名称"
@@ -883,18 +895,26 @@ did:表id
     max_len:"数据每年增长数量"
     mainten_uid:"维护人"
     opt_uid:"业务人"
-    indexs:[
+    desc:"备注"
+    fields:[
         {
-            no:"索引序号1"
-            name:"索引名称1"
-            desc:"备注1"
+            no:"字段序号",
+            name:"字段名称",
+            type:"字段类型",
+            desc:"备注"
         }
     ],
-    fields:[
-
+    indexs:[
+        {
+            no:"索引序号"
+            name:"索引名称"
+            desc:"备注"
+        }
     ]
 }
 
+删除表:delete /doc/<int:did>
+did:表id
 
 获取表索引:get /doc/index
            get /doc/index/<int:page>/<int:pre_page>
@@ -903,12 +923,58 @@ page:页数 从1开始
 pre_page:每页长度
 iid:索引id
 
+新增表索引:post /doc/index/<int:did>
+did:表id
+
+修改表索引:put /doc/index/<int:iid>
+iid:索引id
+参数:
+{
+    no:"索引序号"
+    name:"索引名称"
+    desc:"备注"
+}
+
+删除表索引:delete /doc/index/<int:iid>
+iid:索引id
+
 获取表字段:get /doc/field
            get /doc/field/<int:page>/<int:pre_page>
            get /doc/field/<int:iid>
 page:页数 从1开始
 pre_page:每页长度
 fid：字段id
+
+新增表字段:post /doc/index/<int:did>
+did:表id
+
+修改表字段:put /doc/index/<int:fid>
+fid:字段id
+
+参数:
+{
+    no:"字段序号",
+    name:"字段名称",
+    type:"字段类型",
+    desc:"备注"
+}
+
+删除表字段:delete /doc/index/<int:fid>
+fid:字段id
+
+
+获取历史操作记录:get /doc/history
+                 get /doc/history/<int:page>/<int:pre_page>
+                 get /doc/history/<int:hid>
+page:页数 从1开始
+pre_page:每页长度
+hid：记录id
+
+
+检索mongo表: get /doc/mongo/<string:host>/<string:database>/<string:table>
+host:mongo地址 如:192.168.1.1:2701
+database:数据库
+table:表名
 
 
 文件上传/下载------------------------------------------------
@@ -950,6 +1016,3 @@ fid：字段id
 参考:
     /stats/release/status/2015-01-01/2015-12-12
     /stats/release/app/2015-01-01/2015-12-12
-
-
-]
