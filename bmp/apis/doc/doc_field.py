@@ -1,14 +1,15 @@
 # coding=utf-8
 
 import json
-
-from flask import session
+from datetime import datetime
 
 from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.const import DOC, USER_SESSION
+from bmp.database import Database
 from bmp.models.doc import DocField, DocHistory
-from datetime import datetime
+from flask import session
+
 
 class Doc_fieldApi(BaseApi):
     route = ["/doc/field", "/doc/field/<int:page>/<int:pre_page>", "/doc/field/<int:fid>"]
@@ -24,13 +25,14 @@ class Doc_fieldApi(BaseApi):
     def post(self, fid):
         submit = self.request()
         submit["doc_id"] = fid
-        field = DocField.add(submit)
-        return self.success(submit,DOC.NEW)
+        field = DocField.add(submit, auto_commit=False)
+        return self.success(submit, DOC.NEW)
 
     def put(self, fid):
         submit = self.request()
         submit["id"] = fid
         doc = DocField.edit(submit, auto_commit=False)
+        submit["doc_id"] = doc.doc_id
         return self.success(submit, DOC.PUT)
 
     def success(self, doc, opt):

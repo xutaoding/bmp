@@ -1,17 +1,17 @@
 # coding: utf-8
-import random
-
-from flask import session
 
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION
 from bmp.models.user import User
+from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
 from bmp.utils.user_ldap import Ldap
-from bmp.utils import crypt
+from flask import session
+
 
 class PasswdApi(BaseApi):
-    route = ["/users/passwd/<string:uid>", "/users/passwd/<string:uid>/<string:oldpass>",
+    route = ["/users/passwd/<string:uid>",
+             "/users/passwd/<string:uid>/<string:oldpass>",
              "/users/passwd/<string:uid>/<string:oldpass>/<string:newpass>"]
 
     def put(self, uid, oldpass=None, newpass=None):
@@ -24,4 +24,4 @@ class PasswdApi(BaseApi):
         if not ldap.reset_pwd(uid, newpass, oldpass):
             return self.fail()
 
-        return self.succ(newpass)
+        return self.succ({"new_password": newpass})

@@ -868,11 +868,20 @@ aid:申请id
     status:"审批"
 }
 
-权限部署:post /access/<int:aid>
+权限部署: put /access/deploy/ssh/<int:aid> 部署服务器登录权限
 
 
 
 数据库表文档------------------------------------------------
+
+查询表信息:get /doc/search/<int:page>/<int:pre_page>
+           get /doc/search
+参数
+{
+    "database":"库名称"
+    table:"表名称",
+    env:"环境"
+}
 
 获取表信息:get /doc
            get /doc/<int:page>/<int:pre_page>
@@ -975,6 +984,9 @@ hid：记录id
 host:mongo地址 如:192.168.1.1:2701
 database:数据库
 table:表名
+
+
+
 
 
 文件上传/下载------------------------------------------------

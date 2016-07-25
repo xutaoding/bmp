@@ -25,7 +25,8 @@ class BaseModel(object):
                 setattr(self, k, v)
 
         for k, v in submit.items():
-            set_attr(k, v)
+            if hasattr(self,k):
+                set_attr(k, v)
 
     @classmethod
     def get(cls, _id, _filters=None):

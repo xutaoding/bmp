@@ -59,4 +59,9 @@ class Doc(BaseModel, db.Model):
         _dict = self.to_dict()
         _dict["indexs"] = [i.to_dict() for i in self.indexs]
         _dict["fields"] = [f.to_dict() for f in self.fields]
+        historys = self.historys
+        _dict["modify_time"] = historys[-1].to_dict()["create_time"] if historys else _dict["create_time"]
+        _dict["modify_uid"] = historys[-1].to_dict()["create_uid"] if historys else _dict["create_uid"]
+
+
         return _dict

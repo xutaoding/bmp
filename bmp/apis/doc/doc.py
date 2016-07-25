@@ -45,7 +45,7 @@ class DocApi(BaseApi):
             "type": Doc.__name__,
             "opt": opt,
             "create_uid": session[USER_SESSION]["uid"],
-            "create_time": session
+            "create_time": datetime.now()
         }
         DocHistory.add(hist, auto_commit=False)
         db.session.commit()

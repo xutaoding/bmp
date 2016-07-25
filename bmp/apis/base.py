@@ -1,20 +1,20 @@
 # coding: utf-8
 import json
+import os
 import traceback
 from functools import wraps
-import os
 
-from flask.views import MethodView
-from flask import redirect
-from flask import url_for
-from flask import jsonify
-from flask import session
-from flask import request
-
-from bmp.const import USER_SESSION
-from bmp import log
 from bmp import app
+from bmp import log
+from bmp.const import USER_SESSION
 from bmp.utils.exception import ExceptionEx
+from flask import jsonify
+from flask import redirect
+from flask import request
+from flask import session
+from flask import url_for
+from flask.views import MethodView
+from sqlalchemy import or_
 
 
 def jsonp(func):
@@ -64,15 +64,44 @@ class BaseApi(MethodView):
         except Exception, e:
             traceback.print_exc()
             log.exception(e)
-            return self.fail("接口异常",e.__str__())
+            return self.fail("接口异常", e.__str__())
 
-    def fail(self, error="",msg=""):
+    def fail(self, error="", msg=""):
         return jsonify({
             "success": False,
             "error": error,
-            "message":msg,
+            "message": msg,
             "content": {}
         })
+
+    def get_search_fields(self, _clss, is_fuzzy=True):
+        _filters = []
+
+        if not isinstance(_clss,list):
+            _clss = [_clss]
+
+        for key in [arg for arg in request.args.keys() if arg != "_"]:
+            has_key = False
+            for _cls in _clss:
+                if not hasattr(_cls, key):
+                    continue
+
+                if is_fuzzy:
+                    _filters.append(or_(*[
+                        getattr(_cls, key).like("%" + arg + "%") for arg in request.args.getlist(key)
+                        ]))
+                else:
+                    _filters.append(or_(*[
+                        getattr(_cls, key).like(arg) for arg in request.args.getlist(key)
+                        ]))
+
+                has_key = True
+                break
+
+            if not has_key:
+                raise ExceptionEx("查询字段%s不存在" % key)
+
+        return _filters
 
     def request(self):
         req = None
@@ -102,7 +131,7 @@ class BaseApi(MethodView):
         return jsonify({
             "success": True,
             "error": "",
-            "message":"",
+            "message": "",
             "content": data,
             "file": fdata
         })

@@ -31,7 +31,8 @@ class Doc_indexApi(BaseApi):
         submit = self.request()
         submit["id"] = iid
         doc = DocIndex.edit(submit, auto_commit=False)
-        return self.success(doc, DOC.PUT)
+        submit["doc_id"] = doc.doc_id
+        return self.success(submit, DOC.PUT)
 
     def success(self, doc, opt):
         doc_id = doc.pop("doc_id")
