@@ -14,9 +14,20 @@ class PasswdApi(BaseApi):
              "/users/passwd/<string:uid>/<string:oldpass>",
              "/users/passwd/<string:uid>/<string:oldpass>/<string:newpass>"]
 
+    def auth(self):
+        return True
+
     def put(self, uid, oldpass=None, newpass=None):
-        if not oldpass and not User.get(session[USER_SESSION]["uid"])["is_admin"]:
-            raise ExceptionEx("权限不足")
+        if not oldpass:
+            if not session.__contains__(USER_SESSION):
+                raise ExceptionEx("未登录")
+
+            if not User.get(session[USER_SESSION]["uid"])["is_admin"]:
+                raise ExceptionEx("权限不足")
+
+        if not uid or uid in ["*",u"*"]:
+            return self.fail("无效的用户名")
+
 
         newpass = newpass if newpass else crypt.randpass()
 
