@@ -905,6 +905,7 @@ did:表id
     mainten_uid:"维护人"
     opt_uid:"业务人"
     desc:"备注"
+    example:"示例"
     fields:[
         {
             no:"字段序号",
@@ -941,7 +942,9 @@ iid:索引id
 {
     no:"索引序号"
     name:"索引名称"
-    desc:"备注"
+    field:"索引字段"
+    is_unique:"索引唯一性" # bool值
+    desc:"索引备注"
 }
 
 删除表索引:delete /doc/index/<int:iid>
@@ -954,10 +957,10 @@ page:页数 从1开始
 pre_page:每页长度
 fid：字段id
 
-新增表字段:post /doc/index/<int:did>
+新增表字段:post /doc/field/<int:did>
 did:表id
 
-修改表字段:put /doc/index/<int:fid>
+修改表字段:put /doc/field/<int:fid>
 fid:字段id
 
 参数:
@@ -968,25 +971,22 @@ fid:字段id
     desc:"备注"
 }
 
-删除表字段:delete /doc/index/<int:fid>
+删除表字段:delete /doc/field/<int:fid>
 fid:字段id
 
 
-获取历史操作记录:get /doc/history
-                 get /doc/history/<int:page>/<int:pre_page>
-                 get /doc/history/<int:hid>
+获取历史操作记录:get /doc/history/<int:did>/<int:page>/<int:pre_page>
+                 get /doc/history/<int:did>
 page:页数 从1开始
 pre_page:每页长度
-hid：记录id
+did：对应文档id
 
 
-检索mongo表: get /doc/mongo/<string:host>/<string:database>/<string:table>
+检索mongo表: get /doc/mongo/<string:host>/<string:database>/<string:table>/<int:limit>
 host:mongo地址 如:192.168.1.1:2701
 database:数据库
 table:表名
-
-
-
+limit:采样上限
 
 
 文件上传/下载------------------------------------------------
