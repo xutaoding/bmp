@@ -53,14 +53,17 @@ class DocApi(BaseApi):
 
     def put(self, did):
         submit = self.request()
-        indexs = submit["indexs"] if submit.__contains__("indexs") else []
-        fields = submit["fields"] if submit.__contains__("fields") else []
+
+        indexs = submit.pop("indexs") if submit.__contains__("indexs") else None
+        fields = submit.pop("fields") if submit.__contains__("fields") else None
 
         submit["id"] = did
         doc = Doc.edit(submit, auto_commit=False)
 
-        doc.indexs = [Database.to_cls(DocIndex, index) for index in indexs]
-        doc.fields = [Database.to_cls(DocField, field) for field in fields]
+        if indexs != None:
+            doc.indexs = [Database.to_cls(DocIndex, index) for index in indexs]
+        if fields != None:
+            doc.fields = [Database.to_cls(DocField, field) for field in fields]
 
         return self.success(submit, DOC.PUT)
 
