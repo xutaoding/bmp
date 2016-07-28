@@ -1,13 +1,15 @@
 # coding: utf-8
 from bmp import db
 from bmp.models.base import BaseModel
-
+import json
 
 class DocIndex(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     no = db.Column(db.Integer)
     name = db.Column(db.String(128))
+    field = db.Column(db.String(128))
     desc = db.Column(db.String(128))
+    is_unique = db.Column(db.Boolean)
 
     doc_id = db.Column(db.Integer, db.ForeignKey("doc.id"))
 
@@ -33,6 +35,13 @@ class DocHistory(BaseModel, db.Model):
 
     doc_id = db.Column(db.Integer, db.ForeignKey("doc.id"))
 
+    def _to_dict(self):
+        hist = self.to_dict()
+        hist["content"] = json.loads(hist["content"])
+
+        return hist
+
+
 
 class Doc(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -43,6 +52,7 @@ class Doc(BaseModel, db.Model):
     init_len = db.Column(db.Integer)
     max_len = db.Column(db.Integer)
     desc = db.Column(db.Text)
+    example = db.Column(db.Text)
 
     mainten_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default=None)
     opt_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default=None)
@@ -62,6 +72,5 @@ class Doc(BaseModel, db.Model):
         historys = self.historys
         _dict["modify_time"] = historys[-1].to_dict()["create_time"] if historys else _dict["create_time"]
         _dict["modify_uid"] = historys[-1].to_dict()["create_uid"] if historys else _dict["create_uid"]
-
 
         return _dict
