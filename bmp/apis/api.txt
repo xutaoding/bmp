@@ -828,6 +828,7 @@ aid:申请id
 {#"wifi"
     mac:"mac地址"
 }
+
 {#"服务器登录"
     hosts:"服务器地址1,服务器地址2",
     user_name:"uid",
@@ -868,7 +869,24 @@ aid:申请id
     status:"审批"
 }
 
-权限部署: put /access/deploy/ssh/<int:aid> 部署服务器登录权限
+权限部署: post /access/deploy/ssh 部署服务器登录权限
+参数:
+{
+    type:"权限类型",#linux服务器登录,windows服务器登录
+    hosts:["服务器IP1","服务器IP2"]
+    user_name:"用户名"
+    gen_key:"sshkey是否存在"# 1:是 0:否
+    role:"root","guest"
+}
+
+
+
+获取权限部署历史:get    /access/deploy/history
+                        /access/deploy/history/<int:page>/<int:pre_page>
+                        /access/deploy/history/<int:hid>
+page:页数 从1开始
+pre_page:每页长度
+hid:历史记录id
 
 
 
