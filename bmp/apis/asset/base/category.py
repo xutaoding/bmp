@@ -30,6 +30,7 @@ class CategoryApi(BaseApi):
 
 
 if __name__ == "__main__":
-    Category.delete(93,auto_commit=False)
+    for c in Category.query.filter(Category.parent_id==164).all():
+        print c
 
     db.session.commit()

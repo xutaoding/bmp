@@ -1,17 +1,16 @@
 # coding=utf-8
 
-import json
 from datetime import datetime
 
 from bmp import db
-from bmp.apis.base import BaseApi
+from bmp.apis.doc.base import BaseDocApi
 from bmp.const import DOC, USER_SESSION
 from bmp.database import Database
-from bmp.models.doc import Doc, DocHistory, DocIndex, DocField
+from bmp.models.doc import Doc, DocIndex, DocField
 from flask import session
 
 
-class DocApi(BaseApi):
+class DocApi(BaseDocApi):
     route = ["/doc", "/doc/<int:page>/<int:pre_page>", "/doc/<int:did>"]
 
     def get(self, page=None, pre_page=None, did=None):
@@ -19,7 +18,8 @@ class DocApi(BaseApi):
             return self.succ(Doc.get(did))
         return self.succ(Doc.select(
             page,
-            pre_page
+            pre_page,
+            _orders=Doc.modify_time.desc()
         ))
 
     def post(self):
@@ -29,25 +29,14 @@ class DocApi(BaseApi):
 
         submit["create_time"] = datetime.now()
         submit["create_uid"] = session[USER_SESSION]["uid"]
+        submit["modify_time"] = datetime.now()
+        submit["modify_uid"] = session[USER_SESSION]["uid"]
 
         doc = Doc.add(submit, auto_commit=False)
 
         doc.indexs = [Database.to_cls(DocIndex, index) for index in indexs]
         doc.fields = [Database.to_cls(DocField, field) for field in fields]
 
-        db.session.commit()
-        return self.succ()
-
-    def success(self, doc, opt):
-        hist = {
-            "content": json.dumps(doc),
-            "doc_id": doc["id"],
-            "type": Doc.__name__,
-            "opt": opt,
-            "create_uid": session[USER_SESSION]["uid"],
-            "create_time": datetime.now()
-        }
-        DocHistory.add(hist, auto_commit=False)
         db.session.commit()
         return self.succ()
 
@@ -65,9 +54,12 @@ class DocApi(BaseApi):
         if fields != None:
             doc.fields = [Database.to_cls(DocField, field) for field in fields]
 
-        return self.success(submit, DOC.PUT)
+        return self.success(DOC.PUT, Doc, submit)
 
     def delete(self, did):
-        doc = Doc.get(did)
         Doc.delete(did, auto_commit=False)
-        return self.success(doc, DOC.DELETE)
+        return self.success(DOC.DELETE, Doc, did)
+
+
+if __name__ == "__main__":
+    print Doc.get(3)

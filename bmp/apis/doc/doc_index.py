@@ -1,16 +1,10 @@
 # coding=utf-8
+from bmp.apis.doc.base import BaseDocApi
+from bmp.const import DOC
+from bmp.models.doc import DocIndex
 
-import json
 
-from flask import session
-
-from bmp import db
-from bmp.apis.base import BaseApi
-from bmp.const import DOC, USER_SESSION
-from bmp.models.doc import DocIndex, DocHistory
-from datetime import datetime
-
-class Doc_indexApi(BaseApi):
+class Doc_indexApi(BaseDocApi):
     route = ["/doc/index", "/doc/index/<int:page>/<int:pre_page>", "/doc/index/<int:iid>"]
 
     def get(self, page=None, pre_page=None, iid=None):
@@ -25,31 +19,16 @@ class Doc_indexApi(BaseApi):
         submit = self.request()
         submit["doc_id"] = iid
         index = DocIndex.add(submit)
-        return self.success(submit,DOC.NEW)
+        return self.success(DOC.NEW, DocIndex, submit)
 
     def put(self, iid):
         submit = self.request()
         submit["id"] = iid
-        doc = DocIndex.edit(submit, auto_commit=False)
-        submit["doc_id"] = doc.doc_id
-        return self.success(submit, DOC.PUT)
-
-    def success(self, doc, opt):
-        doc_id = doc.pop("doc_id")
-        hist = {
-            "content": json.dumps(doc),
-            "doc_id": doc_id,
-            "type": DocIndex.__name__,
-            "opt": opt,
-            "create_uid": session[USER_SESSION]["uid"],
-            "create_time": datetime.now()
-        }
-        DocHistory.add(hist, auto_commit=False)
-        db.session.commit()
-        return self.succ()
+        dindex = DocIndex.edit(submit, auto_commit=False)
+        submit["doc_id"] = dindex.doc_id
+        return self.success(DOC.PUT, DocIndex, submit)
 
     def delete(self, iid):
         index = DocIndex.get(iid)
         DocIndex.delete(iid, auto_commit=False)
-
-        return self.success(index, DOC.DELETE)
+        return self.success(DOC.DELETE, DocIndex, index)

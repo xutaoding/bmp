@@ -59,6 +59,9 @@ class Doc(BaseModel, db.Model):
     create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     create_time = db.Column(db.DateTime)
 
+    modify_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
+    modify_time = db.Column(db.DateTime)
+
     is_del = db.Column(db.Boolean, default=False)
 
     historys = db.relationship("DocHistory")
@@ -69,8 +72,4 @@ class Doc(BaseModel, db.Model):
         _dict = self.to_dict()
         _dict["indexs"] = [i.to_dict() for i in self.indexs]
         _dict["fields"] = [f.to_dict() for f in self.fields]
-        historys = self.historys
-        _dict["modify_time"] = historys[-1].to_dict()["create_time"] if historys else _dict["create_time"]
-        _dict["modify_uid"] = historys[-1].to_dict()["create_uid"] if historys else _dict["create_uid"]
-
         return _dict

@@ -42,9 +42,16 @@ class Ldap:
             result.append((dn, user))
         return result
 
-    def get_superior(self, uid):
+    def get_superior(self, uid,inc_1st=False):
         try:
             dn, user = self.search(uid).first()
+
+            if inc_1st:
+                return list({
+                    user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip(),
+                    user["x-csf-emp-1stManager"].split(",")[0].split("=")[1].strip()
+                })
+
             return user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip()
         except:
             return None
@@ -122,5 +129,4 @@ base DN :dc=chinascopefinancial,dc=com
 
 if __name__ == "__main__":
     _ldap = Ldap()
-    for item in _ldap.search("FIN.TEST").all():
-        print item
+    print _ldap.get_superior("chenglong.yan",inc_1st=True)

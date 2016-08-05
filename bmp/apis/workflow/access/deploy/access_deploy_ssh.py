@@ -42,4 +42,3 @@ class Access_deploy_sshApi(BaseApi):
 if __name__ == "__main__":
     ssh = DeploySsh(timeout=None)
     print ssh.add({"user_name": "chenglong.yan", "hosts": ["192.168.250.111"], "gen_key": "1", "role": "root"})
-

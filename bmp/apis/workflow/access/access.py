@@ -2,11 +2,13 @@
 import json
 from datetime import datetime
 
-from flask import session
-
+from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION, ACCESS
 from bmp.models.access import Access
+from bmp.tasks.mail.access import Mail
+from bmp.utils.exception import ExceptionEx
+from flask import session
 
 
 class AccessApi(BaseApi):
@@ -38,7 +40,14 @@ class AccessApi(BaseApi):
         if submit.__contains__("content"):
             submit["content"] = json.dumps(submit["content"])
 
-        Access.edit(submit)
+        access = Access.edit(submit, auto_commit=False)
+
+        if submit["status"] == ACCESS.APPROVAL:
+            mail = Mail()
+            if not mail.to(access):
+                raise ExceptionEx("邮件发送失败")
+
+        db.session.commit()
         return self.succ()
 
     def delete(self, aid):

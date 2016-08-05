@@ -14,7 +14,8 @@ class Doc_historyApi(BaseApi):
             return self.succ(DocHistory.select(
                 page=page,
                 pre_page=pre_page,
-                _filters=DocHistory.doc_id == did
+                _filters=DocHistory.doc_id == did,
+                _orders=DocHistory.create_time.desc()
             ))
         return self.succ(DocHistory.select(
             page,
