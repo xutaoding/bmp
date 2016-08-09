@@ -25,15 +25,14 @@ pwd:密码
 type:分类信息
 
 添加字典分类:post /refs
-
 {
     name:分类名称,
     type:所属类别,
     parent_id:0#预留
 }
 
-
-
+删除字典分类:delete /refs/<int:rid>
+rid:分类id
 
 用户信息:get /my
 

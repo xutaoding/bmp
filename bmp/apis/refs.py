@@ -4,7 +4,7 @@ from bmp.models.ref import Ref
 
 
 class RefsApi(BaseApi):
-    route = ["/refs", "/refs/<string:type>"]
+    route = ["/refs", "/refs/<string:type>", "/refs/<int:rid>"]
 
     def get(self, type="%"):
         return self.succ(Ref.select(type))
@@ -14,8 +14,8 @@ class RefsApi(BaseApi):
         Ref.add(submit["name"], submit["type"], submit["parent_id"])
         return self.succ()
 
-    def delete(self, id):
-        Ref.delete(id)
+    def delete(self, rid):
+        Ref.delete(rid)
         return self.succ()
 
 
