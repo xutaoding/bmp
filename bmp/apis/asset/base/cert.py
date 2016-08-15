@@ -1,10 +1,11 @@
 # coding: utf-8
 
+from datetime import timedelta
+
+from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Cert
 from bmp.tasks.alert import Alert
-from datetime import timedelta
-from bmp import db
 
 
 class CertApi(BaseApi):
@@ -25,7 +26,7 @@ class CertApi(BaseApi):
     def delete(self):
         submit = self.request()
         cert = Cert.delete(submit["ids"].split(","), auto_commit=False)
-        Alert().delete(cert,timedelta(days=20))
+        Alert().delete(cert, timedelta(days=20))
 
         db.session.commit()
         return self.succ()

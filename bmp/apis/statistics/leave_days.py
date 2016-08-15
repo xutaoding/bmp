@@ -2,7 +2,6 @@
 import json
 
 import pandas as pd
-
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
 
@@ -13,7 +12,7 @@ class Leave_daysApi(BaseApi):
     def get(self, begin_time, end_time):
         result = pd.DataFrame(columns=["name", "days"])
         leaves = pd.read_json(
-            json.dumps(Leave.between(begin_time,end_time)))
+            json.dumps(Leave.between(begin_time, end_time)))
 
         if leaves.empty:
             return self.succ([])

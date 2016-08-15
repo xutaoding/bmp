@@ -1,7 +1,6 @@
 # coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.user import User
-from bmp.utils.user_ldap import Ldap
 
 
 class UsersApi(BaseApi):

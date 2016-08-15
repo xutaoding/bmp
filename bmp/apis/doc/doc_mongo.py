@@ -1,15 +1,14 @@
 # coding=utf-8
 
-import random
+import re
 from datetime import datetime
 
 import pymongo
 from bmp.apis.base import BaseApi
 from bson import Int64
+from bson import ObjectId
 from bson.binary import Binary
 from bson.regex import Regex
-from bson import ObjectId
-import re
 
 
 def get_fields_iter(obj, path=None):
@@ -32,14 +31,13 @@ def get_fields_iter(obj, path=None):
             return "Regex"
         elif isinstance(obj, Binary):
             return "Binary"
-        elif isinstance(obj,ObjectId):
+        elif isinstance(obj, ObjectId):
             return "ObjectId"
 
-        elif obj==None:
+        elif obj == None:
             return obj
 
         return re.compile("<type \'(.+)\'>").findall(str(type(obj)))[0]
-
 
     if isinstance(obj, dict):
         for name, value in obj.items():
@@ -64,7 +62,7 @@ def get_collect_info(host, database, table, limit):
         fields = {}
 
         limit = 1 if limit <= 0 else limit
-        for doc in list(collect.find(limit=1,skip=limit)):
+        for doc in list(collect.find(limit=1, skip=limit)):
             for name, typ in get_fields_iter(doc):
                 if not fields.__contains__(name):
                     fields[name] = []

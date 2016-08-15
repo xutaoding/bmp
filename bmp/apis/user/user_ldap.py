@@ -1,10 +1,11 @@
 # coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.user import User
+from bmp.tasks.mail.entry import Mail
 from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
 from bmp.utils.user_ldap import Ldap
-from bmp.tasks.mail.entry import Mail
+
 
 class User_ldapApi(BaseApi):
     route = ["/users/ldap", "/users/ldap/<string:uid>"]
@@ -52,7 +53,7 @@ class User_ldapApi(BaseApi):
 
         User.update()
 
-        mail=Mail()
+        mail = Mail()
         mail.to(_submit)
         return self.succ()
 

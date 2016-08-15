@@ -1,9 +1,10 @@
 # coding: utf-8
+from datetime import timedelta
+
+from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.asset import Stock
 from bmp.tasks.alert import Alert
-from datetime import timedelta
-from bmp import db
 
 
 class StockApi(BaseApi):
@@ -18,15 +19,15 @@ class StockApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        stock = Stock.add(submit,auto_commit=False)
+        stock = Stock.add(submit, auto_commit=False)
         Alert().add("库存", stock, stock.warranty_time, timedelta(days=30))
 
         db.session.commit()
         return self.succ()
 
     def delete(self, sid):
-        stock = Stock.delete(sid,auto_commit=False)
-        Alert().delete(stock,[timedelta(30), timedelta(60)])
+        stock = Stock.delete(sid, auto_commit=False)
+        Alert().delete(stock, [timedelta(30), timedelta(60)])
 
         db.session.commit()
         return self.succ()
@@ -34,7 +35,7 @@ class StockApi(BaseApi):
     def put(self, sid):
         submit = self.request()
         submit["id"] = sid
-        stock = Stock.edit(submit,auto_commit=False)
+        stock = Stock.edit(submit, auto_commit=False)
         Alert().add("库存", stock, stock.warranty_time, timedelta(days=30))
 
         db.session.commit()

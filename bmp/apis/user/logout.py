@@ -1,8 +1,7 @@
 # coding: utf-8
-from flask import session
-
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION
+from flask import session
 
 
 class LogoutApi(BaseApi):

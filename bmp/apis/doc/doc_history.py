@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from bmp.apis.base import BaseApi
-from bmp.models.doc import  DocHistory
+from bmp.models.doc import DocHistory
 
 
 class Doc_historyApi(BaseApi):

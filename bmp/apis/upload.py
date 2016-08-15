@@ -1,14 +1,13 @@
 # coding: utf-8
-from datetime import datetime
 import os
 import uuid
+from datetime import datetime
 
+from bmp import app
+from bmp.apis.base import BaseApi
+from bmp.models.upload import Upload
 from flask import request
 from flask import send_file
-
-from bmp.apis.base import BaseApi
-from bmp import app
-from bmp.models.upload import Upload
 
 
 class UploadApi(BaseApi):

@@ -19,5 +19,5 @@ class RefsApi(BaseApi):
         return self.succ()
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     pass

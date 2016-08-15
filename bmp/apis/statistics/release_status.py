@@ -2,8 +2,8 @@
 from datetime import datetime
 
 from bmp.apis.base import BaseApi
-from bmp.models.release import Release
 from bmp.const import RELEASE
+from bmp.models.release import Release
 
 
 class Release_statusApi(BaseApi):

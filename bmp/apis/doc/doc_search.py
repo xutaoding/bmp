@@ -5,7 +5,7 @@ from bmp.models.doc import Doc
 
 
 class Doc_searchApi(BaseApi):
-    route = ["/doc/search","/doc/search/<int:page>/<int:pre_page>"]
+    route = ["/doc/search", "/doc/search/<int:page>/<int:pre_page>"]
 
     def get(self, page=None, pre_page=None):
         return self.succ(Doc.select(

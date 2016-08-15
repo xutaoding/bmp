@@ -1,12 +1,11 @@
 # coding: utf-8
-from flask import session
-
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION, KEY_SESSION
 from bmp.models.user import User
 from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
 from bmp.utils.user_ldap import Ldap
+from flask import session
 
 
 class LoginApi(BaseApi):

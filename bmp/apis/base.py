@@ -77,7 +77,7 @@ class BaseApi(MethodView):
     def get_search_fields(self, _clss, is_fuzzy=True):
         _filters = []
 
-        if not isinstance(_clss,list):
+        if not isinstance(_clss, list):
             _clss = [_clss]
 
         for key in [arg for arg in request.args.keys() if arg != "_"]:

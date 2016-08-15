@@ -1,10 +1,9 @@
 # coding: utf-8
 
 import rsa
-from flask import session
-
 from bmp.apis.base import BaseApi
 from bmp.const import KEY_SESSION
+from flask import session
 
 
 class PubkeyApi(BaseApi):

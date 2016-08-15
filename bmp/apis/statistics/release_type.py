@@ -2,7 +2,6 @@
 import json
 
 import pandas as pd
-
 from bmp.apis.base import BaseApi
 from bmp.models.release import Release
 from bmp.utils import timeutil as time
