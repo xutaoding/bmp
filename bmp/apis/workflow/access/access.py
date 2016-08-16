@@ -22,7 +22,8 @@ class AccessApi(BaseApi):
         return self.succ(Access.select(
             page=page,
             pre_page=pre_page,
-            _filters=Access.status == ACCESS.NEW
+            _filters=Access.status == ACCESS.NEW,
+            _orders=Access.apply_time.desc()
         ))
 
     def post(self):

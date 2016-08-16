@@ -17,7 +17,8 @@ class Access_approvalApi(BaseApi):
         return self.succ(Access.select(
             page=page,
             pre_page=pre_page,
-            _filters=Access.status == ACCESS.APPROVAL
+            _filters=Access.status == ACCESS.APPROVAL,
+            _orders=Access.apply_time.desc()
         ))
 
     def put(self, aid):

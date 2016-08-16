@@ -1027,13 +1027,35 @@ limit:采样上限
     serial_number ,
     host_interfaces,
     host_disks,
-    host_os ,
+    host_os,
     processor_vcpus ,
     host_name ,
     ssh_info ,
     system_time ,
     ps_info
 }
+
+基金相关------------------------------------------------
+获取净值:get /asset/fund/<int:fid>
+             /asset/fund/<string:sort>/<int:page>/<int:pre_page>
+             /asset/fund/<string:sort>"
+page:页数 从1开始
+pre_page:每页长度
+fid:净值id
+sort:排序 格式 字段:顺序
+
+新增净值:post /asset/fund
+修改净值:put /asset/fund/<int:fid>
+fid:净值id
+参数
+{
+    date:"日期",
+    value:"净值"
+}
+
+删除净值:delete /asset/fund/<int:fid>
+fid:净值id
+
 
 统计------------------------------------------------
 发布应用统计:get /stats/release/app/<string:begin_time>/<string:end_time>

@@ -12,7 +12,7 @@ class BaseModel(object):
             return
 
         def set_attr(k, v):
-            if "time" in k and not isinstance(v, datetime):
+            if ("time" in k or "date" in k) and not isinstance(v, datetime):
                 try:
                     dt = pd.to_datetime(v)
                     if dt is not pd.NaT:

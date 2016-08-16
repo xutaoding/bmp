@@ -12,5 +12,6 @@ class Access_historyApi(BaseApi):
         return self.succ(Access.select(
             page=page,
             pre_page=pre_page,
-            _filters=Access.status.in_([ACCESS.FAIL, ACCESS.DEPLOY])
+            _filters=Access.status.in_([ACCESS.FAIL, ACCESS.DEPLOY]),
+            _orders=Access.apply_time.desc()
         ))

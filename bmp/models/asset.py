@@ -4,20 +4,29 @@ from datetime import timedelta
 
 from flask import session
 
+import bmp.utils.timeutil as time
+from base import BaseModel
 from bmp import db
 from bmp.const import USER_SESSION, SCRAP, STOCK
 from bmp.database import Database
 from bmp.utils.exception import ExceptionEx
-import bmp.utils.timeutil as time
+from datetime import datetime
 
-from base import BaseModel
+class Fund(BaseModel, db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.DateTime)
+    value = db.Column(db.Float)
+    def _to_dict(self):
+        ret = self.to_dict()
+        ret["date"] = self.date.strftime("%Y-%m-%d")
+        return ret
 
 
 class Domain(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     sp = db.Column(db.String(128))
-    instance_amount = db.Column(db.Integer,default=1)
+    instance_amount = db.Column(db.Integer, default=1)
     end_time = db.Column(db.DateTime)
 
 
@@ -424,8 +433,10 @@ class Stock(BaseModel, db.Model):
         stock = Stock(_dicts)
         db.session.add(stock)
 
-        if auto_commit:db.session.commit()
-        else:db.session.flush()
+        if auto_commit:
+            db.session.commit()
+        else:
+            db.session.flush()
 
         return stock
 
@@ -436,8 +447,10 @@ class Stock(BaseModel, db.Model):
 
         stock = Database.to_cls(Stock, _dicts)
 
-        if auto_commit:db.session.commit()
-        else:db.session.flush()
+        if auto_commit:
+            db.session.commit()
+        else:
+            db.session.flush()
 
         return stock
 
