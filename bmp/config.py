@@ -7,7 +7,7 @@ class Config(object):
     LDAP_PORT = "389"
     LDAP_ACCOUNT = "cn=emp_admin,dc=employees,dc=acl,dc=people,dc=chinascopefinancial,dc=com"#"cn=emp_user,dc=employees,dc=acl,dc=people,dc=chinascopefinancial,dc=com"
     LDAP_PASSWORD = "IVXM6e7cT\"CC9bua!BXO"#"\X'94ORKWV#4gCyHFzPV"
-    LDAP_BASE_DN = "dc=chinascopefinancial,dc=com"
+    LDAP_BASE_DN = "dc=employees,dc=people,dc=chinascopefinancial,dc=com"#"dc=chinascopefinancial,dc=com"
 
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -60,4 +60,4 @@ class Test(Config):
     SSH_IDC_HOST = "192.168.250.253"
     SSH_IDC_USER = "depops"
     SSH_IDC_PASSWORD = "Passwd@!"
-    LDAP_BASE_DN = "dc=employees,dc=people,dc=chinascopefinancial,dc=com"
+    #LDAP_BASE_DN = "dc=employees,dc=people,dc=chinascopefinancial,dc=com"
