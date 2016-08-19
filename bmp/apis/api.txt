@@ -1057,6 +1057,12 @@ fid:净值id
 fid:净值id
 
 
+获取沪深300指数价格:get /asset/fund/hs300/<string:start_date>/<string:end_date>
+                        /asset/fund/hs300/<string:start_date>
+start_date:开始时间
+end_date:结束时间
+
+
 统计------------------------------------------------
 发布应用统计:get /stats/release/app/<string:begin_time>/<string:end_time>
 发布状态统计:get /stats/release/status/<string:begin_time>/<string:end_time>
