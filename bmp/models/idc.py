@@ -1,5 +1,6 @@
 # coding=utf-8
 import json
+import traceback
 from datetime import datetime
 
 from bmp import app
@@ -171,6 +172,7 @@ class Idc_host(BaseModel, db.Model):  # 主机信息
 
                 result["success"] = True
             except  Exception, e:
+                traceback.print_exc()
                 log.exception(e)
 
         db.session.commit()
