@@ -198,6 +198,9 @@ uid:用户名
                  put /users/passwd/<string:uid>/<string:oldpass>/<string:newpass> # 用户修改密码
                  put /users/passwd/<string:uid>/<string:oldpass> # 用户生成随机密码
 
+发送入职通知邮件: post /users/entry/<string:uid>
+uid:用户名
+
 
 采购相关------------------------------------------------
 

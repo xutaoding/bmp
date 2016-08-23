@@ -1,21 +1,22 @@
 # coding: utf-8
 
+from datetime import datetime
+
 from base import BaseMail
-from bmp import log
-from bmp.utils.exception import ExceptionEx
 from bmp import app
+
 
 class Mail(BaseMail):
     def to(self, user):
         try:
 
-            sub = u"入职提醒 用户名:%s 密码:%s" % (user["uid"], user["userPassword"])
+            sub = u"入职通知 %s" % datetime.now().strftime("%Y-%m-%d %H:%M")
 
             self.send(
-                [app.config["MAIL_ALERT"]],
+                [app.config["MAIL_ALERT"], user["mail"]],
                 sub,
                 "",
-                "mail.alert.tpl.html")
+                "mail.entry.tpl.html", uid=user["uid"], pwd=user["pwd"])
 
             return True
         except Exception, e:

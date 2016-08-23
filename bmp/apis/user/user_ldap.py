@@ -1,7 +1,6 @@
 # coding: utf-8
 from bmp.apis.base import BaseApi
 from bmp.models.user import User
-from bmp.tasks.mail.entry import Mail
 from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
 from bmp.utils.user_ldap import Ldap
@@ -45,16 +44,9 @@ class User_ldapApi(BaseApi):
             "top"
         ]
 
-        pwd = crypt.randpass()
         ldap = Ldap()
-
         ldap.add(uid, _submit)
-        ldap.reset_pwd(uid, pwd)
-
         User.update()
-
-        mail = Mail()
-        mail.to(_submit)
         return self.succ()
 
     def put(self, uid):
