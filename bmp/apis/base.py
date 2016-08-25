@@ -4,10 +4,6 @@ import os
 import traceback
 from functools import wraps
 
-from bmp import app
-from bmp import log
-from bmp.const import USER_SESSION
-from bmp.utils.exception import ExceptionEx
 from flask import jsonify
 from flask import redirect
 from flask import request
@@ -15,6 +11,10 @@ from flask import session
 from flask import url_for
 from flask.views import MethodView
 from sqlalchemy import or_
+from bmp import app
+from bmp import log
+from bmp.const import USER_SESSION
+from bmp.utils.exception import ExceptionEx
 
 
 def jsonp(func):
@@ -87,13 +87,9 @@ class BaseApi(MethodView):
                     continue
 
                 if is_fuzzy:
-                    _filters.append(or_(*[
-                        getattr(_cls, key).like("%" + arg + "%") for arg in request.args.getlist(key)
-                        ]))
+                    _filters.extend([getattr(_cls, key).like("%" + arg + "%") for arg in request.args.getlist(key)])
                 else:
-                    _filters.append(or_(*[
-                        getattr(_cls, key).like(arg) for arg in request.args.getlist(key)
-                        ]))
+                    _filters.extend([getattr(_cls, key).like(arg) for arg in request.args.getlist(key)])
 
                 has_key = True
                 break
@@ -101,7 +97,7 @@ class BaseApi(MethodView):
             if not has_key:
                 raise ExceptionEx("查询字段%s不存在" % key)
 
-        return _filters
+        return or_(*_filters)
 
     def request(self):
         req = None
