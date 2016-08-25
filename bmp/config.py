@@ -12,6 +12,8 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = "mysql://ops:Ops@192.168.250.10:3306/bmp"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+    ADA_FD_URI = "mysql://ops_view:ops_view@122.144.134.21:3306/ada-fd"
+
     SECRET_KEY = "scope"  # os.urandom(1024)
     SESSION_TYPE = "filesystem"
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
