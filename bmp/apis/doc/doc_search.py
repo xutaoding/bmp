@@ -11,5 +11,6 @@ class Doc_searchApi(BaseApi):
         return self.succ(Doc.select(
             page,
             pre_page,
-            _filters=self.get_search_fields(Doc)
+            _filters=self.get_search_fields(Doc),
+            _orders=Doc.modify_time.desc()
         ))

@@ -35,14 +35,7 @@ class DocApi(BaseDocApi):
         submit["modify_time"] = datetime.now()
         submit["modify_uid"] = session[USER_SESSION]["uid"]
 
-        uids = User.uids()
-        if submit.__contains__("mainten_uid"):
-            if submit["mainten_uid"] not in uids:
-                raise ExceptionEx("不存在维护人 %s" % submit["mainten_uid"])
-
-        if submit.__contains__("opt_uid"):
-            if submit["opt_uid"] not in uids:
-                raise ExceptionEx("不存在业务人 %s" % submit["opt_uid"])
+        self.check_uid(submit)
 
         doc = Doc.add(submit, auto_commit=False)
 
@@ -52,20 +45,23 @@ class DocApi(BaseDocApi):
         db.session.commit()
         return self.succ()
 
+    def check_uid(self,submit):
+        uids = User.uids()
+        if submit.__contains__("mainten_uid") and submit["mainten_uid"]:
+            if submit["mainten_uid"] not in uids:
+                raise ExceptionEx("不存在维护人 %s" % submit["mainten_uid"])
+
+        if submit.__contains__("opt_uid") and submit["opt_uid"]:
+            if submit["opt_uid"] not in uids:
+                raise ExceptionEx("不存在业务人 %s" % submit["opt_uid"])
+
     def put(self, did):
         submit = self.request()
 
         indexs = submit.pop("indexs") if submit.__contains__("indexs") else None
         fields = submit.pop("fields") if submit.__contains__("fields") else None
 
-        uids = User.uids()
-        if submit.__contains__("mainten_uid"):
-            if submit["mainten_uid"] not in uids:
-                raise ExceptionEx("不存在维护人 %s" % submit["mainten_uid"])
-
-        if submit.__contains__("opt_uid"):
-            if submit["opt_uid"] not in uids:
-                raise ExceptionEx("不存在业务人 %s" % submit["opt_uid"])
+        self.check_uid(submit)
 
 
         submit["id"] = did
