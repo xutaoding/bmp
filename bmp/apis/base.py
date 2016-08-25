@@ -11,6 +11,7 @@ from flask import session
 from flask import url_for
 from flask.views import MethodView
 from sqlalchemy import or_
+
 from bmp import app
 from bmp import log
 from bmp.const import USER_SESSION
@@ -80,24 +81,33 @@ class BaseApi(MethodView):
         if not isinstance(_clss, list):
             _clss = [_clss]
 
-        for key in [arg for arg in request.args.keys() if arg != "_"]:
-            has_key = False
-            for _cls in _clss:
-                if not hasattr(_cls, key):
-                    continue
+        for keys in [arg for arg in request.args.keys() if arg != "_"]:
+            __filters = []
+            for key in keys.split(","):
+                has_key = False
+                for _cls in _clss:
+                    if not hasattr(_cls, key):
+                        continue
 
-                if is_fuzzy:
-                    _filters.extend([getattr(_cls, key).like("%" + arg + "%") for arg in request.args.getlist(key)])
-                else:
-                    _filters.extend([getattr(_cls, key).like(arg) for arg in request.args.getlist(key)])
+                    if is_fuzzy:
+                        __filters.extend([
+                                             getattr(_cls, key).like("%" + arg + "%") for arg in
+                                             request.args.getlist(keys)
+                                             ])
+                    else:
+                        __filters.extend([
+                                             getattr(_cls, key).like(arg) for arg in request.args.getlist(keys)
+                                             ])
 
-                has_key = True
-                break
+                    has_key = True
+                    break
 
-            if not has_key:
-                raise ExceptionEx("查询字段%s不存在" % key)
+                if not has_key:
+                    raise ExceptionEx("查询字段%s不存在" % key)
 
-        return or_(*_filters)
+            _filters.append(or_(*__filters))
+
+        return _filters
 
     def request(self):
         req = None
