@@ -49,13 +49,13 @@ class Doc(BaseModel, db.Model):
     table = db.Column(db.String(256))
     env = db.Column(db.String(128))
     pkey = db.Column(db.String(256))
-    init_len = db.Column(db.Integer)
-    max_len = db.Column(db.Integer)
+    init_len = db.Column(db.String(128))
+    max_len = db.Column(db.String(128))
     desc = db.Column(db.Text)
     example = db.Column(db.Text)
 
-    mainten_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default=None)
-    opt_uid = db.Column(db.String(128), db.ForeignKey("user.uid"), default=None)
+    mainten_uid = db.Column(db.Text)
+    opt_uid = db.Column(db.Text)
     create_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     create_time = db.Column(db.DateTime)
 

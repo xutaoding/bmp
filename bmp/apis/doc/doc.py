@@ -35,8 +35,6 @@ class DocApi(BaseDocApi):
         submit["modify_time"] = datetime.now()
         submit["modify_uid"] = session[USER_SESSION]["uid"]
 
-        self.check_uid(submit)
-
         doc = Doc.add(submit, auto_commit=False)
 
         doc.indexs = [Database.to_cls(DocIndex, index) for index in indexs]
@@ -45,7 +43,7 @@ class DocApi(BaseDocApi):
         db.session.commit()
         return self.succ()
 
-    def check_uid(self,submit):
+    def check_uid(self, submit):
         uids = User.uids()
         if submit.__contains__("mainten_uid") and submit["mainten_uid"]:
             if submit["mainten_uid"] not in uids:
@@ -60,9 +58,6 @@ class DocApi(BaseDocApi):
 
         indexs = submit.pop("indexs") if submit.__contains__("indexs") else None
         fields = submit.pop("fields") if submit.__contains__("fields") else None
-
-        self.check_uid(submit)
-
 
         submit["id"] = did
         doc = Doc.edit(submit, auto_commit=False)
