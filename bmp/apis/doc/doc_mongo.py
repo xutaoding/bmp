@@ -62,7 +62,7 @@ def get_collect_info(host, database, table, limit):
         fields = {}
 
         limit = 1 if limit <= 0 else limit
-        for doc in list(collect.find(limit=1, skip=limit)):
+        for doc in list(collect.find(limit=limit)):
             for name, typ in get_fields_iter(doc):
                 if not fields.__contains__(name):
                     fields[name] = []
