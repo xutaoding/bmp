@@ -33,7 +33,7 @@ class Mail(BaseMail):
                 copy_to_uid,
                 sub,
                 access=access,
-                url="/templates/jurisdiction/curr_apply.html",
+                url="/templates/jurisdiction/curr_apply.html?id=%d"%access.id,
                 tpl="mail.access.tpl.html"
             )
 

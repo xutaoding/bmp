@@ -9,9 +9,11 @@ class Access_historyApi(BaseApi):
 
     # 申请人 申请时间 类型 理由 内容 操作
     def get(self, page=0, pre_page=None):
-        return self.succ(Access.select(
-            page=page,
-            pre_page=pre_page,
-            _filters=Access.status.in_([ACCESS.FAIL, ACCESS.DEPLOY]),
-            _orders=Access.apply_time.desc()
-        ))
+        return self.succ(
+            Access.select(
+                page=page,
+                pre_page=pre_page,
+                _filters=Access.status.in_([ACCESS.FAIL, ACCESS.DEPLOY, ACCESS.PASS]),
+                _orders=Access.apply_time.desc()
+            )
+        )

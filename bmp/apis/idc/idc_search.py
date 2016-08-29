@@ -18,6 +18,8 @@ class Idc_searchApi(BaseApi):
 
 if __name__ == "__main__":
     from sqlalchemy import or_
-    for host in Idc_host.select(1, 10, _joins=[Idc_host_disk, Idc_host_interface, Idc_host_ps],
-                                _filters=or_(Idc_host_interface.ip_address.like("127.0.0.1"),Idc_host.ip.like("127.0.0.1")))["items"]:
+    for host in Idc_host.select(1, 10,
+            _joins=[Idc_host_disk, Idc_host_interface, Idc_host_ps],
+            _filters=or_(Idc_host_interface.ip_address.like("127.0.0.1"),Idc_host.ip.like("127.0.0.1"))
+    )["items"]:
         print host
