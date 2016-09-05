@@ -1,4 +1,5 @@
 # coding=utf-8
+import pymongo
 
 from bmp import app
 from bmp.apis.base import BaseApi
@@ -11,7 +12,7 @@ class JoinApi(BaseApi):
 
     def get(self):
         db = MongoDB(app.config["MONGO_HR_HOST"], app.config["MONGO_HR_DATABASE"])
-        joins = list(db.get_collect(self.collect_name).find())
+        joins = list(db.get_collect(self.collect_name).find().sort("crt",pymongo.DESCENDING))
         results = []
         for join in joins:
             join.pop("_id")

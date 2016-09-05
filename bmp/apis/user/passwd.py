@@ -1,13 +1,15 @@
 # coding: utf-8
 
+from flask import session
+
 from bmp.apis.base import BaseApi
 from bmp.const import USER_SESSION
 from bmp.models.user import User
+from bmp.tasks.mail.passwd import Mail
 from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
 from bmp.utils.user_ldap import Ldap
-from flask import session
-from bmp.tasks.mail.passwd import Mail
+
 
 class PasswdApi(BaseApi):
     route = ["/users/passwd/<string:uid>",
@@ -34,11 +36,12 @@ class PasswdApi(BaseApi):
         if not ldap.reset_pwd(uid, newpass, oldpass):
             return self.fail()
 
-        mail=Mail()
-        mail.to(uid,newpass)
-        return self.succ()
+        mail = Mail()
+        mail.to(uid, newpass)
+
+        return self.succ() if oldpass else self.succ(newpass)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     ldap = Ldap()
-    print ldap.auth("arvin.yang","QTPSN2WG")
+    print ldap.auth("arvin.yang", "QTPSN2WG")

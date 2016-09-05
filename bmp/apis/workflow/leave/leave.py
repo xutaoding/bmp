@@ -1,18 +1,13 @@
 # coding=utf-8
 from datetime import datetime
 
+
+from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
 from bmp.tasks.mail.leave import Mail
-
-from flask import session
-from bmp.const import USER_SESSION
-from datetime import timedelta
-
-from bmp import db
-import pandas as pd
-
 from bmp.utils.exception import ExceptionEx
+from bmp.utils import session
 
 
 class LeaveApi(BaseApi):
@@ -23,19 +18,23 @@ class LeaveApi(BaseApi):
 
     def post(self):
         submit = self.request()
-        submit["uid"] = session[USER_SESSION]["uid"]
+        submit["uid"] = session.get_uid()
         submit["apply_time"] = datetime.now()
         if Leave.check_overlap(submit):
             raise ExceptionEx("起止时间不能与已提交申请重叠,"
                               "可在请假审批中修改已提交的申请")
 
-        leave = Leave.add(submit,auto_commit=False)
+        leave = Leave.add(submit, auto_commit=False)
         Mail().to(leave)
 
         db.session.commit()
         return self.succ()
 
     def delete(self, lid):
+        leave = Leave.get(lid)
+        if leave["uid"] != session.get_uid():
+            raise ExceptionEx("权限不足")
+
         Leave.delete(lid)
         return self.succ()
 

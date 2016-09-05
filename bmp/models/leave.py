@@ -29,16 +29,6 @@ class Leave(BaseModel, db.Model):
     approval_uid = db.Column(db.String(128), db.ForeignKey("user.uid"))
     approval_time = db.Column(db.DateTime)
 
-    @classmethod
-    def delete(cls, _ids, auto_commit=True):
-        leave = Leave.query.filter(Leave.id == _ids).one()
-        if leave.status:
-            raise ExceptionEx("申请已审批,无法删除")
-
-        db.session.delete(leave)
-        db.session.commit()
-        return True
-
     @staticmethod
     def check_overlap(submit):
         try:

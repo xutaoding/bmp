@@ -30,7 +30,5 @@ class Hs300Api(BaseApi):
                               "close": row["close"]
                           } for i, row in data.iterrows()])
 
-
-
 if __name__ == "__main__":
     pass

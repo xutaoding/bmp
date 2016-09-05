@@ -47,7 +47,7 @@ class Config(object):
     SMS_USER = "cf_chinascope"
     SMS_PASSWORD = "zKqVjm"
 
-    MONGO_HR_HOST = "192.168.100.40"
+    MONGO_HR_HOST = "122.144.134.3"
     MONGO_HR_DATABASE = "ichinascope"
 
 
@@ -62,4 +62,3 @@ class Test(Config):
     SSH_IDC_HOST = "192.168.250.253"
     SSH_IDC_USER = "depops"
     SSH_IDC_PASSWORD = "Passwd@!"
-    #LDAP_BASE_DN = "dc=employees,dc=people,dc=chinascopefinancial,dc=com"
