@@ -6,7 +6,6 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from base import BaseModel
 from bmp import db
 from bmp.const import LEAVE
-from bmp.utils.exception import ExceptionEx
 
 
 class Leave(BaseModel, db.Model):
@@ -59,8 +58,15 @@ class Leave(BaseModel, db.Model):
         end += " 23:59:59"
 
         query = Leave.query \
-            .filter(Leave.status == LEAVE.PASS).filter(or_(
-            and_(Leave.begin_time >= beg, Leave.end_time <= end, Leave.begin_time <= end, Leave.end_time >= beg),
+            .filter(Leave.status == LEAVE.PASS)\
+            .filter(Leave.days > 0)\
+            .filter(or_(
+            and_(
+                Leave.begin_time >= beg,
+                Leave.end_time <= end,
+                Leave.begin_time <= end,
+                Leave.end_time >= beg
+            ),
             and_(Leave.begin_time <= beg, Leave.end_time >= beg),
             and_(Leave.begin_time <= end, Leave.end_time >= end)))
 

@@ -1,7 +1,9 @@
 # coding: utf-8
+import json
+
 from bmp import db
 from bmp.models.base import BaseModel
-import json
+
 
 class DocIndex(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -40,7 +42,6 @@ class DocHistory(BaseModel, db.Model):
         hist["content"] = json.loads(hist["content"])
 
         return hist
-
 
 
 class Doc(BaseModel, db.Model):

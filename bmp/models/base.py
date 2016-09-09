@@ -1,9 +1,9 @@
-from bmp import db
-from sqlalchemy import or_
-from bmp.database import Database
-import re
 from datetime import datetime
+
 import pandas as pd
+
+from bmp import db
+from bmp.database import Database
 
 
 class BaseModel(object):
@@ -25,7 +25,7 @@ class BaseModel(object):
                 setattr(self, k, v)
 
         for k, v in submit.items():
-            if hasattr(self,k):
+            if hasattr(self, k):
                 set_attr(k, v)
 
     @classmethod
@@ -38,7 +38,7 @@ class BaseModel(object):
         return result[0] if result else result
 
     @classmethod
-    def select(cls, page=None, pre_page=None, _filters=None, _orders=None, _joins=None):
+    def select(cls, page=None, pre_page=None, _filters=None, _orders=None, _joins=None, format=None):
         query = cls.query
         if _filters is None:
             _filters = []
@@ -68,10 +68,12 @@ class BaseModel(object):
         for _order in _orders:
             query = query.order_by(_order)
 
+        _format = format if format else cls._to_dict
+
         if page:
-            return query.paginate(page, pre_page, False).to_page(cls._to_dict)
+            return query.paginate(page, pre_page, False).to_page(_format)
         else:
-            return [cls._to_dict(result) for result in query.all()]
+            return [_format(result) for result in query.all()]
 
     @classmethod
     def delete(cls, _ids, auto_commit=True):
