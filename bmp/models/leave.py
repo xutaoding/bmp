@@ -53,22 +53,26 @@ class Leave(BaseModel, db.Model):
             .paginate(page, pre_page, False).to_page(Leave._to_dict)
 
     @staticmethod
-    def between(beg, end):
+    def between(beg, end, query_type=True):
         beg += " 00:00:00"
         end += " 23:59:59"
 
         query = Leave.query \
             .filter(Leave.status == LEAVE.PASS) \
             .filter(or_(
-                and_(Leave.begin_time >= beg,
-                     Leave.end_time <= end,
-                     Leave.begin_time <= end,
-                     Leave.end_time >= beg),
-                and_(Leave.begin_time <= beg, Leave.end_time >= beg),
-                and_(Leave.begin_time <= end, Leave.end_time >= end))
-            ).order_by(Leave.apply_time.desc())
+            and_(
+                Leave.begin_time >= beg,
+                Leave.end_time <= end,
+                Leave.begin_time <= end,
+                Leave.end_time >= beg
+            ),
+            and_(Leave.begin_time <= beg, Leave.end_time >= beg),
+            and_(Leave.begin_time <= end, Leave.end_time >= end))).order_by(Leave.apply_time.desc())
 
-        return query
+        if query_type:
+            return query
+
+        return [Leave._to_dict(l) for l in query.all()]
 
     @staticmethod
     def history(page=0, pre_page=None):
@@ -103,3 +107,9 @@ class LeaveEvent(BaseModel, db.Model):
             and_(LeaveEvent.begin_time <= end, LeaveEvent.end_time >= end)))
 
         return [LeaveEvent._to_dict(l) for l in query.all()]
+
+
+if __name__ == "__main__":
+    from datetime import datetime
+
+    print Leave.check_overlap(datetime(2016, 5, 4), datetime(2016, 5, 5))
