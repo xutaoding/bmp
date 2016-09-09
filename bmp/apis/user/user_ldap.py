@@ -1,7 +1,7 @@
 # coding: utf-8
+
 from bmp.apis.base import BaseApi
 from bmp.models.user import User
-from bmp.utils import crypt
 from bmp.utils.exception import ExceptionEx
 from bmp.utils.user_ldap import Ldap
 
@@ -15,9 +15,15 @@ class User_ldapApi(BaseApi):
             dn, user = ldap.search(uid, attrlist="*").first()
             return self.succ([user])
 
+        def cmp(a, b):
+            if a["employeeNumber"] > b["employeeNumber"]:
+                return 1
+            elif a["employeeNumber"] == b["employeeNumber"]:
+                return 0
+            return -1
+
         return self.succ(sorted(
-            [user for dn, user in ldap.search(attrlist="*").all()],
-            lambda x, y: x["employeeNumber"] > y["employeeNumber"]
+            [user for dn, user in ldap.search(attrlist="*").all()], cmp
         ))
 
     def to_str_dict(self, submit):
@@ -66,3 +72,7 @@ class User_ldapApi(BaseApi):
 
         User.update()
         return self.succ()
+
+
+if __name__ == '__main__':
+    pass
