@@ -18,7 +18,7 @@ class Mail(BaseMail):
 
             copy_to_uid = [User.get(uid)["mail"] for uid in access.copy_to_uid.split(",")] \
                 if access.copy_to_uid \
-                else ldap.get_superior(access.apply_uid, inc_1st=True)
+                else [ldap.get_1st_manager(access.apply_uid)]
 
             copy_to_uid.extend([u.mail for u in Group.get_users(DEFAULT_GROUP.OP)])
 

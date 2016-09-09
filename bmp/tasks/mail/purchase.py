@@ -14,7 +14,7 @@ class Mail(BaseMail):
         if not p.is_finished:
             if p.cur_approval_type == PURCHASE.FLOW_ONE:
                 ldap=Ldap()
-                suser = User.get(ldap.get_superior(p.apply_uid))
+                suser = User.get(ldap.get_2nd_manager(p.apply_uid))
                 to.append(suser["mail"])
             else:
                 to.extend([u.mail for u in Group.get_users(p.cur_approval_type)])

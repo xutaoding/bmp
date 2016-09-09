@@ -42,17 +42,17 @@ class Ldap:
             result.append((dn, user))
         return result
 
-    def get_superior(self, uid,inc_1st=False):
+    def get_2nd_manager(self, uid):
         try:
             dn, user = self.search(uid).first()
-
-            if inc_1st:
-                return list({
-                    user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip(),
-                    user["x-csf-emp-1stManager"].split(",")[0].split("=")[1].strip()
-                })
-
             return user["x-csf-emp-2ndManager"].split(",")[0].split("=")[1].strip()
+        except:
+            return None
+
+    def get_1st_manager(self, uid):
+        try:
+            dn, user = self.search(uid).first()
+            return user["x-csf-emp-1stManager"].split(",")[0].split("=")[1].strip()
         except:
             return None
 
@@ -97,7 +97,7 @@ class Ldap:
         try:
             self.init.add_s(dn, modlist.addModlist(submit))
         except ldap.LDAPError as e:
-            raise ExceptionEx(e.message)
+            raise ExceptionEx(e.message["info"])
 
     def export(self, cols):
         def to_result_dict(u):
@@ -129,4 +129,4 @@ base DN :dc=chinascopefinancial,dc=com
 
 if __name__ == "__main__":
     _ldap = Ldap()
-    print _ldap.get_superior("chenglong.yan",inc_1st=True)
+    print _ldap.get_2nd_manager("chenglong.yan")
