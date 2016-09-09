@@ -1,20 +1,21 @@
 # coding=utf-8
 from datetime import datetime
 
-
 from bmp import db
 from bmp.apis.base import BaseApi
 from bmp.models.leave import Leave
 from bmp.tasks.mail.leave import Mail
-from bmp.utils.exception import ExceptionEx
 from bmp.utils import session
+from bmp.utils.exception import ExceptionEx
 
 
 class LeaveApi(BaseApi):
     route = ["/leave", "/leave/<string:begin_time>/<string:end_time>", "/leave/<int:lid>"]
 
     def get(self, begin_time, end_time):
-        return self.succ(Leave.between(begin_time, end_time))
+        query = Leave.between(begin_time, end_time).filter(Leave.days > 0)
+
+        return self.succ([Leave._to_dict(l) for l in query.all()])
 
     def post(self):
         submit = self.request()
