@@ -1,12 +1,12 @@
 # coding=utf-8
 from datetime import datetime
+from operator import or_
 
 from bmp.apis.base import BaseApi
-from bmp.const import ACCESS
+from bmp.const import ACCESS,DEFAULT_GROUP
 from bmp.models.access import Access
+from bmp.utils import session
 from bmp.utils.exception import ExceptionEx
-from flask import session
-from bmp.const import USER_SESSION
 
 
 class Access_approvalApi(BaseApi):
@@ -14,10 +14,19 @@ class Access_approvalApi(BaseApi):
 
     # 申请人 申请时间 类型 理由 内容 操作
     def get(self, page=0, pre_page=None):
+        filters = [Access.status == ACCESS.APPROVAL]
+
+        if not session.is_admin() and \
+                not session.in_group(DEFAULT_GROUP.OP):
+            filters.append(or_(
+                Access.apply_uid == session.get_uid(),
+                Access.copy_to_uid.like("%" + session.get_uid() + "%")
+            ))
+
         return self.succ(Access.select(
             page=page,
             pre_page=pre_page,
-            _filters=Access.status == ACCESS.APPROVAL,
+            _filters=filters,
             _orders=Access.apply_time.desc()
         ))
 

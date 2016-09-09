@@ -4,11 +4,11 @@ from datetime import datetime
 
 from bmp import db
 from bmp.apis.base import BaseApi
-from bmp.const import USER_SESSION, ACCESS
+from bmp.const import  ACCESS
 from bmp.models.access import Access
 from bmp.tasks.mail.access import Mail
+from bmp.utils import session
 from bmp.utils.exception import ExceptionEx
-from flask import session
 
 
 class AccessApi(BaseApi):
@@ -19,17 +19,19 @@ class AccessApi(BaseApi):
         if aid:
             return self.succ(Access.get(aid))
 
+        filters = [Access.status == ACCESS.NEW]
+
         return self.succ(Access.select(
             page=page,
             pre_page=pre_page,
-            _filters=Access.status == ACCESS.NEW,
+            _filters=filters,
             _orders=Access.apply_time.desc()
         ))
 
     def post(self):
         submit = self.request()
         submit["apply_time"] = datetime.now()
-        submit["apply_uid"] = session[USER_SESSION]["uid"]
+        submit["apply_uid"] = session.get_uid()
         submit["content"] = json.dumps(submit["content"])
 
         Access.add(submit)
