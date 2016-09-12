@@ -16,7 +16,7 @@ class Access_approvalApi(BaseApi):
     def get(self, page=0, pre_page=None):
         filters = [Access.status == ACCESS.APPROVAL]
 
-        if not session.is_admin() or not session.in_group(DEFAULT_GROUP.OP):
+        if not session.is_admin() and not session.in_group(DEFAULT_GROUP.OP):
             filters.append(or_(
                 Access.apply_uid == session.get_uid(),
                 Access.copy_to_uid.like("%" + session.get_uid() + "%")
