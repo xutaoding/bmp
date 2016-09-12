@@ -3,7 +3,7 @@ from datetime import datetime
 from operator import or_
 
 from bmp.apis.base import BaseApi
-from bmp.const import ACCESS,DEFAULT_GROUP
+from bmp.const import ACCESS,DEFAULT_GROUP, USER_SESSION
 from bmp.models.access import Access
 from bmp.utils import session
 from bmp.utils.exception import ExceptionEx
@@ -35,7 +35,7 @@ class Access_approvalApi(BaseApi):
         if access["status"] != ACCESS.APPROVAL:
             raise ExceptionEx("申请未提交")
 
-        submit["approval_uid"] = session[USER_SESSION]["uid"]
+        submit["approval_uid"] = session.get_uid()
         submit["approval_time"] = datetime.now()
         submit["id"] = aid
         Access.edit(submit)
