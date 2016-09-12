@@ -2,9 +2,11 @@
 import json
 from datetime import datetime
 
+from sqlalchemy import or_
+
 from bmp import db
 from bmp.apis.base import BaseApi
-from bmp.const import  ACCESS
+from bmp.const import ACCESS, DEFAULT_GROUP
 from bmp.models.access import Access
 from bmp.tasks.mail.access import Mail
 from bmp.utils import session
@@ -20,6 +22,10 @@ class AccessApi(BaseApi):
             return self.succ(Access.get(aid))
 
         filters = [Access.status == ACCESS.NEW]
+
+        if not session.is_admin() and \
+                not session.in_group(DEFAULT_GROUP.OP):
+            filters.append(Access.apply_uid == session.get_uid())
 
         return self.succ(Access.select(
             page=page,

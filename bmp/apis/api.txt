@@ -775,10 +775,11 @@ rid:团队id
 参数:
 {
     name:团队名称
+    group:团队组名
 }
 
 删除团队:delete /report/team/<int:rid>
-rid 团队id
+rid:团队id
 
 
 新增编辑权限:post /report/editor/<int:tid>
