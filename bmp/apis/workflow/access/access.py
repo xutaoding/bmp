@@ -23,8 +23,7 @@ class AccessApi(BaseApi):
 
         filters = [Access.status == ACCESS.NEW]
 
-        if not session.is_admin() and \
-                not session.in_group(DEFAULT_GROUP.OP):
+        if not session.is_admin() or not session.in_group(DEFAULT_GROUP.OP):
             filters.append(Access.apply_uid == session.get_uid())
 
         return self.succ(Access.select(
